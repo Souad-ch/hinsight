@@ -152,13 +152,19 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 .method-name{font-size:1.05rem;color:var(--text);margin-bottom:10px;}
 .method-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.75;}
 
-/* NOTES */
+/* NOTES / Q&A */
 #notes{background:var(--card);}
-.notes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
-.note-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:30px 36px;display:flex;gap:22px;align-items:flex-start;transition:var(--tr);}
-.note-card:hover{border-color:rgba(120,144,124,0.35);transform:translateX(-4px);}
-.note-bullet{width:8px;height:8px;background:var(--accent);border-radius:50%;flex-shrink:0;margin-top:10px;box-shadow:0 0 12px rgba(120,144,124,0.5);}
-.note-text{font-size:0.97rem;color:var(--text-dim);line-height:1.8;}
+.qa-list{display:flex;flex-direction:column;gap:12px;max-width:860px;}
+.qa-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color var(--tr);}
+.qa-item.open{border-color:rgba(120,144,124,0.4);}
+.qa-question{width:100%;background:transparent;border:none;outline:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 28px;font-family:var(--font-ar);font-size:1rem;color:var(--text);font-weight:600;text-align:right;}
+.qa-question:hover{color:var(--accent-light);}
+.qa-q-icon{width:28px;height:28px;background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--accent-light);flex-shrink:0;font-family:var(--font-en);font-weight:700;}
+.qa-arrow{font-size:1.1rem;color:var(--accent-dim);transition:transform 0.35s ease;flex-shrink:0;}
+.qa-item.open .qa-arrow{transform:rotate(180deg);color:var(--accent-light);}
+.qa-answer{max-height:0;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1),padding 0.35s ease;}
+.qa-item.open .qa-answer{max-height:200px;}
+.qa-answer-inner{padding:0 28px 22px;font-size:0.95rem;color:var(--text-dim);line-height:1.85;border-top:1px solid var(--line);padding-top:16px;}
 
 /* CONSULTATIONS */
 #consultations{background:var(--bg);}
@@ -177,18 +183,18 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 
 /* BOOKING - LUXURY CALENDAR */
 #booking{background:var(--card);}
-.booking-wrapper{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.cal-header{display:flex;align-items:center;justify-content:space-between;padding:24px 32px;border-bottom:1px solid var(--line);}
-.cal-title{font-size:1.15rem;color:var(--text);font-family:var(--font-ar);letter-spacing:0.02em;}
-.cal-nav{display:flex;gap:8px;}
-.cal-btn{width:38px;height:38px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:1.1rem;}
+.booking-wrapper{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:560px;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);}
+.cal-title{font-size:0.95rem;color:var(--text);font-family:var(--font-ar);letter-spacing:0.02em;}
+.cal-nav{display:flex;gap:6px;}
+.cal-btn{width:30px;height:30px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:0.95rem;}
 .cal-btn:hover{border-color:var(--accent);color:var(--accent-light);background:rgba(120,144,124,0.08);}
 .cal-btn:disabled{opacity:0.25;cursor:not-allowed;}
-.cal-grid-wrap{padding:24px 32px 0;}
-.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px;}
-.cal-wd{text-align:center;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-ar);padding:6px 0;letter-spacing:0.04em;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;transition:var(--tr);position:relative;border:1px solid transparent;min-height:44px;}
+.cal-grid-wrap{padding:14px 20px 0;}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px;}
+.cal-wd{text-align:center;font-size:0.62rem;color:var(--text-muted);font-family:var(--font-ar);padding:4px 0;letter-spacing:0.03em;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;transition:var(--tr);position:relative;border:1px solid transparent;min-height:32px;}
 .cal-day:empty{cursor:default;}
 .cal-day:not(:empty):hover{background:rgba(120,144,124,0.08);border-color:rgba(120,144,124,0.2);}
 .cal-day.past{opacity:0.28;cursor:not-allowed;pointer-events:none;}
@@ -196,17 +202,17 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 .cal-day.selected{background:rgba(120,144,124,0.14);border-color:var(--accent)!important;}
 .cal-day.selected .day-n{color:var(--accent-light);}
 .cal-day.fully-booked{opacity:0.35;}
-.day-n{font-family:var(--font-en);font-size:0.92rem;color:var(--text);line-height:1;}
-.day-dot{width:4px;height:4px;border-radius:50%;margin-top:4px;}
-.has-slots .day-dot{background:var(--accent);box-shadow:0 0 6px rgba(120,144,124,0.6);}
+.day-n{font-family:var(--font-en);font-size:0.78rem;color:var(--text);line-height:1;}
+.day-dot{width:3px;height:3px;border-radius:50%;margin-top:3px;}
+.has-slots .day-dot{background:var(--accent);box-shadow:0 0 5px rgba(120,144,124,0.6);}
 .fully-booked .day-dot{background:var(--text-muted);}
 .no-slots .day-dot{background:transparent;}
-.slots-panel{padding:28px 32px 32px;border-top:1px solid var(--line);margin-top:16px;}
-.slots-date-title{font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;}
-.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.slot{border:1px solid var(--border);border-radius:10px;padding:20px 14px;text-align:center;cursor:pointer;transition:var(--tr);position:relative;background:var(--card);}
-.slot:hover:not(.booked){border-color:var(--accent);background:rgba(120,144,124,0.07);box-shadow:0 0 24px rgba(159,187,164,0.1);transform:translateY(-3px);}
-.slot .slot-time{font-family:var(--font-en);font-size:1.4rem;font-weight:300;color:var(--text);display:block;margin-bottom:5px;}
+.slots-panel{padding:16px 20px 20px;border-top:1px solid var(--line);margin-top:10px;}
+.slots-date-title{font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;}
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.slot{border:1px solid var(--border);border-radius:8px;padding:14px 10px;text-align:center;cursor:pointer;transition:var(--tr);position:relative;background:var(--card);}
+.slot:hover:not(.booked){border-color:var(--accent);background:rgba(120,144,124,0.07);box-shadow:0 0 20px rgba(159,187,164,0.1);transform:translateY(-2px);}
+.slot .slot-time{font-family:var(--font-en);font-size:1.1rem;font-weight:300;color:var(--text);display:block;margin-bottom:4px;}
 .slot .slot-label{font-size:0.78rem;color:var(--text-dim);}
 .slot.booked{cursor:not-allowed;border-color:rgba(100,100,100,0.15);background:rgba(20,20,20,0.5);opacity:0.6;}
 .slot.booked .slot-time{color:var(--text-muted);text-decoration:line-through;}
@@ -307,7 +313,8 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 .footer-col ul a:hover{color:var(--accent-light);}
 .footer-col ul a:hover::before{width:12px;}
 .social-links{display:flex;gap:10px;margin-top:24px;}
-.social-link{width:38px;height:38px;background:var(--bg);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--text-muted);transition:var(--tr);}
+.social-link{width:38px;height:38px;background:var(--bg);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:var(--tr);}
+.social-link svg{width:16px;height:16px;fill:currentColor;}
 .social-link:hover{border-color:var(--accent);color:var(--accent-light);transform:translateY(-3px);}
 .footer-bottom{border-top:1px solid var(--line);padding-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
 .footer-copy{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
@@ -512,20 +519,44 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 </div>
 </section>
 
-<!-- NOTES -->
+<!-- NOTES / Q&A -->
 <section class="section" id="notes">
 <div class="container">
 <div class="section-head reveal">
 <span class="section-label en">Quick Insights</span>
 <h2 class="section-title">رؤى سريعة</h2>
 <div class="green-line"></div>
-<p class="section-subtitle">ملاحظات موجزة تفتح باباً للتفكير.</p>
+<p class="section-subtitle">أسئلة يطرحها المتداولون — إجابات هنادي.</p>
 </div>
-<div class="notes-grid">
-<div class="note-card reveal delay-1"><div class="note-bullet"></div><p class="note-text">لماذا لا يتحرك الذهب دائمًا مع الخبر؟ الأسواق تسعّر التوقعات، لا الأحداث.</p></div>
-<div class="note-card reveal delay-2"><div class="note-bullet"></div><p class="note-text">ما الذي يراقبه المستثمرون هذا الأسبوع؟ بيانات التضخم الأمريكي وموقف الفيدرالي.</p></div>
-<div class="note-card reveal delay-3"><div class="note-bullet"></div><p class="note-text">متى يصبح الخبر مستهلكًا في السوق؟ حين يعرفه الجميع، لم يعد له قيمة سعرية.</p></div>
-<div class="note-card reveal delay-4"><div class="note-bullet"></div><p class="note-text">الفرق بين الخوف والسيولة في وقت الأزمات — الأول انفعال، والثاني قرار.</p></div>
+<div class="qa-list reveal">
+<div class="qa-item open">
+<button class="qa-question" onclick="toggleQA(this)">
+<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>لماذا لا يتحرك الذهب دائمًا مع الخبر؟</span></div>
+<span class="qa-arrow">▾</span>
+</button>
+<div class="qa-answer"><div class="qa-answer-inner">الأسواق لا تسعّر الأحداث — بل تسعّر التوقعات. حين يُعلَن الخبر، يكون السوق قد هضمه مسبقاً. الذهب يتحرك مع التوقعات المستقبلية للتضخم والسياسة النقدية، لا مع العناوين.</div></div>
+</div>
+<div class="qa-item">
+<button class="qa-question" onclick="toggleQA(this)">
+<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>ما الذي يراقبه المستثمرون هذا الأسبوع؟</span></div>
+<span class="qa-arrow">▾</span>
+</button>
+<div class="qa-answer"><div class="qa-answer-inner">الأنظار تتجه نحو بيانات التضخم الأمريكي (CPI) وتصريحات الفيدرالي. أي مفاجأة في الأرقام ستُعيد رسم توقعات أسعار الفائدة — وهذا يؤثر مباشرة على الدولار والذهب والأسهم.</div></div>
+</div>
+<div class="qa-item">
+<button class="qa-question" onclick="toggleQA(this)">
+<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>متى يصبح الخبر مستهلكًا في السوق؟</span></div>
+<span class="qa-arrow">▾</span>
+</button>
+<div class="qa-answer"><div class="qa-answer-inner">حين يعرفه الجميع، لم يعد له قيمة سعرية. السوق يعيش على المستقبل. الخبر المُسعَّر هو خبر قديم حتى لو نُشر اليوم — ابحث دائماً عما لم يُسعَّر بعد.</div></div>
+</div>
+<div class="qa-item">
+<button class="qa-question" onclick="toggleQA(this)">
+<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>ما الفرق بين الخوف والسيولة في الأزمات؟</span></div>
+<span class="qa-arrow">▾</span>
+</button>
+<div class="qa-answer"><div class="qa-answer-inner">الخوف انفعال — يدفعك للبيع العشوائي. السيولة قرار — تُحرّك الأموال الكبيرة نحو ملاذات محددة كالدولار والسندات والذهب. تعلّم قراءة حركة السيولة لا مشاعر الجموع.</div></div>
+</div>
 </div>
 </div>
 </section>
@@ -630,9 +661,9 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 <p class="section-subtitle">تقارير دورية لأبرز ما يتحرك في الأسواق العالمية.</p>
 </div>
 <div class="reports-grid">
-<div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name">تقرير الذهب الشهري</h3><p class="report-date en">May 2025 • PDF</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
-<div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name">تقرير الاقتصاد العالمي</h3><p class="report-date en">Q2 2025 • PDF</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
-<div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name">تقرير السيولة والأسواق</h3><p class="report-date en">May 2025 • PDF</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name">تقرير الذهب الشهري</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name">تقرير الاقتصاد العالمي</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name">تقرير السيولة والأسواق</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
 </div>
 </div>
 </section>
@@ -675,10 +706,8 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 <div class="logo"><span class="logo-main en">Hanadi Insights</span><span class="logo-sub en">Strategic Market Analysis</span></div>
 <p>منصة تحليل اقتصادي وأسواق عالمية تربط السياسة والاقتصاد والسيولة بسلوك الأسواق.</p>
 <div class="social-links">
-<a href="#" class="social-link">𝕏</a>
-<a href="#" class="social-link">✈</a>
-<a href="#" class="social-link">▶</a>
-<a href="#" class="social-link">in</a>
+<a href="#" class="social-link" title="Facebook"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.532-4.697 1.313 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg></a>
+<a href="#" class="social-link" title="Instagram"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
 </div>
 </div>
 <div class="footer-col">
@@ -962,6 +991,44 @@ setTimeout(closeBookingModal,3000);
 
 buildWeekdays();
 buildCalendar();
+
+// Q&A TOGGLE
+function toggleQA(btn){
+const item=btn.closest('.qa-item');
+const isOpen=item.classList.contains('open');
+document.querySelectorAll('.qa-item.open').forEach(i=>i.classList.remove('open'));
+if(!isOpen)item.classList.add('open');
+}
+
+// LIVE TICKER
+const TICKER_DATA=[
+{sym:'XAU/USD',base:2341.50,dec:2},
+{sym:'EUR/USD',base:1.0832,dec:4},
+{sym:'WTI Crude',base:78.94,dec:2},
+{sym:'S&P 500',base:5248.3,dec:1},
+{sym:'USD/JPY',base:153.20,dec:2},
+{sym:'BTC/USD',base:62410,dec:0},
+{sym:'GBP/USD',base:1.2710,dec:4},
+{sym:'NAS 100',base:18340,dec:0},
+];
+function buildTicker(){
+const wrap=document.getElementById('ticker');
+if(!wrap)return;
+let html='';
+TICKER_DATA.forEach(d=>{
+const chg=((Math.random()-0.48)*d.base*0.008);
+const price=(d.base+chg).toFixed(d.dec);
+const pct=((chg/d.base)*100).toFixed(2);
+const up=chg>=0;
+const cls=up?'ti-up':'ti-down';
+const arr=up?'▲':'▼';
+html+=`<span class="ticker-item"><b>${d.sym}</b> <span class="${cls}">${arr} ${price} ${up?'+':''}${pct}%</span></span><span class="ticker-sep">·</span>`;
+});
+html+=html;
+wrap.innerHTML=html;
+}
+buildTicker();
+setInterval(buildTicker,4000);
 </script>
 </body>
 </html>
