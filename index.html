@@ -1,1186 +1,966 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hanadi Insights — تحليل الأسواق العالمية</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg:          #0C0B0F;
-      --bg-mid:      #111014;
-      --card:        #161818;
-      --card-hover:  #1c1f1f;
-      --border:      rgba(120,144,124,0.15);
-      --accent:      #78907C;
-      --accent-light:#9FBBA4;
-      --accent-dim:  #506155;
-      --glow:        rgba(159,187,164,0.12);
-      --text:        #DDDEDD;
-      --text-dim:    #8a9a8c;
-      --text-muted:  #4a5a4c;
-      --line:        rgba(120,144,124,0.18);
-      --font-ar:     'Noto Naskh Arabic', serif;
-      --font-en:     'Cormorant Garamond', serif;
-      --radius:      8px;
-      --tr:          0.35s cubic-bezier(0.4,0,0.2,1);
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hanadi Insights — تحليل الأسواق العالمية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+--bg:#0C0B0F;--bg-mid:#111014;--card:#161818;--card-hover:#1c1f1f;
+--border:rgba(120,144,124,0.15);--accent:#78907C;--accent-light:#9FBBA4;
+--accent-dim:#506155;--glow:rgba(159,187,164,0.12);--text:#DDDEDD;
+--text-dim:#8a9a8c;--text-muted:#4a5a4c;--line:rgba(120,144,124,0.18);
+--font-ar:'Noto Naskh Arabic',serif;--font-en:'Cormorant Garamond',serif;
+--radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-ar);line-height:1.75;overflow-x:hidden;direction:rtl;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5;}
+a{text-decoration:none;color:inherit;}img{display:block;max-width:100%;}ul{list-style:none;}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+/* TYPOGRAPHY */
+.en{font-family:var(--font-en);letter-spacing:0.04em;}
+h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
+.section-label{font-family:var(--font-en);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-light);display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;}
+.section-label::before{content:'';display:block;width:24px;height:1px;background:var(--accent-light);}
+.section-title{font-size:clamp(1.8rem,3vw,2.6rem);color:var(--text);margin-bottom:16px;}
+.section-subtitle{color:var(--text-dim);font-size:1.05rem;max-width:520px;line-height:1.85;}
+.green-line{width:60px;height:2px;background:linear-gradient(270deg,var(--accent),transparent);margin-bottom:32px;animation:lineExpand 0.8s ease forwards;}
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-ar);
-      line-height: 1.75;
-      overflow-x: hidden;
-      direction: rtl;
-    }
+/* LUXURY ANIMATIONS */
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-30px) scale(1.08);}66%{transform:translate(-30px,20px) scale(0.94);}}
+@keyframes heroReveal{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
+@keyframes lineExpand{from{width:0;}to{width:60px;}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(159,187,164,0.08);}50%{box-shadow:0 0 50px rgba(159,187,164,0.22);}}
+@keyframes borderShimmer{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
+@keyframes modalIn{from{opacity:0;transform:translateY(40px) scale(0.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes overlayIn{from{opacity:0;}to{opacity:1;}}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 9999; opacity: 0.5;
-    }
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:var(--radius);font-family:var(--font-ar);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--tr);border:none;outline:none;position:relative;overflow:hidden;}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 60%);opacity:0;transition:var(--tr);}
+.btn:hover::after{opacity:1;}
+.btn-green{background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:var(--bg);}
+.btn-green:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(120,144,124,0.4);}
+.btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);}
+.btn-outline:hover{background:var(--glow);transform:translateY(-3px);box-shadow:0 8px 24px rgba(120,144,124,0.15);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-size:0.88rem;padding:9px 20px;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent-light);transform:translateY(-2px);}
 
-    a { text-decoration: none; color: inherit; }
-    img { display: block; max-width: 100%; }
-    ul { list-style: none; }
+/* HEADER */
+#header{position:fixed;top:0;right:0;left:0;z-index:1000;background:rgba(12,11,15,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--line);transition:var(--tr);}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.logo{display:flex;flex-direction:column;line-height:1.1;}
+.logo-main{font-family:var(--font-en);font-size:1.25rem;font-weight:600;color:var(--accent-light);letter-spacing:0.06em;}
+.logo-sub{font-size:0.62rem;color:var(--text-muted);letter-spacing:0.14em;font-family:var(--font-en);text-transform:uppercase;}
+.nav-links{display:flex;align-items:center;gap:2px;}
+.nav-links a{font-size:0.85rem;color:var(--text-muted);padding:7px 13px;border-radius:6px;transition:var(--tr);}
+.nav-links a:hover{color:var(--accent-light);background:rgba(120,144,124,0.08);}
+.nav-cta{padding:9px 22px!important;background:linear-gradient(135deg,var(--accent),var(--accent-dim))!important;color:var(--bg)!important;font-weight:700!important;border-radius:var(--radius)!important;}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(120,144,124,0.4)!important;}
+.menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;}
+.menu-toggle span{display:block;width:24px;height:2px;background:var(--accent);transition:var(--tr);border-radius:2px;}
+.mobile-nav{display:none;position:fixed;inset:72px 0 0 0;background:var(--card);z-index:999;padding:32px 24px;flex-direction:column;gap:8px;border-top:1px solid var(--line);overflow-y:auto;}
+.mobile-nav.open{display:flex;}
+.mobile-nav a{padding:14px 0;font-size:1.05rem;color:var(--text-dim);border-bottom:1px solid var(--line);transition:var(--tr);}
+.mobile-nav a:hover{color:var(--accent-light);padding-right:10px;}
+.mobile-nav .btn{margin-top:16px;justify-content:center;}
 
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;padding:120px 0 80px;position:relative;overflow:hidden;}
+.hero-orbs{position:absolute;inset:0;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);}
+.orb-1{width:700px;height:700px;background:radial-gradient(circle,rgba(120,144,124,0.07) 0%,transparent 70%);top:-200px;left:-150px;animation:orbFloat 12s ease-in-out infinite;}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(159,187,164,0.05) 0%,transparent 70%);bottom:-100px;right:5%;animation:orbFloat 16s ease-in-out infinite reverse;animation-delay:-5s;}
+.orb-3{width:300px;height:300px;background:radial-gradient(circle,rgba(80,97,85,0.1) 0%,transparent 70%);top:40%;right:30%;animation:orbFloat 10s ease-in-out infinite;animation-delay:-8s;}
+.hero-grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(120,144,124,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(120,144,124,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+#hero::after{content:'INSIGHTS';position:absolute;bottom:-30px;left:-10px;font-family:var(--font-en);font-size:clamp(6rem,14vw,20rem);font-weight:600;color:rgba(120,144,124,0.03);letter-spacing:0.1em;pointer-events:none;line-height:1;}
+.hero-inner{display:grid;grid-template-columns:1fr 400px;gap:80px;align-items:center;position:relative;z-index:1;}
+.hero-label{font-family:var(--font-en);font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent-light);display:flex;align-items:center;gap:16px;margin-bottom:28px;opacity:0;animation:heroReveal 0.8s ease 0.2s forwards;}
+.hero-label::before{content:'';display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--accent));}
+.hero-title{font-size:clamp(2.6rem,5vw,4.2rem);color:var(--text);line-height:1.15;margin-bottom:28px;opacity:0;animation:heroReveal 0.9s ease 0.4s forwards;}
+.hero-title span{background:linear-gradient(135deg,var(--accent-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-text{font-size:1.08rem;color:var(--text-dim);max-width:520px;margin-bottom:44px;line-height:1.9;opacity:0;animation:heroReveal 0.9s ease 0.6s forwards;}
+.hero-buttons{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:60px;opacity:0;animation:heroReveal 0.9s ease 0.8s forwards;}
+.trust-badges{display:flex;gap:44px;flex-wrap:wrap;opacity:0;animation:heroReveal 0.9s ease 1s forwards;}
+.trust-badge{display:flex;flex-direction:column;position:relative;}
+.trust-badge::after{content:'';position:absolute;bottom:-8px;right:0;left:0;height:1px;background:linear-gradient(270deg,var(--accent-dim),transparent);}
+.trust-badge .num{font-family:var(--font-en);font-size:1.1rem;font-weight:600;color:var(--accent-light);line-height:1;margin-bottom:5px;}
+.trust-badge .lbl{font-size:0.78rem;color:var(--text-muted);}
+.hero-image-wrap{position:relative;opacity:0;animation:heroReveal 1s ease 0.5s forwards;}
+.hero-image-frame{width:100%;aspect-ratio:3/4;max-height:540px;background:linear-gradient(135deg,var(--card) 0%,var(--bg-mid) 100%);border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.hero-image-frame::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(12,11,15,0.7) 100%),linear-gradient(135deg,rgba(120,144,124,0.06) 0%,transparent 50%);}
+.hero-image-frame::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(159,187,164,0.04) 0%,transparent 50%,rgba(120,144,124,0.04) 100%);animation:float 6s ease-in-out infinite;}
+.hero-ph{color:var(--accent-dim);font-size:2.5rem;position:relative;z-index:1;}
+.hero-image-wrap::after{content:'';position:absolute;bottom:-16px;right:-16px;width:90px;height:90px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent);border-radius:0 0 4px 0;}
+.hero-image-wrap::before{content:'';position:absolute;top:-16px;left:-16px;width:90px;height:90px;border-top:2px solid var(--accent);border-left:2px solid var(--accent);border-radius:4px 0 0 0;z-index:1;}
+.hero-badge{position:absolute;bottom:28px;right:-20px;background:var(--card);border:1px solid rgba(120,144,124,0.3);border-radius:8px;padding:14px 18px;backdrop-filter:blur(10px);animation:glowPulse 3s ease-in-out infinite;z-index:2;}
+.hero-badge .badge-num{font-family:var(--font-en);font-size:1.4rem;font-weight:600;color:var(--accent-light);display:block;line-height:1;}
+.hero-badge .badge-lbl{font-size:0.72rem;color:var(--text-muted);margin-top:3px;}
 
-    /* ── TYPOGRAPHY ── */
-    .en { font-family: var(--font-en); letter-spacing: 0.04em; }
-    h1,h2,h3,h4 { font-family: var(--font-ar); font-weight: 700; line-height: 1.3; }
+/* SECTIONS */
+.section{padding:110px 0;position:relative;}
+.section-head{margin-bottom:60px;}
 
-    .section-label {
-      font-family: var(--font-en);
-      font-size: 0.68rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--accent-light);
-      display: block;
-      margin-bottom: 12px;
-    }
-    .section-title { font-size: clamp(1.6rem,3vw,2.4rem); color: var(--text); margin-bottom: 16px; }
-    .section-subtitle { color: var(--text-dim); font-size: 1.05rem; max-width: 520px; }
+/* TICKER */
+.ticker-wrap{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:12px 0;}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 30s linear infinite;}
+@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.ticker-item{font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);padding:0 32px;display:inline-flex;align-items:center;gap:12px;}
+.ticker-item .ti-up{color:#4caf88;}.ticker-item .ti-down{color:#c0392b;}
+.ticker-sep{color:var(--accent-dim);}
 
-    .green-line {
-      width: 60px; height: 2px;
-      background: linear-gradient(270deg, var(--accent), transparent);
-      margin-bottom: 32px;
-    }
+/* INSIGHTS */
+#insights{background:var(--card);}
+.insights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.insight-card{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius);padding:36px;transition:var(--tr);cursor:pointer;position:relative;overflow:hidden;}
+.insight-card::before{content:'';position:absolute;bottom:0;right:0;left:0;height:2px;background:linear-gradient(270deg,var(--accent),transparent);transform:scaleX(0);transform-origin:right;transition:var(--tr);}
+.insight-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(120,144,124,0.05) 0%,transparent 70%);opacity:0;transition:var(--tr);}
+.insight-card:hover{border-color:rgba(120,144,124,0.4);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 60px rgba(120,144,124,0.06);}
+.insight-card:hover::before{transform:scaleX(1);}
+.insight-card:hover::after{opacity:1;}
+.card-tag{font-family:var(--font-en);font-size:0.63rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-light);background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.22);padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:18px;}
+.card-title{font-size:1.12rem;color:var(--text);margin-bottom:14px;line-height:1.5;}
+.card-desc{font-size:0.88rem;color:var(--text-muted);line-height:1.8;margin-bottom:28px;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;}
+.card-date{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
+.read-more-btn{display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--accent-light);background:transparent;border:none;cursor:pointer;font-family:var(--font-ar);padding:0;transition:var(--tr);}
+.read-more-btn:hover{color:var(--text);gap:10px;}
+.read-more-btn .arr{transition:var(--tr);}
 
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 28px; border-radius: var(--radius);
-      font-family: var(--font-ar); font-size: 0.95rem; font-weight: 600;
-      cursor: pointer; transition: var(--tr); border: none; outline: none;
-    }
-    .btn-green {
-      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
-      color: var(--bg);
-    }
-    .btn-green:hover {
-      background: linear-gradient(135deg, var(--accent-light), var(--accent));
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(120,144,124,0.3);
-    }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-    }
-    .btn-outline:hover { background: var(--glow); transform: translateY(-2px); }
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      font-size: 0.88rem; padding: 9px 20px;
-    }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--accent-light); }
+/* METHOD */
+#method{background:var(--bg);overflow:hidden;}
+.method-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(120,144,124,0.04) 0%,transparent 70%);pointer-events:none;}
+.method-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+.method-grid::before{content:'';position:absolute;top:68px;right:12.5%;left:12.5%;height:1px;background:linear-gradient(90deg,transparent,var(--accent-dim),var(--accent-dim),transparent);}
+.method-card{padding:44px 28px;text-align:center;position:relative;border-top:1px solid var(--line);transition:var(--tr);}
+.method-card:not(:last-child){border-left:1px solid var(--line);}
+.method-card:hover{background:rgba(120,144,124,0.03);}
+.method-num{font-family:var(--font-en);font-size:0.63rem;letter-spacing:0.22em;color:var(--accent-dim);display:block;margin-bottom:18px;}
+.method-icon{width:60px;height:60px;background:rgba(120,144,124,0.07);border:1px solid rgba(120,144,124,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:1.5rem;transition:var(--tr);}
+.method-card:hover .method-icon{background:rgba(120,144,124,0.14);border-color:var(--accent);box-shadow:0 0 30px rgba(159,187,164,0.18);transform:scale(1.08);}
+.method-name{font-size:1.05rem;color:var(--text);margin-bottom:10px;}
+.method-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.75;}
 
-    /* ── HEADER ── */
-    #header {
-      position: fixed; top: 0; right: 0; left: 0; z-index: 1000;
-      background: rgba(12,11,15,0.92);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--line);
-      transition: var(--tr);
-    }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+/* NOTES */
+#notes{background:var(--card);}
+.notes-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.note-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:30px 36px;display:flex;gap:22px;align-items:flex-start;transition:var(--tr);}
+.note-card:hover{border-color:rgba(120,144,124,0.35);transform:translateX(-4px);}
+.note-bullet{width:8px;height:8px;background:var(--accent);border-radius:50%;flex-shrink:0;margin-top:10px;box-shadow:0 0 12px rgba(120,144,124,0.5);}
+.note-text{font-size:0.97rem;color:var(--text-dim);line-height:1.8;}
 
-    .logo { display: flex; flex-direction: column; line-height: 1.1; }
-    .logo-main { font-family: var(--font-en); font-size: 1.25rem; font-weight: 600; color: var(--accent-light); letter-spacing: 0.06em; }
-    .logo-sub { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.12em; font-family: var(--font-en); text-transform: uppercase; }
+/* CONSULTATIONS */
+#consultations{background:var(--bg);}
+.cons-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.cons-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:44px 36px;display:flex;flex-direction:column;gap:22px;transition:var(--tr);position:relative;overflow:hidden;}
+.cons-card::after{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(270deg,var(--accent),var(--accent-dim));transform:scaleX(0);transform-origin:right;transition:var(--tr);}
+.cons-card:hover{transform:translateY(-6px);box-shadow:0 28px 60px rgba(0,0,0,0.5),0 0 40px rgba(120,144,124,0.07);}
+.cons-card:hover::after{transform:scaleX(1);}
+.cons-card.featured{border-color:rgba(120,144,124,0.3);}
+.cons-card.featured::after{transform:scaleX(1);}
+.cons-icon{font-size:2rem;}
+.cons-name{font-size:1.25rem;color:var(--text);}
+.cons-desc{font-size:0.88rem;color:var(--text-muted);line-height:1.8;flex:1;}
+.cons-duration{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--accent-dim);font-family:var(--font-en);}
+.cons-duration::before{content:'◷';}
 
-    .nav-links { display: flex; align-items: center; gap: 4px; }
-    .nav-links a { font-size: 0.88rem; color: var(--text-dim); padding: 6px 12px; border-radius: 4px; transition: var(--tr); }
-    .nav-links a:hover { color: var(--accent-light); background: var(--glow); }
-    .nav-cta {
-      padding: 9px 20px !important;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dim)) !important;
-      color: var(--bg) !important; font-weight: 700 !important;
-      border-radius: var(--radius) !important;
-    }
-    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(120,144,124,0.35) !important; }
+/* BOOKING - LUXURY CALENDAR */
+#booking{background:var(--card);}
+.booking-wrapper{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:24px 32px;border-bottom:1px solid var(--line);}
+.cal-title{font-size:1.15rem;color:var(--text);font-family:var(--font-ar);letter-spacing:0.02em;}
+.cal-nav{display:flex;gap:8px;}
+.cal-btn{width:38px;height:38px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:1.1rem;}
+.cal-btn:hover{border-color:var(--accent);color:var(--accent-light);background:rgba(120,144,124,0.08);}
+.cal-btn:disabled{opacity:0.25;cursor:not-allowed;}
+.cal-grid-wrap{padding:24px 32px 0;}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px;}
+.cal-wd{text-align:center;font-size:0.72rem;color:var(--text-muted);font-family:var(--font-ar);padding:6px 0;letter-spacing:0.04em;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;transition:var(--tr);position:relative;border:1px solid transparent;min-height:44px;}
+.cal-day:empty{cursor:default;}
+.cal-day:not(:empty):hover{background:rgba(120,144,124,0.08);border-color:rgba(120,144,124,0.2);}
+.cal-day.past{opacity:0.28;cursor:not-allowed;pointer-events:none;}
+.cal-day.today .day-n{color:var(--accent-light);font-weight:700;}
+.cal-day.selected{background:rgba(120,144,124,0.14);border-color:var(--accent)!important;}
+.cal-day.selected .day-n{color:var(--accent-light);}
+.cal-day.fully-booked{opacity:0.35;}
+.day-n{font-family:var(--font-en);font-size:0.92rem;color:var(--text);line-height:1;}
+.day-dot{width:4px;height:4px;border-radius:50%;margin-top:4px;}
+.has-slots .day-dot{background:var(--accent);box-shadow:0 0 6px rgba(120,144,124,0.6);}
+.fully-booked .day-dot{background:var(--text-muted);}
+.no-slots .day-dot{background:transparent;}
+.slots-panel{padding:28px 32px 32px;border-top:1px solid var(--line);margin-top:16px;}
+.slots-date-title{font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;}
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.slot{border:1px solid var(--border);border-radius:10px;padding:20px 14px;text-align:center;cursor:pointer;transition:var(--tr);position:relative;background:var(--card);}
+.slot:hover:not(.booked){border-color:var(--accent);background:rgba(120,144,124,0.07);box-shadow:0 0 24px rgba(159,187,164,0.1);transform:translateY(-3px);}
+.slot .slot-time{font-family:var(--font-en);font-size:1.4rem;font-weight:300;color:var(--text);display:block;margin-bottom:5px;}
+.slot .slot-label{font-size:0.78rem;color:var(--text-dim);}
+.slot.booked{cursor:not-allowed;border-color:rgba(100,100,100,0.15);background:rgba(20,20,20,0.5);opacity:0.6;}
+.slot.booked .slot-time{color:var(--text-muted);text-decoration:line-through;}
+.slot.booked::after{content:'محجوز';position:absolute;bottom:8px;right:50%;transform:translateX(50%);font-size:0.6rem;color:#c0392b;font-family:var(--font-ar);}
+.slots-placeholder{text-align:center;padding:32px 0;color:var(--text-muted);font-size:0.9rem;}
 
-    .menu-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
-    .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--accent); transition: var(--tr); }
+/* BOOKING MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(8,8,12,0.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px;animation:overlayIn 0.3s ease forwards;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid rgba(120,144,124,0.2);border-radius:16px;padding:44px;max-width:480px;width:100%;position:relative;box-shadow:0 60px 120px rgba(0,0,0,0.8),0 0 80px rgba(120,144,124,0.08);animation:modalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards;}
+.modal-close{position:absolute;top:18px;left:18px;width:34px;height:34px;background:var(--bg);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:var(--tr);}
+.modal-close:hover{border-color:var(--accent);color:var(--accent-light);transform:rotate(90deg);}
+.modal h3{font-size:1.35rem;color:var(--text);margin-bottom:8px;}
+.modal-slot-info{font-size:0.88rem;color:var(--accent-light);margin-bottom:30px;font-family:var(--font-en);direction:ltr;text-align:left;}
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:0.85rem;color:var(--text-dim);margin-bottom:8px;}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;font-family:var(--font-ar);font-size:0.95rem;color:var(--text);outline:none;transition:var(--tr);direction:rtl;}
+.form-input::placeholder{color:var(--text-muted);}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(120,144,124,0.12);}
+.modal-actions{display:flex;gap:12px;margin-top:28px;}
+.modal-actions .btn{flex:1;justify-content:center;}
+.success-msg{text-align:center;padding:20px 0;display:none;}
+.success-msg .success-icon{font-size:3.5rem;margin-bottom:18px;}
+.success-msg h4{font-size:1.25rem;color:var(--text);margin-bottom:8px;}
+.success-msg p{font-size:0.88rem;color:var(--text-dim);}
 
-    .mobile-nav {
-      display: none; position: fixed; inset: 72px 0 0 0;
-      background: var(--card); z-index: 999;
-      padding: 32px 24px; flex-direction: column; gap: 8px;
-      border-top: 1px solid var(--line); overflow-y: auto;
-    }
-    .mobile-nav.open { display: flex; }
-    .mobile-nav a { padding: 14px 0; font-size: 1.05rem; color: var(--text-dim); border-bottom: 1px solid var(--line); transition: var(--tr); }
-    .mobile-nav a:hover { color: var(--accent-light); padding-right: 8px; }
-    .mobile-nav .btn { margin-top: 16px; justify-content: center; }
+/* ARTICLE MODAL */
+#articleModal .modal{max-width:760px;max-height:88vh;overflow-y:auto;padding:0;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;}
+#articleModal .modal::-webkit-scrollbar{width:4px;}
+#articleModal .modal::-webkit-scrollbar-thumb{background:var(--accent-dim);border-radius:4px;}
+.art-modal-head{padding:44px 48px 32px;border-bottom:1px solid var(--line);}
+.art-modal-tag{font-family:var(--font-en);font-size:0.63rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-light);background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.22);padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:16px;}
+.art-modal-title{font-size:clamp(1.4rem,3vw,2rem);color:var(--text);line-height:1.35;margin-bottom:16px;}
+.art-modal-meta{display:flex;gap:20px;align-items:center;font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);}
+.art-modal-meta span{display:flex;align-items:center;gap:6px;}
+.art-modal-body{padding:36px 48px 48px;}
+.art-modal-body p{font-size:1.02rem;color:var(--text-dim);line-height:2;margin-bottom:24px;}
+.art-modal-body h4{font-size:1.1rem;color:var(--text);margin:32px 0 14px;}
+.art-modal-body blockquote{border-right:3px solid var(--accent);padding:16px 20px;background:rgba(120,144,124,0.05);border-radius:0 8px 8px 0;margin:28px 0;font-style:italic;color:var(--text-dim);}
+.art-close-btn{position:sticky;top:16px;float:left;margin:16px 16px 0 0;width:36px;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:var(--tr);z-index:10;}
+.art-close-btn:hover{border-color:var(--accent);color:var(--accent-light);transform:rotate(90deg);}
 
-    /* ── HERO ── */
-    #hero {
-      min-height: 100vh; display: flex; align-items: center;
-      padding: 120px 0 80px; position: relative; overflow: hidden;
-    }
-    #hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 60% 70% at 15% 50%, rgba(120,144,124,0.08) 0%, transparent 65%),
-        radial-gradient(ellipse 40% 50% at 85% 20%, rgba(22,24,24,0.8) 0%, transparent 60%);
-    }
-    #hero::after {
-      content: 'INSIGHTS';
-      position: absolute; bottom: -20px; left: -10px;
-      font-family: var(--font-en); font-size: clamp(6rem,14vw,18rem);
-      font-weight: 600; color: rgba(120,144,124,0.04);
-      letter-spacing: 0.1em; pointer-events: none; line-height: 1;
-    }
+/* ABOUT */
+#about{background:var(--bg-mid);}
+.about-inner{display:grid;grid-template-columns:1fr 360px;gap:80px;align-items:start;}
+.about-text{font-size:1.05rem;color:var(--text-dim);line-height:1.95;margin-bottom:40px;}
+.timeline{border-right:2px solid var(--line);padding-right:32px;}
+.timeline-item{position:relative;margin-bottom:36px;}
+.timeline-item::before{content:'';position:absolute;top:8px;right:-39px;width:14px;height:14px;border-radius:50%;background:var(--bg-mid);border:2px solid var(--accent-dim);transition:var(--tr);}
+.timeline-item:first-child::before{border-color:var(--accent);background:var(--accent);box-shadow:0 0 16px rgba(120,144,124,0.5);}
+.timeline-item:hover::before{border-color:var(--accent);}
+.timeline-year{font-family:var(--font-en);font-size:0.75rem;letter-spacing:0.12em;color:var(--accent-light);display:block;margin-bottom:6px;}
+.timeline-title{font-size:0.97rem;color:var(--text);}
+.about-photo{aspect-ratio:4/5;background:linear-gradient(135deg,var(--card) 0%,var(--bg) 100%);border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.about-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(12,11,15,0.6) 100%);}
 
-    .hero-inner { display: grid; grid-template-columns: 1fr 420px; gap: 64px; align-items: center; position: relative; z-index: 1; }
+/* LIBRARY */
+#library{background:var(--bg);}
+.library-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.lib-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;display:flex;gap:16px;align-items:center;transition:var(--tr);cursor:pointer;}
+.lib-card:hover{border-color:rgba(120,144,124,0.35);transform:translateX(-5px);box-shadow:4px 0 24px rgba(0,0,0,0.3);}
+.lib-index{font-family:var(--font-en);font-size:1.8rem;font-weight:300;color:rgba(120,144,124,0.2);line-height:1;flex-shrink:0;transition:var(--tr);}
+.lib-card:hover .lib-index{color:rgba(120,144,124,0.5);}
+.lib-name{font-size:0.95rem;color:var(--text);}
 
-    .hero-label {
-      font-family: var(--font-en); font-size: 0.68rem; letter-spacing: 0.28em;
-      text-transform: uppercase; color: var(--accent-light);
-      display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
-    }
-    .hero-label::before { content: ''; display: block; width: 32px; height: 1px; background: var(--accent); }
+/* REPORTS */
+#reports{background:var(--card);}
+.reports-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.report-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;transition:var(--tr);}
+.report-card:hover{border-color:rgba(120,144,124,0.35);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.report-icon{width:48px;height:60px;background:rgba(120,144,124,0.07);border:1px solid rgba(120,144,124,0.18);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;position:relative;}
+.report-icon::after{content:'PDF';position:absolute;bottom:-1px;right:-1px;background:var(--accent);color:var(--bg);font-family:var(--font-en);font-size:0.48rem;font-weight:700;padding:2px 4px;border-radius:2px;letter-spacing:0.05em;}
+.report-name{font-size:1.05rem;color:var(--text);margin-bottom:8px;}
+.report-date{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);margin-bottom:24px;}
 
-    .hero-title { font-size: clamp(2.4rem,5vw,4rem); color: var(--text); line-height: 1.2; margin-bottom: 24px; }
-    .hero-title span { color: var(--accent-light); }
-    .hero-text { font-size: 1.08rem; color: var(--text-dim); max-width: 520px; margin-bottom: 40px; line-height: 1.85; }
-    .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
+/* ARTICLES CTA */
+#articles-cta{background:var(--bg-mid);padding:80px 0;}
+.articles-cta-inner{display:flex;align-items:center;justify-content:space-between;gap:40px;padding:48px 56px;border:1px solid rgba(120,144,124,0.2);border-radius:12px;background:linear-gradient(135deg,rgba(120,144,124,0.04) 0%,transparent 60%);animation:glowPulse 4s ease-in-out infinite;}
 
-    .trust-badges { display: flex; gap: 40px; flex-wrap: wrap; }
-    .trust-badge { display: flex; flex-direction: column; }
-    .trust-badge .num { font-family: var(--font-en); font-size: 1.05rem; font-weight: 600; color: var(--accent-light); line-height: 1; margin-bottom: 4px; }
-    .trust-badge .lbl { font-size: 0.8rem; color: var(--text-muted); }
+/* NEWSLETTER */
+#newsletter{background:var(--bg);padding:110px 0;}
+.nl-inner{max-width:600px;margin:0 auto;text-align:center;}
+.nl-inner .section-subtitle{max-width:100%;margin:0 auto 44px;}
+.nl-form{display:flex;gap:12px;max-width:480px;margin:0 auto;}
+.nl-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;font-family:var(--font-ar);font-size:0.95rem;color:var(--text);outline:none;transition:var(--tr);direction:ltr;text-align:left;}
+.nl-input::placeholder{color:var(--text-muted);}
+.nl-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(120,144,124,0.1);}
 
-    .hero-image-wrap { position: relative; }
-    .hero-image-frame {
-      width: 100%; aspect-ratio: 3/4; max-height: 520px;
-      background: var(--card); border: 1px solid var(--border); border-radius: 4px;
-      position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
-    }
-    .hero-image-frame::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(180deg, transparent 40%, rgba(12,11,15,0.7) 100%), linear-gradient(135deg, rgba(120,144,124,0.05) 0%, transparent 50%);
-    }
-    .hero-image-frame .ph-icon { color: var(--accent-dim); font-size: 2rem; }
-    .hero-image-wrap::after {
-      content: ''; position: absolute; bottom: -12px; right: -12px;
-      width: 80px; height: 80px; border-bottom: 2px solid var(--accent); border-right: 2px solid var(--accent);
-    }
-    .hero-image-wrap::before {
-      content: ''; position: absolute; top: -12px; left: -12px;
-      width: 80px; height: 80px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); z-index: 1;
-    }
+/* FOOTER */
+#footer{background:var(--card);border-top:1px solid var(--line);padding:72px 0 36px;}
+.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:56px;margin-bottom:56px;}
+.footer-brand .logo-main{font-size:1.1rem;margin-bottom:4px;}
+.footer-brand p{font-size:0.85rem;color:var(--text-muted);line-height:1.8;margin-top:14px;max-width:280px;}
+.footer-col h4{font-size:0.72rem;font-family:var(--font-en);letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-light);margin-bottom:22px;}
+.footer-col ul li{margin-bottom:12px;}
+.footer-col ul a{font-size:0.88rem;color:var(--text-muted);transition:var(--tr);display:inline-flex;align-items:center;gap:6px;}
+.footer-col ul a::before{content:'';width:0;height:1px;background:var(--accent-light);transition:var(--tr);}
+.footer-col ul a:hover{color:var(--accent-light);}
+.footer-col ul a:hover::before{width:12px;}
+.social-links{display:flex;gap:10px;margin-top:24px;}
+.social-link{width:38px;height:38px;background:var(--bg);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--text-muted);transition:var(--tr);}
+.social-link:hover{border-color:var(--accent);color:var(--accent-light);transform:translateY(-3px);}
+.footer-bottom{border-top:1px solid var(--line);padding-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.footer-copy{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
+.footer-legal{font-size:0.78rem;color:var(--text-muted);max-width:500px;text-align:center;}
 
-    /* ── SECTIONS ── */
-    .section { padding: 100px 0; position: relative; }
-    .section-head { margin-bottom: 56px; }
+/* SCROLL TOP */
+#scrollTop{position:fixed;bottom:36px;left:36px;width:46px;height:46px;background:var(--card);border:1px solid rgba(120,144,124,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:var(--tr);color:var(--accent);font-size:1rem;z-index:500;}
+#scrollTop.visible{opacity:1;pointer-events:all;}
+#scrollTop:hover{background:rgba(120,144,124,0.1);border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 24px rgba(120,144,124,0.2);}
 
-    /* ── INSIGHTS CARDS ── */
-    #insights { background: var(--card); }
-    .insights-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.delay-1{transition-delay:0.1s;}.delay-2{transition-delay:0.2s;}.delay-3{transition-delay:0.3s;}.delay-4{transition-delay:0.4s;}
 
-    .insight-card {
-      background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 32px; transition: var(--tr); cursor: pointer; position: relative; overflow: hidden;
-    }
-    .insight-card::before {
-      content: ''; position: absolute; bottom: 0; right: 0; left: 0; height: 2px;
-      background: linear-gradient(270deg, var(--accent), transparent);
-      transform: scaleX(0); transform-origin: right; transition: var(--tr);
-    }
-    .insight-card:hover { border-color: rgba(120,144,124,0.35); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 40px rgba(120,144,124,0.05); }
-    .insight-card:hover::before { transform: scaleX(1); }
-
-    .card-tag {
-      font-family: var(--font-en); font-size: 0.65rem; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--accent-light);
-      background: rgba(120,144,124,0.1); border: 1px solid rgba(120,144,124,0.2);
-      padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 16px;
-    }
-    .card-title { font-size: 1.12rem; color: var(--text); margin-bottom: 12px; line-height: 1.45; }
-    .card-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.75; margin-bottom: 24px; }
-    .card-footer { display: flex; align-items: center; justify-content: space-between; }
-    .card-date { font-family: var(--font-en); font-size: 0.75rem; color: var(--text-muted); }
-
-    /* ── METHOD ── */
-    #method { background: var(--bg); overflow: hidden; }
-    .method-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(120,144,124,0.05) 0%, transparent 70%); pointer-events: none; }
-    .method-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative; }
-    .method-grid::before {
-      content: ''; position: absolute; top: 56px; right: 12.5%; left: 12.5%; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent-dim), transparent);
-    }
-    .method-card { padding: 40px 28px; text-align: center; position: relative; border-top: 1px solid var(--line); }
-    .method-card:not(:last-child) { border-left: 1px solid var(--line); }
-    .method-num { font-family: var(--font-en); font-size: 0.65rem; letter-spacing: 0.2em; color: var(--accent-dim); display: block; margin-bottom: 16px; }
-    .method-icon {
-      width: 56px; height: 56px; background: rgba(120,144,124,0.08); border: 1px solid rgba(120,144,124,0.2);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 20px; font-size: 1.4rem; transition: var(--tr);
-    }
-    .method-card:hover .method-icon { background: rgba(120,144,124,0.15); border-color: var(--accent); box-shadow: 0 0 20px rgba(159,187,164,0.15); }
-    .method-name { font-size: 1.05rem; color: var(--text); margin-bottom: 10px; }
-    .method-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; }
-
-    /* ── NOTES ── */
-    #notes { background: var(--card); }
-    .notes-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
-    .note-card {
-      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 28px 32px; display: flex; gap: 20px; align-items: flex-start; transition: var(--tr);
-    }
-    .note-card:hover { border-color: rgba(120,144,124,0.3); }
-    .note-bullet { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; flex-shrink: 0; margin-top: 9px; }
-    .note-text { font-size: 0.97rem; color: var(--text-dim); line-height: 1.7; }
-
-    /* ── CONSULTATIONS ── */
-    #consultations { background: var(--bg); }
-    .cons-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
-    .cons-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 40px 32px; display: flex; flex-direction: column; gap: 20px; transition: var(--tr); position: relative; overflow: hidden;
-    }
-    .cons-card::after {
-      content: ''; position: absolute; top: 0; right: 0; left: 0; height: 3px;
-      background: linear-gradient(270deg, var(--accent), var(--accent-dim));
-      transform: scaleX(0); transform-origin: right; transition: var(--tr);
-    }
-    .cons-card:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,0,0,0.5), 0 0 30px rgba(120,144,124,0.06); }
-    .cons-card:hover::after { transform: scaleX(1); }
-    .cons-card.featured { border-color: rgba(120,144,124,0.35); }
-    .cons-card.featured::after { transform: scaleX(1); }
-    .cons-icon { font-size: 1.8rem; }
-    .cons-name { font-size: 1.2rem; color: var(--text); }
-    .cons-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.75; flex: 1; }
-    .cons-duration { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--accent-dim); font-family: var(--font-en); }
-    .cons-duration::before { content: '◷'; }
-
-    /* ── BOOKING SECTION ── */
-    #booking { background: var(--card); }
-
-    .booking-wrapper {
-      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .cal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 28px; border-bottom: 1px solid var(--line);
-    }
-    .cal-title { font-size: 1.1rem; color: var(--text); font-family: var(--font-ar); }
-    .cal-nav { display: flex; gap: 8px; }
-    .cal-btn {
-      width: 36px; height: 36px; background: var(--card); border: 1px solid var(--border);
-      border-radius: 6px; cursor: pointer; color: var(--text-dim);
-      display: flex; align-items: center; justify-content: center; transition: var(--tr);
-      font-size: 1rem;
-    }
-    .cal-btn:hover { border-color: var(--accent); color: var(--accent-light); }
-
-    .days-scroll {
-      display: flex; gap: 8px; padding: 20px 28px;
-      overflow-x: auto; scrollbar-width: none;
-    }
-    .days-scroll::-webkit-scrollbar { display: none; }
-
-    .day-pill {
-      flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
-      padding: 12px 16px; border: 1px solid var(--border); border-radius: var(--radius);
-      cursor: pointer; transition: var(--tr); min-width: 64px; background: var(--card);
-    }
-    .day-pill:hover { border-color: var(--accent); background: rgba(120,144,124,0.07); }
-    .day-pill.active { border-color: var(--accent); background: rgba(120,144,124,0.12); }
-    .day-pill .day-name { font-family: var(--font-ar); font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; }
-    .day-pill .day-num { font-family: var(--font-en); font-size: 1.2rem; font-weight: 600; color: var(--text); }
-    .day-pill.active .day-num { color: var(--accent-light); }
-    .day-pill .day-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 6px; background: transparent; }
-    .day-pill.has-avail .day-dot { background: var(--accent); }
-    .day-pill.all-booked .day-dot { background: var(--text-muted); }
-
-    .slots-area { padding: 24px 28px; min-height: 180px; }
-    .slots-date-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; font-family: var(--font-ar); }
-
-    .slots-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
-
-    .slot {
-      border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 18px 12px; text-align: center; cursor: pointer; transition: var(--tr);
-      position: relative; background: var(--card);
-    }
-    .slot:hover:not(.booked) { border-color: var(--accent); background: rgba(120,144,124,0.08); box-shadow: 0 0 20px rgba(159,187,164,0.08); }
-    .slot .slot-time { font-family: var(--font-en); font-size: 1.3rem; font-weight: 300; color: var(--text); display: block; margin-bottom: 4px; }
-    .slot .slot-label { font-size: 0.78rem; color: var(--text-dim); }
-
-    .slot.booked {
-      cursor: not-allowed; border-color: rgba(100,100,100,0.2);
-      background: rgba(30,30,30,0.5);
-    }
-    .slot.booked .slot-time { color: var(--text-muted); text-decoration: line-through; }
-    .slot.booked .slot-label { color: var(--text-muted); }
-    .slot.booked::after {
-      content: '✕'; position: absolute; top: 8px; left: 10px;
-      font-size: 0.75rem; color: #c0392b; font-weight: 700;
-    }
-    .slot.booked-badge {
-      font-size: 0.65rem; color: #c0392b; background: rgba(192,57,43,0.1);
-      border: 1px solid rgba(192,57,43,0.2); border-radius: 20px;
-      padding: 2px 8px; display: inline-block; margin-top: 6px;
-    }
-
-    /* ── BOOKING MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(12,11,15,0.85);
-      backdrop-filter: blur(8px); z-index: 2000;
-      display: none; align-items: center; justify-content: center; padding: 24px;
-    }
-    .modal-overlay.open { display: flex; }
-
-    .modal {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 40px; max-width: 480px; width: 100%; position: relative;
-      box-shadow: 0 40px 80px rgba(0,0,0,0.7), 0 0 60px rgba(120,144,124,0.08);
-    }
-    .modal-close {
-      position: absolute; top: 16px; left: 16px;
-      width: 32px; height: 32px; background: var(--bg); border: 1px solid var(--border);
-      border-radius: 50%; cursor: pointer; color: var(--text-dim);
-      display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: var(--tr);
-    }
-    .modal-close:hover { border-color: var(--accent); color: var(--accent-light); }
-    .modal h3 { font-size: 1.3rem; color: var(--text); margin-bottom: 8px; }
-    .modal-slot-info { font-size: 0.88rem; color: var(--accent-light); margin-bottom: 28px; font-family: var(--font-en); direction: ltr; text-align: left; }
-
-    .form-group { margin-bottom: 18px; }
-    .form-label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
-    .form-input {
-      width: 100%; background: var(--bg); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 12px 16px;
-      font-family: var(--font-ar); font-size: 0.95rem; color: var(--text);
-      outline: none; transition: var(--tr); direction: rtl;
-    }
-    .form-input::placeholder { color: var(--text-muted); }
-    .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(120,144,124,0.1); }
-
-    .modal-actions { display: flex; gap: 12px; margin-top: 28px; }
-    .modal-actions .btn { flex: 1; justify-content: center; }
-
-    /* success state */
-    .success-msg {
-      text-align: center; padding: 20px 0; display: none;
-    }
-    .success-msg .success-icon { font-size: 3rem; margin-bottom: 16px; }
-    .success-msg h4 { font-size: 1.2rem; color: var(--text); margin-bottom: 8px; }
-    .success-msg p { font-size: 0.88rem; color: var(--text-dim); }
-
-    /* ── ABOUT ── */
-    #about { background: var(--bg-mid); }
-    .about-inner { display: grid; grid-template-columns: 1fr 360px; gap: 72px; align-items: start; }
-    .about-text { font-size: 1.05rem; color: var(--text-dim); line-height: 1.95; margin-bottom: 40px; }
-
-    .timeline { border-right: 2px solid var(--line); padding-right: 28px; }
-    .timeline-item { position: relative; margin-bottom: 32px; }
-    .timeline-item::before {
-      content: ''; position: absolute; top: 8px; right: -35px;
-      width: 12px; height: 12px; border-radius: 50%;
-      background: var(--bg-mid); border: 2px solid var(--accent-dim);
-    }
-    .timeline-item:first-child::before { border-color: var(--accent); background: var(--accent); }
-    .timeline-year { font-family: var(--font-en); font-size: 0.75rem; letter-spacing: 0.12em; color: var(--accent-light); display: block; margin-bottom: 6px; }
-    .timeline-title { font-size: 0.95rem; color: var(--text); }
-
-    .about-photo {
-      aspect-ratio: 4/5; background: var(--card); border: 1px solid var(--border);
-      border-radius: 4px; position: relative; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .about-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(12,11,15,0.6) 100%); }
-    .about-photo .ph-icon { color: var(--accent-dim); font-size: 2rem; }
-
-    /* ── LIBRARY ── */
-    #library { background: var(--bg); }
-    .library-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-    .lib-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 28px; display: flex; gap: 16px; align-items: center; transition: var(--tr); cursor: pointer;
-    }
-    .lib-card:hover { border-color: rgba(120,144,124,0.3); transform: translateX(-4px); }
-    .lib-index { font-family: var(--font-en); font-size: 1.8rem; font-weight: 300; color: rgba(120,144,124,0.25); line-height: 1; flex-shrink: 0; }
-    .lib-name { font-size: 0.95rem; color: var(--text); }
-
-    /* ── REPORTS ── */
-    #reports { background: var(--card); }
-    .reports-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
-    .report-card {
-      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 36px 32px; transition: var(--tr);
-    }
-    .report-card:hover { border-color: rgba(120,144,124,0.3); transform: translateY(-3px); }
-    .report-icon {
-      width: 48px; height: 60px; background: rgba(120,144,124,0.08); border: 1px solid rgba(120,144,124,0.2);
-      border-radius: 4px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; margin-bottom: 20px; position: relative;
-    }
-    .report-icon::after {
-      content: 'PDF'; position: absolute; bottom: -1px; right: -1px;
-      background: var(--accent); color: var(--bg); font-family: var(--font-en);
-      font-size: 0.5rem; font-weight: 700; padding: 2px 4px; border-radius: 2px;
-    }
-    .report-name { font-size: 1.05rem; color: var(--text); margin-bottom: 8px; }
-    .report-date { font-family: var(--font-en); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 24px; }
-
-    /* ── NEWSLETTER ── */
-    #newsletter { background: var(--bg); padding: 100px 0; }
-    .nl-inner { max-width: 600px; margin: 0 auto; text-align: center; }
-    .nl-inner .section-subtitle { max-width: 100%; margin: 0 auto 40px; }
-    .nl-form { display: flex; gap: 12px; max-width: 480px; margin: 0 auto; }
-    .nl-input {
-      flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 13px 18px; font-family: var(--font-ar); font-size: 0.95rem; color: var(--text);
-      outline: none; transition: var(--tr); direction: ltr; text-align: left;
-    }
-    .nl-input::placeholder { color: var(--text-muted); }
-    .nl-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(120,144,124,0.1); }
-
-    /* ── FOOTER ── */
-    #footer { background: var(--card); border-top: 1px solid var(--line); padding: 64px 0 32px; }
-    .footer-top { display: grid; grid-template-columns: 1.8fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
-    .footer-brand .logo-main { font-size: 1.1rem; margin-bottom: 4px; }
-    .footer-brand p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.75; margin-top: 12px; max-width: 280px; }
-    .footer-col h4 { font-size: 0.8rem; font-family: var(--font-en); letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-light); margin-bottom: 20px; }
-    .footer-col ul li { margin-bottom: 10px; }
-    .footer-col ul a { font-size: 0.88rem; color: var(--text-muted); transition: var(--tr); }
-    .footer-col ul a:hover { color: var(--accent-light); }
-
-    .social-links { display: flex; gap: 12px; margin-top: 24px; }
-    .social-link {
-      width: 36px; height: 36px; background: var(--bg); border: 1px solid var(--border);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; color: var(--text-muted); transition: var(--tr);
-    }
-    .social-link:hover { border-color: var(--accent); color: var(--accent-light); }
-
-    .footer-bottom {
-      border-top: 1px solid var(--line); padding-top: 28px;
-      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-    }
-    .footer-copy { font-family: var(--font-en); font-size: 0.75rem; color: var(--text-muted); }
-    .footer-legal { font-size: 0.78rem; color: var(--text-muted); max-width: 500px; text-align: center; }
-
-    /* ── SCROLL TOP ── */
-    #scrollTop {
-      position: fixed; bottom: 32px; left: 32px;
-      width: 44px; height: 44px; background: var(--card); border: 1px solid var(--border);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0; pointer-events: none; transition: var(--tr);
-      color: var(--accent); font-size: 1.1rem; z-index: 500;
-    }
-    #scrollTop.visible { opacity: 1; pointer-events: all; }
-    #scrollTop:hover { background: var(--glow); border-color: var(--accent); transform: translateY(-2px); }
-
-    /* ── REVEAL ── */
-    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .delay-1 { transition-delay: 0.1s; }
-    .delay-2 { transition-delay: 0.2s; }
-    .delay-3 { transition-delay: 0.3s; }
-    .delay-4 { transition-delay: 0.4s; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 1024px) {
-      .hero-inner { grid-template-columns: 1fr; text-align: center; }
-      .hero-image-wrap { max-width: 320px; margin: 0 auto; }
-      .hero-label { justify-content: center; }
-      .hero-buttons { justify-content: center; }
-      .trust-badges { justify-content: center; }
-      .green-line { margin-right: auto; margin-left: auto; }
-      .section-subtitle { margin-right: auto; margin-left: auto; text-align: center; }
-      .about-inner { grid-template-columns: 1fr; }
-      .about-photo { max-width: 300px; }
-      .insights-grid { grid-template-columns: 1fr; }
-      .method-grid { grid-template-columns: repeat(2,1fr); }
-      .cons-grid { grid-template-columns: 1fr; }
-      .library-grid { grid-template-columns: repeat(2,1fr); }
-      .reports-grid { grid-template-columns: 1fr; }
-      .footer-top { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .menu-toggle { display: flex; }
-      .notes-grid { grid-template-columns: 1fr; }
-      .library-grid { grid-template-columns: 1fr; }
-      .nl-form { flex-direction: column; }
-      .footer-bottom { flex-direction: column; text-align: center; }
-      .slots-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 480px) {
-      .method-grid { grid-template-columns: 1fr; }
-      .method-grid::before { display: none; }
-      .method-card:not(:last-child) { border-left: none; }
-      .trust-badges { flex-direction: column; align-items: center; }
-    }
-  </style>
+/* RESPONSIVE */
+@media(max-width:1024px){
+.hero-inner{grid-template-columns:1fr;text-align:center;}
+.hero-image-wrap{max-width:340px;margin:0 auto;}
+.hero-label{justify-content:center;}
+.hero-buttons{justify-content:center;}
+.trust-badges{justify-content:center;}
+.green-line{margin-right:auto;margin-left:auto;}
+.section-subtitle{margin-right:auto;margin-left:auto;text-align:center;}
+.about-inner{grid-template-columns:1fr;}
+.about-photo{max-width:300px;}
+.insights-grid{grid-template-columns:1fr;}
+.method-grid{grid-template-columns:repeat(2,1fr);}
+.cons-grid{grid-template-columns:1fr;}
+.library-grid{grid-template-columns:repeat(2,1fr);}
+.reports-grid{grid-template-columns:1fr;}
+.footer-top{grid-template-columns:1fr;}
+.articles-cta-inner{flex-direction:column;text-align:center;}
+}
+@media(max-width:768px){
+.nav-links{display:none;}.menu-toggle{display:flex;}
+.notes-grid{grid-template-columns:1fr;}
+.library-grid{grid-template-columns:1fr;}
+.nl-form{flex-direction:column;}
+.footer-bottom{flex-direction:column;text-align:center;}
+.slots-grid{grid-template-columns:1fr;}
+.art-modal-head{padding:36px 28px 24px;}
+.art-modal-body{padding:28px 28px 36px;}
+}
+@media(max-width:480px){
+.method-grid{grid-template-columns:1fr;}
+.method-grid::before{display:none;}
+.method-card:not(:last-child){border-left:none;}
+.trust-badges{flex-direction:column;align-items:center;}
+.hero-badge{display:none;}
+}
+</style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header id="header">
-    <div class="container">
-      <div class="header-inner">
-        <a href="#hero" class="logo">
-          <span class="logo-main en">Hanadi Insights</span>
-          <span class="logo-sub">Strategic Market Analysis</span>
-        </a>
-        <nav>
-          <ul class="nav-links">
-            <li><a href="#hero">الرئيسية</a></li>
-            <li><a href="#insights">التحليلات</a></li>
-            <li><a href="#notes">الرؤى السريعة</a></li>
-            <li><a href="#consultations">الاستشارات</a></li>
-            <li><a href="#about">عن هنادي</a></li>
-            <li><a href="#library">المكتبة</a></li>
-            <li><a href="#reports">التقارير</a></li>
-            <li><a href="#newsletter">النشرة</a></li>
-            <li><a href="#booking" class="nav-cta">احجز موعداً</a></li>
-          </ul>
-        </nav>
-        <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
-      </div>
-    </div>
-  </header>
+<!-- HEADER -->
+<header id="header">
+<div class="container">
+<div class="header-inner">
+<a href="#hero" class="logo">
+<span class="logo-main en">Hanadi Insights</span>
+<span class="logo-sub">Strategic Market Analysis</span>
+</a>
+<nav>
+<ul class="nav-links">
+<li><a href="#hero">الرئيسية</a></li>
+<li><a href="#insights">التحليلات</a></li>
+<li><a href="articles.html">المقالات</a></li>
+<li><a href="#notes">الرؤى السريعة</a></li>
+<li><a href="#consultations">الاستشارات</a></li>
+<li><a href="#about">عن هنادي</a></li>
+<li><a href="#library">المكتبة</a></li>
+<li><a href="#reports">التقارير</a></li>
+<li><a href="#booking" class="nav-cta">احجز موعداً</a></li>
+</ul>
+</nav>
+<div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+</div>
+</div>
+</header>
 
-  <!-- MOBILE NAV -->
-  <nav class="mobile-nav" id="mobileNav">
-    <a href="#hero">الرئيسية</a>
-    <a href="#insights">التحليلات</a>
-    <a href="#notes">الرؤى السريعة</a>
-    <a href="#consultations">الاستشارات</a>
-    <a href="#about">عن هنادي</a>
-    <a href="#library">المكتبة</a>
-    <a href="#reports">التقارير</a>
-    <a href="#newsletter">النشرة البريدية</a>
-    <a href="#booking" class="btn btn-green">احجز موعداً</a>
-  </nav>
+<!-- MOBILE NAV -->
+<nav class="mobile-nav" id="mobileNav">
+<a href="#hero">الرئيسية</a>
+<a href="#insights">التحليلات</a>
+<a href="articles.html">المقالات</a>
+<a href="#notes">الرؤى السريعة</a>
+<a href="#consultations">الاستشارات</a>
+<a href="#about">عن هنادي</a>
+<a href="#library">المكتبة</a>
+<a href="#reports">التقارير</a>
+<a href="#newsletter">النشرة البريدية</a>
+<a href="#booking" class="btn btn-green">احجز موعداً</a>
+</nav>
 
-  <!-- HERO -->
-  <section id="hero">
-    <div class="container">
-      <div class="hero-inner">
-        <div class="hero-content">
-          <div class="hero-label en">Strategic Market Analysis</div>
-          <h1 class="hero-title">
-            أقرأ الأسواق<br/>
-            من <span>خلف الأحداث</span>
-          </h1>
-          <p class="hero-text">
-            منصة تحليل اقتصادي وأسواق عالمية تربط السياسة، الاقتصاد، السيولة، وسلوك المستثمرين بلغة يفهمها المتداول.
-          </p>
-          <div class="hero-buttons">
-            <a href="#insights" class="btn btn-green">اقرأ آخر التحليلات</a>
-            <a href="#booking" class="btn btn-outline">احجز استشارة</a>
-          </div>
-          <div class="trust-badges">
-            <div class="trust-badge"><span class="num en">منذ 1998</span><span class="lbl">خبرة في الأسواق</span></div>
-            <div class="trust-badge"><span class="num en">2002</span><span class="lbl">أول مكتب فوركس في دمشق</span></div>
-            <div class="trust-badge"><span class="num en">منذ 2003</span><span class="lbl">تدريب وتحليل الأسواق</span></div>
-          </div>
-        </div>
-        <div class="hero-image-wrap">
-          <div class="hero-image-frame">
-            <div class="ph-icon">◈</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- TICKER -->
+<div class="ticker-wrap" style="margin-top:72px;">
+<div class="ticker-inner" id="ticker">
+<span class="ticker-item"><b>XAU/USD</b> <span class="ti-up">▲ 2,341.50 +0.42%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>EUR/USD</b> <span class="ti-down">▼ 1.0832 -0.18%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>WTI Crude</b> <span class="ti-up">▲ 78.94 +0.65%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>S&amp;P 500</b> <span class="ti-up">▲ 5,248.3 +0.31%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>USD/JPY</b> <span class="ti-down">▼ 153.20 -0.22%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>BTC/USD</b> <span class="ti-up">▲ 62,410 +1.2%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>XAU/USD</b> <span class="ti-up">▲ 2,341.50 +0.42%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>EUR/USD</b> <span class="ti-down">▼ 1.0832 -0.18%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>WTI Crude</b> <span class="ti-up">▲ 78.94 +0.65%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>S&amp;P 500</b> <span class="ti-up">▲ 5,248.3 +0.31%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>USD/JPY</b> <span class="ti-down">▼ 153.20 -0.22%</span></span><span class="ticker-sep">·</span>
+<span class="ticker-item"><b>BTC/USD</b> <span class="ti-up">▲ 62,410 +1.2%</span></span><span class="ticker-sep">·</span>
+</div>
+</div>
 
-  <!-- INSIGHTS -->
-  <section class="section" id="insights">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="section-label en">Latest Analysis</span>
-        <h2 class="section-title">أحدث التحليلات</h2>
-        <div class="green-line"></div>
-        <p class="section-subtitle">قراءة معمّقة في أبرز الأحداث التي تحرّك الأسواق العالمية.</p>
-      </div>
-      <div class="insights-grid">
-        <div class="insight-card reveal delay-1">
-          <span class="card-tag en">Geopolitics</span>
-          <h3 class="card-title">الحرب الإيرانية الأميركية وأثرها على عالم التداول</h3>
-          <p class="card-desc">كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.</p>
-          <div class="card-footer">
-            <span class="card-date en">15 May 2025</span>
-            <a href="#" class="btn btn-ghost">اقرأ التحليل</a>
-          </div>
-        </div>
-        <div class="insight-card reveal delay-2">
-          <span class="card-tag en">Commodities</span>
-          <h3 class="card-title">الذهب ليس غاليًا... العالم هو القَلِق</h3>
-          <p class="card-desc">لماذا يرتفع الذهب ليس بسبب قيمته، بل بسبب ما يعكسه عن حالة الثقة في النظام المالي العالمي.</p>
-          <div class="card-footer">
-            <span class="card-date en">8 May 2025</span>
-            <a href="#" class="btn btn-ghost">اقرأ التحليل</a>
-          </div>
-        </div>
-        <div class="insight-card reveal delay-3">
-          <span class="card-tag en">Macro</span>
-          <h3 class="card-title">الصين: من يراقبها يفهم اتجاه السيولة</h3>
-          <p class="card-desc">الصين ليست مجرد سوق ناشئة — إنها مقياس لاتجاه التدفقات الدولية. كيف تقرأ ما تفعله بكين قبل أن يفعله السوق؟</p>
-          <div class="card-footer">
-            <span class="card-date en">1 May 2025</span>
-            <a href="#" class="btn btn-ghost">اقرأ التحليل</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- HERO -->
+<section id="hero">
+<div class="hero-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<div class="hero-grid-lines"></div>
+<div class="container">
+<div class="hero-inner">
+<div class="hero-content">
+<div class="hero-label en">Strategic Market Analysis</div>
+<h1 class="hero-title">أقرأ الأسواق<br/>من <span>خلف الأحداث</span></h1>
+<p class="hero-text">منصة تحليل اقتصادي وأسواق عالمية تربط السياسة، الاقتصاد، السيولة، وسلوك المستثمرين بلغة يفهمها المتداول.</p>
+<div class="hero-buttons">
+<a href="#insights" class="btn btn-green">اقرأ آخر التحليلات</a>
+<a href="#booking" class="btn btn-outline">احجز استشارة</a>
+</div>
+<div class="trust-badges">
+<div class="trust-badge"><span class="num en">منذ 1998</span><span class="lbl">خبرة في الأسواق</span></div>
+<div class="trust-badge"><span class="num en">2002</span><span class="lbl">أول مكتب فوركس في دمشق</span></div>
+<div class="trust-badge"><span class="num en">منذ 2003</span><span class="lbl">تدريب وتحليل الأسواق</span></div>
+</div>
+</div>
+<div class="hero-image-wrap">
+<div class="hero-image-frame"><div class="hero-ph">◈</div></div>
+<div class="hero-badge"><span class="badge-num en">+25</span><span class="badge-lbl">سنة خبرة</span></div>
+</div>
+</div>
+</div>
+</section>
 
-  <!-- METHOD -->
-  <section class="section" id="method">
-    <div class="method-bg"></div>
-    <div class="container">
-      <div class="section-head reveal" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
-        <span class="section-label en">The Framework</span>
-        <h2 class="section-title">كيف تقرأ هنادي السوق؟</h2>
-        <div class="green-line" style="margin-right:auto;margin-left:auto;"></div>
-        <p class="section-subtitle" style="text-align:center;">منهجية متسلسلة تبدأ بالحدث وتنتهي بقرار المتداول.</p>
-      </div>
-      <div class="method-grid">
-        <div class="method-card reveal delay-1">
-          <span class="method-num en">01</span>
-          <div class="method-icon">🌐</div>
-          <h3 class="method-name">الحدث السياسي</h3>
-          <p class="method-desc">تحديد الأحداث الجيوسياسية ذات الوزن الحقيقي على الأسواق.</p>
-        </div>
-        <div class="method-card reveal delay-2">
-          <span class="method-num en">02</span>
-          <div class="method-icon">📊</div>
-          <h3 class="method-name">الأثر الاقتصادي</h3>
-          <p class="method-desc">ربط الحدث بالتداعيات الاقتصادية: تضخم، فائدة، نمو.</p>
-        </div>
-        <div class="method-card reveal delay-3">
-          <span class="method-num en">03</span>
-          <div class="method-icon">💧</div>
-          <h3 class="method-name">حركة السيولة</h3>
-          <p class="method-desc">قراءة أين تتجه الأموال الكبيرة — الملاذات الآمنة أم المخاطرة.</p>
-        </div>
-        <div class="method-card reveal delay-4">
-          <span class="method-num en">04</span>
-          <div class="method-icon">⚖️</div>
-          <h3 class="method-name">قرار المتداول</h3>
-          <p class="method-desc">ترجمة كل ما سبق إلى رؤية قابلة للتطبيق بعيداً عن العواطف.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- INSIGHTS -->
+<section class="section" id="insights">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Latest Analysis</span>
+<h2 class="section-title">أحدث التحليلات</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">قراءة معمّقة في أبرز الأحداث التي تحرّك الأسواق العالمية.</p>
+</div>
+<div class="insights-grid">
+<div class="insight-card reveal delay-1" onclick="openArticle(0)">
+<span class="card-tag en">Geopolitics</span>
+<h3 class="card-title">الحرب الإيرانية الأميركية وأثرها على عالم التداول</h3>
+<p class="card-desc">كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.</p>
+<div class="card-footer">
+<span class="card-date en">15 May 2025</span>
+<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
+</div>
+</div>
+<div class="insight-card reveal delay-2" onclick="openArticle(1)">
+<span class="card-tag en">Commodities</span>
+<h3 class="card-title">الذهب ليس غاليًا... العالم هو القَلِق</h3>
+<p class="card-desc">لماذا يرتفع الذهب ليس بسبب قيمته، بل بسبب ما يعكسه عن حالة الثقة في النظام المالي العالمي.</p>
+<div class="card-footer">
+<span class="card-date en">8 May 2025</span>
+<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
+</div>
+</div>
+<div class="insight-card reveal delay-3" onclick="openArticle(2)">
+<span class="card-tag en">Macro</span>
+<h3 class="card-title">الصين: من يراقبها يفهم اتجاه السيولة</h3>
+<p class="card-desc">الصين ليست مجرد سوق ناشئة — إنها مقياس لاتجاه التدفقات الدولية. كيف تقرأ ما تفعله بكين قبل أن يفعله السوق؟</p>
+<div class="card-footer">
+<span class="card-date en">1 May 2025</span>
+<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
+</div>
+</div>
+</div>
+<div style="text-align:center;margin-top:44px;" class="reveal">
+<a href="articles.html" class="btn btn-outline">عرض جميع المقالات →</a>
+</div>
+</div>
+</section>
 
-  <!-- NOTES -->
-  <section class="section" id="notes">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="section-label en">Quick Insights</span>
-        <h2 class="section-title">رؤى سريعة</h2>
-        <div class="green-line"></div>
-        <p class="section-subtitle">ملاحظات موجزة تفتح باباً للتفكير.</p>
-      </div>
-      <div class="notes-grid">
-        <div class="note-card reveal delay-1">
-          <div class="note-bullet"></div>
-          <p class="note-text">لماذا لا يتحرك الذهب دائمًا مع الخبر؟ الأسواق تسعّر التوقعات، لا الأحداث.</p>
-        </div>
-        <div class="note-card reveal delay-2">
-          <div class="note-bullet"></div>
-          <p class="note-text">ما الذي يراقبه المستثمرون هذا الأسبوع؟ بيانات التضخم الأمريكي وموقف الفيدرالي.</p>
-        </div>
-        <div class="note-card reveal delay-3">
-          <div class="note-bullet"></div>
-          <p class="note-text">متى يصبح الخبر مستهلكًا في السوق؟ حين يعرفه الجميع، لم يعد له قيمة سعرية.</p>
-        </div>
-        <div class="note-card reveal delay-4">
-          <div class="note-bullet"></div>
-          <p class="note-text">الفرق بين الخوف والسيولة في وقت الأزمات — الأول انفعال، والثاني قرار.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- METHOD -->
+<section class="section" id="method">
+<div class="method-bg"></div>
+<div class="container">
+<div class="section-head reveal" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+<span class="section-label en">The Framework</span>
+<h2 class="section-title">كيف تقرأ هنادي السوق؟</h2>
+<div class="green-line" style="margin-right:auto;margin-left:auto;"></div>
+<p class="section-subtitle" style="text-align:center;">منهجية متسلسلة تبدأ بالحدث وتنتهي بقرار المتداول.</p>
+</div>
+<div class="method-grid">
+<div class="method-card reveal delay-1"><span class="method-num en">01</span><div class="method-icon">🌐</div><h3 class="method-name">الحدث السياسي</h3><p class="method-desc">تحديد الأحداث الجيوسياسية ذات الوزن الحقيقي على الأسواق.</p></div>
+<div class="method-card reveal delay-2"><span class="method-num en">02</span><div class="method-icon">📊</div><h3 class="method-name">الأثر الاقتصادي</h3><p class="method-desc">ربط الحدث بالتداعيات الاقتصادية: تضخم، فائدة، نمو.</p></div>
+<div class="method-card reveal delay-3"><span class="method-num en">03</span><div class="method-icon">💧</div><h3 class="method-name">حركة السيولة</h3><p class="method-desc">قراءة أين تتجه الأموال الكبيرة — الملاذات الآمنة أم المخاطرة.</p></div>
+<div class="method-card reveal delay-4"><span class="method-num en">04</span><div class="method-icon">⚖️</div><h3 class="method-name">قرار المتداول</h3><p class="method-desc">ترجمة كل ما سبق إلى رؤية قابلة للتطبيق بعيداً عن العواطف.</p></div>
+</div>
+</div>
+</section>
 
-  <!-- CONSULTATIONS -->
-  <section class="section" id="consultations">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="section-label en">Services</span>
-        <h2 class="section-title">الاستشارات</h2>
-        <div class="green-line"></div>
-        <p class="section-subtitle">جلسات مصممة للمتداول الجاد والمستثمر الباحث عن وضوح.</p>
-      </div>
-      <div class="cons-grid">
-        <div class="cons-card reveal delay-1">
-          <div class="cons-icon">🔭</div>
-          <h3 class="cons-name">جلسة قراءة سوق</h3>
-          <p class="cons-desc">قراءة شاملة للمشهد الحالي للأسواق: أين نحن؟ ما السيناريوهات الأكثر ترجيحًا؟ وما الذي يجب أن تراقبه.</p>
-          <div class="cons-duration">60 min</div>
-          <a href="#booking" class="btn btn-outline" style="margin-top:8px">احجز الآن</a>
-        </div>
-        <div class="cons-card featured reveal delay-2">
-          <div class="cons-icon">🛡️</div>
-          <h3 class="cons-name">جلسة إدارة مخاطر</h3>
-          <p class="cons-desc">تقييم محفظتك الحالية وبناء خطة واضحة لإدارة المخاطر بناءً على المشهد الاقتصادي الراهن.</p>
-          <div class="cons-duration">90 min</div>
-          <a href="#booking" class="btn btn-green" style="margin-top:8px">احجز الآن</a>
-        </div>
-        <div class="cons-card reveal delay-3">
-          <div class="cons-icon">🏦</div>
-          <h3 class="cons-name">استشارة خاصة</h3>
-          <p class="cons-desc">للمستثمرين والشركات: تحليل مخصص يربط القرارات الاستراتيجية بديناميكيات الأسواق الدولية.</p>
-          <div class="cons-duration">120 min</div>
-          <a href="#booking" class="btn btn-outline" style="margin-top:8px">احجز الآن</a>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- NOTES -->
+<section class="section" id="notes">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Quick Insights</span>
+<h2 class="section-title">رؤى سريعة</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">ملاحظات موجزة تفتح باباً للتفكير.</p>
+</div>
+<div class="notes-grid">
+<div class="note-card reveal delay-1"><div class="note-bullet"></div><p class="note-text">لماذا لا يتحرك الذهب دائمًا مع الخبر؟ الأسواق تسعّر التوقعات، لا الأحداث.</p></div>
+<div class="note-card reveal delay-2"><div class="note-bullet"></div><p class="note-text">ما الذي يراقبه المستثمرون هذا الأسبوع؟ بيانات التضخم الأمريكي وموقف الفيدرالي.</p></div>
+<div class="note-card reveal delay-3"><div class="note-bullet"></div><p class="note-text">متى يصبح الخبر مستهلكًا في السوق؟ حين يعرفه الجميع، لم يعد له قيمة سعرية.</p></div>
+<div class="note-card reveal delay-4"><div class="note-bullet"></div><p class="note-text">الفرق بين الخوف والسيولة في وقت الأزمات — الأول انفعال، والثاني قرار.</p></div>
+</div>
+</div>
+</section>
 
-  <!-- BOOKING -->
-  <section class="section" id="booking">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="section-label en">Book a Session</span>
-        <h2 class="section-title">احجز موعدك</h2>
-        <div class="green-line"></div>
-        <p class="section-subtitle">اختر اليوم والوقت المناسب لك — ثلاثة مواعيد يومياً.</p>
-      </div>
-      <div class="booking-wrapper reveal">
-        <div class="cal-header">
-          <span class="cal-title" id="calMonthTitle"></span>
-          <div class="cal-nav">
-            <button class="cal-btn" id="calPrev">‹</button>
-            <button class="cal-btn" id="calNext">›</button>
-          </div>
-        </div>
-        <div class="days-scroll" id="daysScroll"></div>
-        <div class="slots-area">
-          <p class="slots-date-title" id="slotsDateTitle">← اختر يوماً من الأعلى</p>
-          <div class="slots-grid" id="slotsGrid"></div>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- CONSULTATIONS -->
+<section class="section" id="consultations">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Services</span>
+<h2 class="section-title">الاستشارات</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">جلسات مصممة للمتداول الجاد والمستثمر الباحث عن وضوح.</p>
+</div>
+<div class="cons-grid">
+<div class="cons-card reveal delay-1"><div class="cons-icon">🔭</div><h3 class="cons-name">جلسة قراءة سوق</h3><p class="cons-desc">قراءة شاملة للمشهد الحالي للأسواق: أين نحن؟ ما السيناريوهات الأكثر ترجيحًا؟ وما الذي يجب أن تراقبه.</p><div class="cons-duration">60 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px">احجز الآن</a></div>
+<div class="cons-card featured reveal delay-2"><div class="cons-icon">🛡️</div><h3 class="cons-name">جلسة إدارة مخاطر</h3><p class="cons-desc">تقييم محفظتك الحالية وبناء خطة واضحة لإدارة المخاطر بناءً على المشهد الاقتصادي الراهن.</p><div class="cons-duration">90 min</div><a href="#booking" class="btn btn-green" style="margin-top:8px">احجز الآن</a></div>
+<div class="cons-card reveal delay-3"><div class="cons-icon">🏦</div><h3 class="cons-name">استشارة خاصة</h3><p class="cons-desc">للمستثمرين والشركات: تحليل مخصص يربط القرارات الاستراتيجية بديناميكيات الأسواق الدولية.</p><div class="cons-duration">120 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px">احجز الآن</a></div>
+</div>
+</div>
+</section>
 
-  <!-- ABOUT -->
-  <section class="section" id="about">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="section-label en">About Hanadi</span>
-        <h2 class="section-title">عن هنادي</h2>
-        <div class="green-line"></div>
-      </div>
-      <div class="about-inner">
-        <div>
-          <p class="about-text reveal">
-            بدأت هنادي رحلتها في عالم الأسواق عام 1998، من عمّان، قبل أن تؤسس عام 2002 أول مكتب فوركس في دمشق. منذ 2003 تقدّم التدريب والتحليل في عالم الأسواق المالية، بمنهجية تربط الحدث السياسي بالأثر الاقتصادي وسلوك السيولة وصولاً إلى قرار المتداول.
-          </p>
-          <p class="about-text reveal">
-            ليست منصة توصيات — بل منصة تعليم، تحليل، وبناء وعي. لأن المتداول الذي يفهم لماذا يتحرك السوق، يختلف تماماً عمّن يلاحق الأسعار.
-          </p>
-          <div class="timeline reveal">
-            <div class="timeline-item"><span class="timeline-year en">1998</span><p class="timeline-title">البداية في عالم الأسواق، عمّان</p></div>
-            <div class="timeline-item"><span class="timeline-year en">2002</span><p class="timeline-title">تأسيس أول مكتب فوركس في دمشق</p></div>
-            <div class="timeline-item"><span class="timeline-year en">2003</span><p class="timeline-title">أولى الكورسات والتدريبات في تحليل الأسواق</p></div>
-            <div class="timeline-item"><span class="timeline-year en">Today</span><p class="timeline-title">منصة تحليل اقتصادي وأسواق عالمية</p></div>
-          </div>
-        </div>
-        <div class="about-photo reveal delay-2">
-          <div class="ph-icon">◈</div>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- BOOKING -->
+<section class="section" id="booking">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Book a Session</span>
+<h2 class="section-title">احجز موعدك</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">اختر اليوم والوقت المناسب لك — ثلاثة مواعيد يومياً.</p>
+</div>
+<div class="booking-wrapper reveal">
+<div class="cal-header">
+<span class="cal-title" id="calMonthTitle"></span>
+<div class="cal-nav">
+<button class="cal-btn" id="calPrev">‹</button>
+<button class="cal-btn" id="calNext">›</button>
+</div>
+</div>
+<div class="cal-grid-wrap">
+<div class="cal-weekdays" id="calWeekdays"></div>
+<div class="cal-grid" id="calGrid"></div>
+</div>
+<div class="slots-panel">
+<p class="slots-date-title" id="slotsDateTitle">اختر يوماً من التقويم أعلاه</p>
+<div id="slotsContainer"><div class="slots-placeholder">اختر يوماً لعرض المواعيد المتاحة</div></div>
+</div>
+</div>
+</div>
+</section>
 
-  <!-- LIBRARY -->
-  <section class="section" id="library">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="section-label en">Learning Hub</span>
-        <h2 class="section-title">المكتبة التعليمية</h2>
-        <div class="green-line"></div>
-        <p class="section-subtitle">محتوى دائم يبني أساساً متيناً للمتداول.</p>
-      </div>
-      <div class="library-grid">
-        <div class="lib-card reveal delay-1"><span class="lib-index en">01</span><span class="lib-name">ما هو التداول؟</span></div>
-        <div class="lib-card reveal delay-2"><span class="lib-index en">02</span><span class="lib-name">إدارة رأس المال</span></div>
-        <div class="lib-card reveal delay-3"><span class="lib-index en">03</span><span class="lib-name">كيف تُقرأ الأخبار الاقتصادية؟</span></div>
-        <div class="lib-card reveal delay-1"><span class="lib-index en">04</span><span class="lib-name">أساسيات الذهب</span></div>
-        <div class="lib-card reveal delay-2"><span class="lib-index en">05</span><span class="lib-name">البنوك المركزية وأسعار الفائدة</span></div>
-        <div class="lib-card reveal delay-3"><span class="lib-index en">06</span><span class="lib-name">كيف يفكر المتداول المحترف؟</span></div>
-      </div>
-    </div>
-  </section>
+<!-- ABOUT -->
+<section class="section" id="about">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">About Hanadi</span>
+<h2 class="section-title">عن هنادي</h2>
+<div class="green-line"></div>
+</div>
+<div class="about-inner">
+<div>
+<p class="about-text reveal">بدأت هنادي رحلتها في عالم الأسواق عام 1998، من عمّان، قبل أن تؤسس عام 2002 أول مكتب فوركس في دمشق. منذ 2003 تقدّم التدريب والتحليل في عالم الأسواق المالية، بمنهجية تربط الحدث السياسي بالأثر الاقتصادي وسلوك السيولة وصولاً إلى قرار المتداول.</p>
+<p class="about-text reveal">ليست منصة توصيات — بل منصة تعليم، تحليل، وبناء وعي. لأن المتداول الذي يفهم لماذا يتحرك السوق، يختلف تماماً عمّن يلاحق الأسعار.</p>
+<div class="timeline reveal">
+<div class="timeline-item"><span class="timeline-year en">1998</span><p class="timeline-title">البداية في عالم الأسواق، عمّان</p></div>
+<div class="timeline-item"><span class="timeline-year en">2002</span><p class="timeline-title">تأسيس أول مكتب فوركس في دمشق</p></div>
+<div class="timeline-item"><span class="timeline-year en">2003</span><p class="timeline-title">أولى الكورسات والتدريبات في تحليل الأسواق</p></div>
+<div class="timeline-item"><span class="timeline-year en">Today</span><p class="timeline-title">منصة تحليل اقتصادي وأسواق عالمية</p></div>
+</div>
+</div>
+<div class="about-photo reveal delay-2"><div style="color:var(--accent-dim);font-size:2rem;position:relative;z-index:1;">◈</div></div>
+</div>
+</div>
+</section>
 
-  <!-- REPORTS -->
-  <section class="section" id="reports">
-    <div class="container">
-      <div class="section-head reveal">
-        <span class="section-label en">Market Reports</span>
-        <h2 class="section-title">تقارير الأسواق</h2>
-        <div class="green-line"></div>
-        <p class="section-subtitle">تقارير دورية لأبرز ما يتحرك في الأسواق العالمية.</p>
-      </div>
-      <div class="reports-grid">
-        <div class="report-card reveal delay-1">
-          <div class="report-icon">📄</div>
-          <h3 class="report-name">تقرير الذهب الشهري</h3>
-          <p class="report-date en">May 2025 • PDF</p>
-          <a href="#" class="btn btn-ghost">تحميل التقرير</a>
-        </div>
-        <div class="report-card reveal delay-2">
-          <div class="report-icon">📄</div>
-          <h3 class="report-name">تقرير الاقتصاد العالمي</h3>
-          <p class="report-date en">Q2 2025 • PDF</p>
-          <a href="#" class="btn btn-ghost">تحميل التقرير</a>
-        </div>
-        <div class="report-card reveal delay-3">
-          <div class="report-icon">📄</div>
-          <h3 class="report-name">تقرير السيولة والأسواق</h3>
-          <p class="report-date en">May 2025 • PDF</p>
-          <a href="#" class="btn btn-ghost">تحميل التقرير</a>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- LIBRARY -->
+<section class="section" id="library">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Learning Hub</span>
+<h2 class="section-title">المكتبة التعليمية</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">محتوى دائم يبني أساساً متيناً للمتداول.</p>
+</div>
+<div class="library-grid">
+<div class="lib-card reveal delay-1"><span class="lib-index en">01</span><span class="lib-name">ما هو التداول؟</span></div>
+<div class="lib-card reveal delay-2"><span class="lib-index en">02</span><span class="lib-name">إدارة رأس المال</span></div>
+<div class="lib-card reveal delay-3"><span class="lib-index en">03</span><span class="lib-name">كيف تُقرأ الأخبار الاقتصادية؟</span></div>
+<div class="lib-card reveal delay-1"><span class="lib-index en">04</span><span class="lib-name">أساسيات الذهب</span></div>
+<div class="lib-card reveal delay-2"><span class="lib-index en">05</span><span class="lib-name">البنوك المركزية وأسعار الفائدة</span></div>
+<div class="lib-card reveal delay-3"><span class="lib-index en">06</span><span class="lib-name">كيف يفكر المتداول المحترف؟</span></div>
+</div>
+</div>
+</section>
 
-  <!-- NEWSLETTER -->
-  <section id="newsletter">
-    <div class="container">
-      <div class="nl-inner reveal">
-        <span class="section-label en" style="display:block;text-align:center;">Weekly Newsletter</span>
-        <h2 class="section-title">رسالة أسبوعية من هنادي</h2>
-        <div class="green-line" style="margin:16px auto 32px;"></div>
-        <p class="section-subtitle" style="text-align:center;margin:0 auto 40px;">تحليل هادئ لأهم ما يتحرك خلف الأسواق... يصلك مباشرة إلى بريدك.</p>
-        <div class="nl-form">
-          <input type="email" class="nl-input" placeholder="your@email.com" />
-          <button class="btn btn-green" id="nlBtn" type="submit">اشتراك</button>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- REPORTS -->
+<section class="section" id="reports">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Market Reports</span>
+<h2 class="section-title">تقارير الأسواق</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">تقارير دورية لأبرز ما يتحرك في الأسواق العالمية.</p>
+</div>
+<div class="reports-grid">
+<div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name">تقرير الذهب الشهري</h3><p class="report-date en">May 2025 • PDF</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name">تقرير الاقتصاد العالمي</h3><p class="report-date en">Q2 2025 • PDF</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name">تقرير السيولة والأسواق</h3><p class="report-date en">May 2025 • PDF</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+</div>
+</div>
+</section>
 
-  <!-- FOOTER -->
-  <footer id="footer">
-    <div class="container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="logo">
-            <span class="logo-main en">Hanadi Insights</span>
-            <span class="logo-sub en">Strategic Market Analysis</span>
-          </div>
-          <p>منصة تحليل اقتصادي وأسواق عالمية تربط السياسة والاقتصاد والسيولة بسلوك الأسواق.</p>
-          <div class="social-links">
-            <a href="#" class="social-link">𝕏</a>
-            <a href="#" class="social-link">✈</a>
-            <a href="#" class="social-link">▶</a>
-            <a href="#" class="social-link">in</a>
-          </div>
-        </div>
-        <div class="footer-col">
-          <h4>روابط سريعة</h4>
-          <ul>
-            <li><a href="#insights">التحليلات</a></li>
-            <li><a href="#notes">الرؤى السريعة</a></li>
-            <li><a href="#consultations">الاستشارات</a></li>
-            <li><a href="#booking">حجز موعد</a></li>
-            <li><a href="#about">عن هنادي</a></li>
-            <li><a href="#library">المكتبة</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>تواصل</h4>
-          <ul>
-            <li><a href="#newsletter">النشرة البريدية</a></li>
-            <li><a href="#booking">احجز استشارة</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span class="footer-copy en">© 2025 Hanadi Insights</span>
-        <p class="footer-legal">المحتوى المنشور لأغراض تعليمية وتحليلية ولا يُعد توصية استثمارية مباشرة.</p>
-      </div>
-    </div>
-  </footer>
+<!-- ARTICLES CTA -->
+<section id="articles-cta">
+<div class="container">
+<div class="articles-cta-inner reveal">
+<div>
+<span class="section-label en" style="margin-bottom:10px;">All Articles</span>
+<h2 class="section-title" style="margin-bottom:10px;">أرشيف المقالات الكامل</h2>
+<p style="color:var(--text-dim);font-size:0.97rem;">أكثر من 50 مقالاً في التحليل الاقتصادي وأسواق المال</p>
+</div>
+<a href="articles.html" class="btn btn-green" style="flex-shrink:0;">تصفح جميع المقالات ←</a>
+</div>
+</div>
+</section>
 
-  <div id="scrollTop">↑</div>
+<!-- NEWSLETTER -->
+<section id="newsletter">
+<div class="container">
+<div class="nl-inner reveal">
+<span class="section-label en" style="display:flex;justify-content:center;">Weekly Newsletter</span>
+<h2 class="section-title">رسالة أسبوعية من هنادي</h2>
+<div class="green-line" style="margin:16px auto 32px;"></div>
+<p class="section-subtitle" style="text-align:center;margin:0 auto 44px;">تحليل هادئ لأهم ما يتحرك خلف الأسواق... يصلك مباشرة إلى بريدك.</p>
+<div class="nl-form">
+<input type="email" class="nl-input" placeholder="your@email.com"/>
+<button class="btn btn-green" id="nlBtn" type="submit">اشتراك</button>
+</div>
+</div>
+</div>
+</section>
 
-  <!-- BOOKING MODAL -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <button class="modal-close" id="modalClose">✕</button>
-      <div id="modalForm">
-        <h3>تأكيد الحجز</h3>
-        <p class="modal-slot-info" id="modalSlotInfo"></p>
-        <div class="form-group">
-          <label class="form-label">الاسم الكامل</label>
-          <input type="text" class="form-input" id="bookName" placeholder="أدخل اسمك الكامل" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">رقم واتساب / الهاتف</label>
-          <input type="text" class="form-input" id="bookPhone" placeholder="+966 5x xxx xxxx" dir="ltr" />
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-ghost" id="modalCancelBtn">إلغاء</button>
-          <button class="btn btn-green" id="modalConfirmBtn">تأكيد الحجز</button>
-        </div>
-      </div>
-      <div class="success-msg" id="successMsg">
-        <div class="success-icon">✅</div>
-        <h4>تم تأكيد حجزك!</h4>
-        <p id="successDetail"></p>
-      </div>
-    </div>
-  </div>
+<!-- FOOTER -->
+<footer id="footer">
+<div class="container">
+<div class="footer-top">
+<div class="footer-brand">
+<div class="logo"><span class="logo-main en">Hanadi Insights</span><span class="logo-sub en">Strategic Market Analysis</span></div>
+<p>منصة تحليل اقتصادي وأسواق عالمية تربط السياسة والاقتصاد والسيولة بسلوك الأسواق.</p>
+<div class="social-links">
+<a href="#" class="social-link">𝕏</a>
+<a href="#" class="social-link">✈</a>
+<a href="#" class="social-link">▶</a>
+<a href="#" class="social-link">in</a>
+</div>
+</div>
+<div class="footer-col">
+<h4>روابط سريعة</h4>
+<ul>
+<li><a href="#insights">التحليلات</a></li>
+<li><a href="articles.html">المقالات</a></li>
+<li><a href="#notes">الرؤى السريعة</a></li>
+<li><a href="#consultations">الاستشارات</a></li>
+<li><a href="#booking">حجز موعد</a></li>
+<li><a href="#about">عن هنادي</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h4>تواصل</h4>
+<ul>
+<li><a href="#newsletter">النشرة البريدية</a></li>
+<li><a href="#booking">احجز استشارة</a></li>
+<li><a href="#library">المكتبة التعليمية</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span class="footer-copy en">© 2025 Hanadi Insights</span>
+<p class="footer-legal">المحتوى المنشور لأغراض تعليمية وتحليلية ولا يُعد توصية استثمارية مباشرة.</p>
+</div>
+</div>
+</footer>
 
-  <script>
-    // ── MOBILE MENU ──
-    const menuToggle = document.getElementById('menuToggle');
-    const mobileNav  = document.getElementById('mobileNav');
-    menuToggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
-    mobileNav.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileNav.classList.remove('open')));
+<div id="scrollTop">↑</div>
 
-    // ── SCROLL TOP ──
-    const scrollTopBtn = document.getElementById('scrollTop');
-    window.addEventListener('scroll', () => scrollTopBtn.classList.toggle('visible', window.scrollY > 400));
-    scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="bookingModal">
+<div class="modal">
+<button class="modal-close" id="modalClose">✕</button>
+<div id="modalForm">
+<h3>تأكيد الحجز</h3>
+<p class="modal-slot-info" id="modalSlotInfo"></p>
+<div class="form-group"><label class="form-label">الاسم الكامل</label><input type="text" class="form-input" id="bookName" placeholder="أدخل اسمك الكامل"/></div>
+<div class="form-group"><label class="form-label">رقم واتساب / الهاتف</label><input type="text" class="form-input" id="bookPhone" placeholder="+966 5x xxx xxxx" dir="ltr"/></div>
+<div class="modal-actions"><button class="btn btn-ghost" id="modalCancelBtn">إلغاء</button><button class="btn btn-green" id="modalConfirmBtn">تأكيد الحجز</button></div>
+</div>
+<div class="success-msg" id="successMsg">
+<div class="success-icon">✅</div>
+<h4>تم تأكيد حجزك!</h4>
+<p id="successDetail"></p>
+</div>
+</div>
+</div>
 
-    // ── REVEAL ──
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+<!-- ARTICLE MODAL -->
+<div class="modal-overlay" id="articleModal">
+<div class="modal">
+<button class="art-close-btn" id="artModalClose">✕</button>
+<div class="art-modal-head">
+<span class="art-modal-tag" id="artTag"></span>
+<h2 class="art-modal-title" id="artTitle"></h2>
+<div class="art-modal-meta">
+<span id="artDate"></span>
+<span id="artReadTime"></span>
+</div>
+</div>
+<div class="art-modal-body" id="artBody"></div>
+</div>
+</div>
 
-    // ── NEWSLETTER ──
-    const nlBtn = document.getElementById('nlBtn');
-    nlBtn.addEventListener('click', () => {
-      const input = document.querySelector('.nl-input');
-      if (input.value.trim()) {
-        input.value = '';
-        const orig = nlBtn.textContent;
-        nlBtn.textContent = '✓ تم الاشتراك';
-        nlBtn.disabled = true;
-        setTimeout(() => { nlBtn.textContent = orig; nlBtn.disabled = false; }, 3000);
-      }
-    });
+<script>
+const ARTICLES = [
+{
+tag:'Geopolitics',title:'الحرب الإيرانية الأميركية وأثرها على عالم التداول',
+date:'15 May 2025',readTime:'8 دقائق قراءة',
+body:`
+<p>في كل مرة تشتعل فيها التوترات بين واشنطن وطهران، يتسارع قلب المتداول قبل أن يتحرك السوق. لكن الخطأ الذي يقع فيه كثيرون هو الاستجابة للضوضاء الإعلامية قبل قراءة ما تقوله الأموال الكبيرة.</p>
+<h4>ما الذي يحدث فعلاً في السيولة؟</h4>
+<p>عندما تتصاعد التوترات الجيوسياسية في منطقة الشرق الأوسط، تتحرك ثلاثة أصول بشكل متزامن: الذهب يرتفع، والدولار يتقوى كملاذ آمن، والنفط يقفز. لكن الحركة الأكثر أهمية هي خروج السيولة من أسواق الملاكي الناشئة والتوجه نحو السندات الأمريكية قصيرة الأجل.</p>
+<p>المستثمرون المؤسسيون الكبار لا يبيعون بسبب الخوف — بل يعيدون توزيع المخاطر وفقاً لسيناريوهات محددة سبق أن وضعوها. هذه النقطة هي الفارق بين من يفهم السوق ومن يلاحقه.</p>
+<h4>السيناريو الأكثر ترجيحاً</h4>
+<p>تاريخياً، أثبتت التوترات الإيرانية الأمريكية أنها دورات قصيرة تمتد بين 3 إلى 8 أسابيع. الأسواق تسعّر الخطر بسرعة، ثم تعود للتركيز على البيانات الاقتصادية. النفط هو الأصل الأكثر حساسية، خاصة إذا تعطلت حركة الملاحة في مضيق هرمز.</p>
+<blockquote>من يشتري على الخوف ويبيع على الخبر، يتصرف كالسوق — لا معه.</blockquote>
+<p>خلاصة القول: لا تدع العناوين الإخبارية تقود قراراتك. راقب مستويات الذهب ومنحنى العائد الأمريكي — فهما يخبرانك بما يفكر فيه الكبار قبل أن يُعلنوه.</p>
+`
+},
+{
+tag:'Commodities',title:'الذهب ليس غاليًا... العالم هو القَلِق',
+date:'8 May 2025',readTime:'7 دقائق قراءة',
+body:`
+<p>حين يسألني أحدهم: "هل الذهب غالٍ الآن؟" أجيب دائماً: السؤال الصحيح ليس عن سعر الذهب، بل عن حالة الثقة في النظام المالي العالمي.</p>
+<h4>الذهب مرآة، ليس سلعة</h4>
+<p>الذهب لا ينتج دخلاً، ولا يدفع أرباحاً، ولا تقيّمه نماذج DCF التقليدية. ما يحرّكه هو مستوى القلق الجماعي من استقرار العملات، والسياسات النقدية، والديون السيادية. عندما يرتفع الذهب بقوة، فهو يقول لك: ثمة شيء في النظام يقلق الكبار.</p>
+<p>في عام 2024-2025، شهدنا ارتفاعاً تاريخياً في الذهب رافقه شراء قياسي من البنوك المركزية — وهذه إشارة نادرة الأهمية. البنوك المركزية لا تشتري من باب المضاربة، بل من باب الحماية الاستراتيجية.</p>
+<h4>ماذا تقرأ في السعر؟</h4>
+<p>ارتفاع الذهب مع قوة الدولار في الوقت ذاته يعني أن هناك قلقاً عميقاً يتجاوز عملة بعينها. هذا بالضبط ما نراه اليوم — خوف من تضخم هيكلي، ومن استدامة المديونية الأمريكية، ومن تآكل الثقة في مؤسسات بريتون وودز.</p>
+<blockquote>الذهب لا يكذب. عندما يرتفع، اسأل نفسك: من يشتريه وماذا يخاف؟</blockquote>
+<p>المتداول الذكي لا يسأل "هل يجب أن أشتري ذهباً؟" — بل يسأل "ماذا يخبرني سعر الذهب عن حالة العالم؟" والإجابة على هذا السؤال تفتح أبواباً لقراءة كل الأسواق الأخرى.</p>
+`
+},
+{
+tag:'Macro',title:'الصين: من يراقبها يفهم اتجاه السيولة',
+date:'1 May 2025',readTime:'9 دقائق قراءة',
+body:`
+<p>إذا أردت أن تفهم اتجاه السيولة العالمية في الأشهر القادمة، فانظر إلى الصين. ليس لأنها الاقتصاد الأكبر، بل لأن قراراتها تحرّك المواد الخام، والعملات، والتدفقات الاستثمارية بشكل مؤثر وسابق للأحداث.</p>
+<h4>الصين كمؤشر استباقي</h4>
+<p>حين تُحفّز الصين اقتصادها — عبر خفض الاحتياطي الإلزامي أو زيادة الإنفاق البنية التحتية — يرتفع الطلب على النفط والنحاس والحديد الصلب. هذه السلع هي مؤشر استباقي لما ستفعله الأسواق الناشئة والأسهم الصناعية العالمية.</p>
+<p>في المقابل، حين يتراجع النشاط الصناعي الصيني (PMI أقل من 50)، فهذا يعني ضغطاً على أسعار السلع وتراجعاً في الطلب العالمي — وهو ما أثّر سلباً على عملات دول كأستراليا والبرازيل وكندا.</p>
+<h4>ما الذي تراقبه الآن؟</h4>
+<p>ثلاثة مؤشرات صينية يجب أن تكون على شاشتك دائماً: مؤشر PMI الصناعي، صادرات النفط والنحاس، وسعر صرف اليوان أمام الدولار. هذه الثلاثة معاً تعطيك صورة دقيقة عن نية بكين الاقتصادية قبل أن تُعلنها رسمياً.</p>
+<blockquote>الصين تتحرك ببطء، لكن أثرها عميق ودائم. من يراقب الإشارات المبكرة يجد نفسه دائماً قبل الحدث.</blockquote>
+<p>المتداول الذي يفهم الصين يملك ميزة حقيقية في قراءة اتجاهات السلع والأسواق الناشئة. ابنِ هذا الفهم، وستجد قراراتك أكثر وضوحاً وأقل تأثراً بضوضاء السوق اليومية.</p>
+`
+}
+];
 
-    // ── ACTIVE NAV ──
-    const sections = document.querySelectorAll('section[id],footer[id]');
-    const navLinks = document.querySelectorAll('.nav-links a:not(.nav-cta)');
-    const navObs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          const id = e.target.id;
-          navLinks.forEach(l => { l.style.color = l.getAttribute('href') === `#${id}` ? 'var(--accent-light)' : ''; });
-        }
-      });
-    }, { threshold: 0.4 });
-    sections.forEach(s => navObs.observe(s));
+// ARTICLE MODAL
+function openArticle(i){
+const a=ARTICLES[i];
+document.getElementById('artTag').textContent=a.tag;
+document.getElementById('artTitle').textContent=a.title;
+document.getElementById('artDate').textContent='📅 '+a.date;
+document.getElementById('artReadTime').textContent='⏱ '+a.readTime;
+document.getElementById('artBody').innerHTML=a.body;
+const m=document.getElementById('articleModal');
+m.classList.add('open');
+m.querySelector('.modal').scrollTop=0;
+document.body.style.overflow='hidden';
+}
+function closeArticle(){
+document.getElementById('articleModal').classList.remove('open');
+document.body.style.overflow='';
+}
+document.getElementById('artModalClose').addEventListener('click',closeArticle);
+document.getElementById('articleModal').addEventListener('click',function(e){if(e.target===this)closeArticle();});
 
-    // ─────────────────────────────────────────
-    // BOOKING SYSTEM
-    // ─────────────────────────────────────────
-    const SLOTS      = ['10:00', '14:00', '18:00'];
-    const SLOT_AR    = { '10:00': '10:00 صباحاً', '14:00': '2:00 ظهراً', '18:00': '6:00 مساءً' };
-    const AR_DAYS    = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-    const AR_MONTHS  = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+// MOBILE MENU
+const menuToggle=document.getElementById('menuToggle');
+const mobileNav=document.getElementById('mobileNav');
+menuToggle.addEventListener('click',()=>mobileNav.classList.toggle('open'));
+mobileNav.querySelectorAll('a').forEach(l=>l.addEventListener('click',()=>mobileNav.classList.remove('open')));
 
-    const STORE_KEY  = 'hanadi_bookings';
+// SCROLL TOP
+const scrollTopBtn=document.getElementById('scrollTop');
+window.addEventListener('scroll',()=>scrollTopBtn.classList.toggle('visible',window.scrollY>400));
+scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
-    function getBookings() {
-      try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch { return {}; }
-    }
-    function saveBooking(dateKey, slot, name, phone) {
-      const b = getBookings();
-      if (!b[dateKey]) b[dateKey] = {};
-      b[dateKey][slot] = { name, phone, ts: Date.now() };
-      localStorage.setItem(STORE_KEY, JSON.stringify(b));
-    }
-    function isBooked(dateKey, slot) {
-      const b = getBookings();
-      return !!(b[dateKey] && b[dateKey][slot]);
-    }
+// REVEAL
+const observer=new IntersectionObserver((entries)=>{
+entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 
-    function toDateKey(d) {
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    }
+// NEWSLETTER
+const nlBtn=document.getElementById('nlBtn');
+nlBtn.addEventListener('click',()=>{
+const input=document.querySelector('.nl-input');
+if(input.value.trim()){input.value='';const orig=nlBtn.textContent;nlBtn.textContent='✓ تم';nlBtn.disabled=true;setTimeout(()=>{nlBtn.textContent=orig;nlBtn.disabled=false;},3000);}
+});
 
-    // State
-    let visibleStart = 0; // offset from today
-    const WINDOW_SIZE = 14;
-    let selectedDate  = null;
+// ACTIVE NAV
+const sections=document.querySelectorAll('section[id],footer[id]');
+const navLinks=document.querySelectorAll('.nav-links a:not(.nav-cta)');
+const navObs=new IntersectionObserver((entries)=>{
+entries.forEach(e=>{
+if(e.isIntersecting){const id=e.target.id;navLinks.forEach(l=>{l.style.color=l.getAttribute('href')==='#'+id?'var(--accent-light)':'';});}
+});
+},{threshold:0.4});
+sections.forEach(s=>navObs.observe(s));
 
-    const calTitle    = document.getElementById('calMonthTitle');
-    const daysScroll  = document.getElementById('daysScroll');
-    const slotsTitle  = document.getElementById('slotsDateTitle');
-    const slotsGrid   = document.getElementById('slotsGrid');
-    const calPrev     = document.getElementById('calPrev');
-    const calNext     = document.getElementById('calNext');
+// CALENDAR
+const SLOTS=['10:00','14:00','18:00'];
+const SLOT_AR={'10:00':'10:00 صباحاً','14:00':'2:00 ظهراً','18:00':'6:00 مساءً'};
+const AR_DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const AR_DAYS_SHORT=['أحد','إثن','ثلا','أربع','خمي','جمع','سبت'];
+const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const STORE_KEY='hanadi_bookings';
+function getBookings(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}');}catch{return {};}}
+function saveBooking(dk,slot,name,phone){const b=getBookings();if(!b[dk])b[dk]={};b[dk][slot]={name,phone,ts:Date.now()};localStorage.setItem(STORE_KEY,JSON.stringify(b));}
+function isBooked(dk,slot){const b=getBookings();return !!(b[dk]&&b[dk][slot]);}
+function toDateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 
-    function buildDays() {
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const days = [];
-      for (let i = visibleStart; i < visibleStart + WINDOW_SIZE; i++) {
-        const d = new Date(today);
-        d.setDate(today.getDate() + i);
-        days.push(d);
-      }
+let curYear,curMonth,selectedDate=null;
+const today=new Date();today.setHours(0,0,0,0);
+curYear=today.getFullYear();curMonth=today.getMonth();
 
-      // month title from first visible
-      const f = days[0];
-      calTitle.textContent = `${AR_MONTHS[f.getMonth()]} ${f.getFullYear()}`;
+const calTitle=document.getElementById('calMonthTitle');
+const calGrid=document.getElementById('calGrid');
+const calWeekdays=document.getElementById('calWeekdays');
+const slotsContainer=document.getElementById('slotsContainer');
+const slotsDateTitle=document.getElementById('slotsDateTitle');
 
-      daysScroll.innerHTML = '';
-      days.forEach(d => {
-        const key = toDateKey(d);
-        const booked = getBookings()[key] || {};
-        const bookedCount = Object.keys(booked).length;
+function buildWeekdays(){
+calWeekdays.innerHTML='';
+AR_DAYS_SHORT.forEach(d=>{const el=document.createElement('div');el.className='cal-wd';el.textContent=d;calWeekdays.appendChild(el);});
+}
 
-        const pill = document.createElement('div');
-        pill.className = 'day-pill';
-        if (selectedDate && toDateKey(selectedDate) === key) pill.classList.add('active');
-        if (bookedCount > 0 && bookedCount < SLOTS.length) pill.classList.add('has-avail');
-        if (bookedCount >= SLOTS.length) pill.classList.add('all-booked');
+function buildCalendar(){
+calTitle.textContent=AR_MONTHS[curMonth]+' '+curYear;
+calGrid.innerHTML='';
+const firstDay=new Date(curYear,curMonth,1).getDay();
+const daysInMonth=new Date(curYear,curMonth+1,0).getDate();
+for(let i=0;i<firstDay;i++){const empty=document.createElement('div');calGrid.appendChild(empty);}
+for(let d=1;d<=daysInMonth;d++){
+const date=new Date(curYear,curMonth,d);
+const dk=toDateKey(date);
+const booked=getBookings()[dk]||{};
+const bookedCount=Object.keys(booked).length;
+const isPast=date<today;
+const isToday=toDateKey(date)===toDateKey(today);
+const isSelected=selectedDate&&toDateKey(selectedDate)===dk;
+const cell=document.createElement('div');
+cell.className='cal-day';
+if(isPast)cell.classList.add('past');
+if(isToday)cell.classList.add('today');
+if(isSelected)cell.classList.add('selected');
+if(bookedCount>0&&bookedCount<SLOTS.length)cell.classList.add('has-slots');
+else if(bookedCount>=SLOTS.length)cell.classList.add('fully-booked');
+else cell.classList.add('no-slots');
+cell.innerHTML=`<span class="day-n">${d}</span><span class="day-dot"></span>`;
+if(!isPast){cell.addEventListener('click',()=>{selectedDate=date;buildCalendar();showSlots(date);});}
+calGrid.appendChild(cell);
+}
+}
 
-        pill.innerHTML = `
-          <span class="day-name">${AR_DAYS[d.getDay()]}</span>
-          <span class="day-num en">${d.getDate()}</span>
-          <span class="day-dot"></span>`;
+function showSlots(d){
+const dk=toDateKey(d);
+slotsDateTitle.textContent=AR_DAYS[d.getDay()]+'، '+d.getDate()+' '+AR_MONTHS[d.getMonth()]+' '+d.getFullYear();
+slotsContainer.innerHTML='';
+const grid=document.createElement('div');grid.className='slots-grid';
+SLOTS.forEach(slot=>{
+const booked=isBooked(dk,slot);
+const card=document.createElement('div');
+card.className='slot'+(booked?' booked':'');
+card.innerHTML=`<span class="slot-time en">${slot}</span><span class="slot-label">${SLOT_AR[slot]}</span>`;
+if(!booked)card.addEventListener('click',()=>openBookingModal(d,slot));
+grid.appendChild(card);
+});
+slotsContainer.appendChild(grid);
+}
 
-        pill.addEventListener('click', () => {
-          selectedDate = d;
-          buildDays();
-          buildSlots(d);
-        });
-        daysScroll.appendChild(pill);
-      });
+document.getElementById('calPrev').addEventListener('click',()=>{curMonth--;if(curMonth<0){curMonth=11;curYear--;}buildCalendar();if(selectedDate)showSlots(selectedDate);});
+document.getElementById('calNext').addEventListener('click',()=>{curMonth++;if(curMonth>11){curMonth=0;curYear++;}buildCalendar();if(selectedDate)showSlots(selectedDate);});
 
-      calPrev.disabled = visibleStart === 0;
-      calPrev.style.opacity = visibleStart === 0 ? '0.3' : '1';
-    }
+// BOOKING MODAL
+let pendingDate=null,pendingSlot=null;
+function openBookingModal(d,slot){
+pendingDate=d;pendingSlot=slot;
+const dateStr=d.getDate()+' '+AR_MONTHS[d.getMonth()]+' '+d.getFullYear();
+document.getElementById('modalSlotInfo').textContent=dateStr+' — '+SLOT_AR[slot];
+document.getElementById('bookName').value='';
+document.getElementById('bookPhone').value='';
+document.getElementById('bookName').style.borderColor='';
+document.getElementById('bookPhone').style.borderColor='';
+document.getElementById('modalForm').style.display='';
+document.getElementById('successMsg').style.display='none';
+document.getElementById('bookingModal').classList.add('open');
+document.body.style.overflow='hidden';
+}
+function closeBookingModal(){
+document.getElementById('bookingModal').classList.remove('open');
+document.body.style.overflow='';
+pendingDate=null;pendingSlot=null;
+}
+document.getElementById('modalClose').addEventListener('click',closeBookingModal);
+document.getElementById('modalCancelBtn').addEventListener('click',closeBookingModal);
+document.getElementById('bookingModal').addEventListener('click',function(e){if(e.target===this)closeBookingModal();});
+document.getElementById('modalConfirmBtn').addEventListener('click',()=>{
+const name=document.getElementById('bookName').value.trim();
+const phone=document.getElementById('bookPhone').value.trim();
+if(!name||!phone){
+document.getElementById('bookName').style.borderColor=name?'':'#c0392b';
+document.getElementById('bookPhone').style.borderColor=phone?'':'#c0392b';
+return;
+}
+saveBooking(toDateKey(pendingDate),pendingSlot,name,phone);
+const dateStr=pendingDate.getDate()+' '+AR_MONTHS[pendingDate.getMonth()]+' '+pendingDate.getFullYear();
+document.getElementById('successDetail').textContent=dateStr+' — '+SLOT_AR[pendingSlot];
+document.getElementById('modalForm').style.display='none';
+document.getElementById('successMsg').style.display='block';
+buildCalendar();
+if(selectedDate)showSlots(selectedDate);
+setTimeout(closeBookingModal,3000);
+});
 
-    function buildSlots(d) {
-      const key = toDateKey(d);
-      const dayName = AR_DAYS[d.getDay()];
-      const dateStr = `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-      slotsTitle.textContent = `${dayName}، ${dateStr}`;
-      slotsGrid.innerHTML = '';
-
-      SLOTS.forEach(slot => {
-        const booked = isBooked(key, slot);
-        const card = document.createElement('div');
-        card.className = 'slot' + (booked ? ' booked' : '');
-        card.innerHTML = `
-          <span class="slot-time en">${slot}</span>
-          <span class="slot-label">${SLOT_AR[slot]}</span>
-          ${booked ? '<span class="booked-badge">محجوز</span>' : ''}`;
-
-        if (!booked) {
-          card.addEventListener('click', () => openModal(d, slot));
-        }
-        slotsGrid.appendChild(card);
-      });
-    }
-
-    calPrev.addEventListener('click', () => {
-      if (visibleStart > 0) { visibleStart = Math.max(0, visibleStart - WINDOW_SIZE); buildDays(); if (selectedDate) buildSlots(selectedDate); }
-    });
-    calNext.addEventListener('click', () => {
-      visibleStart += WINDOW_SIZE; buildDays(); if (selectedDate) buildSlots(selectedDate);
-    });
-
-    // ── MODAL ──
-    const overlay      = document.getElementById('modalOverlay');
-    const modalClose   = document.getElementById('modalClose');
-    const modalCancelBtn = document.getElementById('modalCancelBtn');
-    const modalConfirm = document.getElementById('modalConfirmBtn');
-    const modalSlotInfo = document.getElementById('modalSlotInfo');
-    const bookName     = document.getElementById('bookName');
-    const bookPhone    = document.getElementById('bookPhone');
-    const modalForm    = document.getElementById('modalForm');
-    const successMsg   = document.getElementById('successMsg');
-    const successDetail = document.getElementById('successDetail');
-
-    let pendingDate = null, pendingSlot = null;
-
-    function openModal(d, slot) {
-      pendingDate = d; pendingSlot = slot;
-      const dateStr = `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-      modalSlotInfo.textContent = `${dateStr}  —  ${SLOT_AR[slot]}`;
-      bookName.value = ''; bookPhone.value = '';
-      modalForm.style.display = '';
-      successMsg.style.display = 'none';
-      overlay.classList.add('open');
-    }
-
-    function closeModal() {
-      overlay.classList.remove('open');
-      pendingDate = null; pendingSlot = null;
-    }
-
-    modalClose.addEventListener('click', closeModal);
-    modalCancelBtn.addEventListener('click', closeModal);
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-
-    modalConfirm.addEventListener('click', () => {
-      const name  = bookName.value.trim();
-      const phone = bookPhone.value.trim();
-      if (!name || !phone) {
-        bookName.style.borderColor  = name  ? '' : '#c0392b';
-        bookPhone.style.borderColor = phone ? '' : '#c0392b';
-        return;
-      }
-      saveBooking(toDateKey(pendingDate), pendingSlot, name, phone);
-
-      const dateStr = `${pendingDate.getDate()} ${AR_MONTHS[pendingDate.getMonth()]} ${pendingDate.getFullYear()}`;
-      successDetail.textContent = `${dateStr}  —  ${SLOT_AR[pendingSlot]}`;
-
-      modalForm.style.display = 'none';
-      successMsg.style.display = 'block';
-
-      buildDays();
-      if (selectedDate) buildSlots(selectedDate);
-
-      setTimeout(closeModal, 2800);
-    });
-
-    // Init calendar
-    buildDays();
-  </script>
+buildWeekdays();
+buildCalendar();
+</script>
 </body>
 </html>
