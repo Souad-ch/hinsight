@@ -658,8 +658,7 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 <span class="section-label en">Market Reports</span>
 <h2 class="section-title">تقارير الأسواق</h2>
 <div class="green-line"></div>
-<p class="section-subtitle">تقارير دورية لأبرز ما يتحرك في الأسواق العالمية.</p>
-</div>
+<p class="section-subtitle">تقارير دورية لأبرز ما يتحرك في الأسواق العالمية.</p></div>
 <div class="reports-grid">
 <div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name">تقرير الذهب الشهري</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
 <div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name">تقرير الاقتصاد العالمي</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
@@ -924,7 +923,7 @@ if(bookedCount>0&&bookedCount<SLOTS.length)cell.classList.add('has-slots');
 else if(bookedCount>=SLOTS.length)cell.classList.add('fully-booked');
 else cell.classList.add('no-slots');
 cell.innerHTML=`<span class="day-n">${d}</span><span class="day-dot"></span>`;
-if(!isPast){cell.addEventListener('click',()=>{selectedDate=date;buildCalendar();showSlots(date);});}
+if(!isPast){cell.addEventListener('click',()=>{selectedDate=date;buildCalendar();showSlots(date);}};}
 calGrid.appendChild(cell);
 }
 }
@@ -1031,4 +1030,3 @@ buildTicker();
 setInterval(buildTicker,4000);
 </script>
 </body>
-</html>
