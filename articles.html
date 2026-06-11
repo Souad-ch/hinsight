@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>المقالات — Hanadi Insights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+--bg:#0C0B0F;--bg-mid:#111014;--card:#161818;--card-hover:#1c1f1f;
+--border:rgba(120,144,124,0.15);--accent:#78907C;--accent-light:#9FBBA4;
+--accent-dim:#506155;--glow:rgba(159,187,164,0.12);--text:#DDDEDD;
+--text-dim:#8a9a8c;--text-muted:#4a5a4c;--line:rgba(120,144,124,0.18);
+--font-ar:'Noto Naskh Arabic',serif;--font-en:'Cormorant Garamond',serif;
+--radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-ar);line-height:1.75;overflow-x:hidden;direction:rtl;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5;}
+a{text-decoration:none;color:inherit;}ul{list-style:none;}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+.en{font-family:var(--font-en);letter-spacing:0.04em;}
+
+/* ANIMATIONS */
+@keyframes heroReveal{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+@keyframes orbFloat{0%,100%{transform:translate(0,0);}50%{transform:translate(20px,-20px);}}
+@keyframes modalIn{from{opacity:0;transform:translateY(40px) scale(0.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes overlayIn{from{opacity:0;}to{opacity:1;}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:var(--radius);font-family:var(--font-ar);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--tr);border:none;outline:none;}
+.btn-green{background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:var(--bg);}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(120,144,124,0.4);}
+.btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);}
+.btn-outline:hover{background:var(--glow);transform:translateY(-2px);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-size:0.88rem;padding:9px 20px;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent-light);}
+
+/* HEADER */
+#header{position:fixed;top:0;right:0;left:0;z-index:1000;background:rgba(12,11,15,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--line);}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.logo{display:flex;flex-direction:column;line-height:1.1;}
+.logo-main{font-family:var(--font-en);font-size:1.25rem;font-weight:600;color:var(--accent-light);letter-spacing:0.06em;}
+.logo-sub{font-size:0.62rem;color:var(--text-muted);letter-spacing:0.14em;font-family:var(--font-en);text-transform:uppercase;}
+.nav-links{display:flex;align-items:center;gap:2px;}
+.nav-links a{font-size:0.85rem;color:var(--text-muted);padding:7px 13px;border-radius:6px;transition:var(--tr);}
+.nav-links a:hover,.nav-links a.active{color:var(--accent-light);background:rgba(120,144,124,0.08);}
+.nav-cta{padding:9px 22px!important;background:linear-gradient(135deg,var(--accent),var(--accent-dim))!important;color:var(--bg)!important;font-weight:700!important;border-radius:var(--radius)!important;}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(120,144,124,0.4)!important;}
+.menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;}
+.menu-toggle span{display:block;width:24px;height:2px;background:var(--accent);border-radius:2px;}
+.mobile-nav{display:none;position:fixed;inset:72px 0 0 0;background:var(--card);z-index:999;padding:32px 24px;flex-direction:column;gap:8px;border-top:1px solid var(--line);overflow-y:auto;}
+.mobile-nav.open{display:flex;}
+.mobile-nav a{padding:14px 0;font-size:1.05rem;color:var(--text-dim);border-bottom:1px solid var(--line);transition:var(--tr);}
+.mobile-nav .btn{margin-top:16px;justify-content:center;}
+
+/* PAGE HERO */
+.page-hero{padding:140px 0 80px;position:relative;overflow:hidden;}
+.page-hero .orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+.page-hero .orb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(120,144,124,0.06) 0%,transparent 70%);top:-150px;left:-100px;animation:orbFloat 14s ease-in-out infinite;}
+.page-hero .orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(159,187,164,0.04) 0%,transparent 70%);bottom:0;right:10%;animation:orbFloat 10s ease-in-out infinite reverse;}
+.page-hero-inner{position:relative;z-index:1;}
+.page-hero-label{font-family:var(--font-en);font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent-light);display:flex;align-items:center;gap:16px;margin-bottom:20px;animation:heroReveal 0.7s ease 0.2s both;}
+.page-hero-label::before{content:'';width:36px;height:1px;background:var(--accent);}
+.page-hero h1{font-size:clamp(2.2rem,5vw,3.6rem);color:var(--text);margin-bottom:16px;animation:heroReveal 0.8s ease 0.35s both;}
+.page-hero h1 span{background:linear-gradient(135deg,var(--accent-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.page-hero p{font-size:1.05rem;color:var(--text-dim);max-width:540px;line-height:1.85;animation:heroReveal 0.8s ease 0.5s both;}
+
+/* FILTERS */
+.filters-wrap{padding:32px 0 48px;position:sticky;top:72px;z-index:100;background:rgba(12,11,15,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+.filters{display:flex;gap:8px;flex-wrap:wrap;}
+.filter-btn{font-family:var(--font-ar);font-size:0.85rem;padding:8px 20px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:var(--tr);}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent-light);}
+.filter-btn.active{background:rgba(120,144,124,0.12);border-color:var(--accent);color:var(--accent-light);}
+
+/* FEATURED ARTICLE */
+.featured-section{padding:60px 0 40px;}
+.featured-card{background:var(--card);border:1px solid rgba(120,144,124,0.2);border-radius:12px;padding:48px 56px;display:grid;grid-template-columns:1fr 360px;gap:56px;align-items:center;cursor:pointer;transition:var(--tr);position:relative;overflow:hidden;}
+.featured-card::before{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(270deg,var(--accent),var(--accent-dim));}
+.featured-card:hover{transform:translateY(-4px);box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 60px rgba(120,144,124,0.08);}
+.feat-label{font-family:var(--font-en);font-size:0.62rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-light);display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.feat-label::before{content:'FEATURED';font-size:0.6rem;letter-spacing:0.14em;background:rgba(120,144,124,0.15);border:1px solid rgba(120,144,124,0.3);padding:2px 10px;border-radius:20px;color:var(--accent-light);}
+.feat-tag{display:inline-block;font-family:var(--font-en);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-light);background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.2);padding:3px 12px;border-radius:20px;margin-bottom:16px;}
+.feat-title{font-size:clamp(1.5rem,3vw,2.1rem);color:var(--text);line-height:1.3;margin-bottom:16px;}
+.feat-desc{font-size:0.97rem;color:var(--text-dim);line-height:1.85;margin-bottom:28px;}
+.feat-meta{display:flex;align-items:center;gap:20px;font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);}
+.feat-img{aspect-ratio:4/3;background:linear-gradient(135deg,var(--bg-mid),var(--bg));border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--accent-dim);}
+
+/* ARTICLES GRID */
+.articles-section{padding:24px 0 80px;}
+.articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.art-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;transition:var(--tr);cursor:pointer;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px;}
+.art-card::after{content:'';position:absolute;bottom:0;right:0;left:0;height:2px;background:linear-gradient(270deg,var(--accent),transparent);transform:scaleX(0);transform-origin:right;transition:var(--tr);}
+.art-card:hover{border-color:rgba(120,144,124,0.35);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 40px rgba(120,144,124,0.05);}
+.art-card:hover::after{transform:scaleX(1);}
+.art-tag{font-family:var(--font-en);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-light);background:rgba(120,144,124,0.08);border:1px solid rgba(120,144,124,0.18);padding:3px 10px;border-radius:20px;display:inline-block;align-self:flex-start;}
+.art-title{font-size:1.08rem;color:var(--text);line-height:1.5;flex:1;}
+.art-desc{font-size:0.86rem;color:var(--text-muted);line-height:1.75;}
+.art-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;}
+.art-date{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
+.art-read{font-size:0.82rem;color:var(--accent-light);display:flex;align-items:center;gap:5px;transition:var(--tr);}
+.art-card:hover .art-read{gap:9px;}
+
+/* LOAD MORE */
+.load-more-wrap{text-align:center;padding:16px 0 20px;}
+
+/* ARTICLE MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(8,8,12,0.88);backdrop-filter:blur(12px);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px;animation:overlayIn 0.3s ease forwards;}
+.modal-overlay.open{display:flex;}
+.art-modal{background:var(--card);border:1px solid rgba(120,144,124,0.2);border-radius:16px;max-width:760px;width:100%;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 60px 120px rgba(0,0,0,0.8);animation:modalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;}
+.art-modal::-webkit-scrollbar{width:4px;}
+.art-modal::-webkit-scrollbar-thumb{background:var(--accent-dim);border-radius:4px;}
+.art-modal-head{padding:44px 48px 32px;border-bottom:1px solid var(--line);}
+.art-modal-tag{font-family:var(--font-en);font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-light);background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.2);padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:16px;}
+.art-modal-title{font-size:clamp(1.4rem,3vw,2rem);color:var(--text);line-height:1.35;margin-bottom:16px;}
+.art-modal-meta{display:flex;gap:20px;font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);}
+.art-modal-body{padding:36px 48px 52px;}
+.art-modal-body p{font-size:1.02rem;color:var(--text-dim);line-height:2;margin-bottom:24px;}
+.art-modal-body h4{font-size:1.1rem;color:var(--text);margin:32px 0 14px;}
+.art-modal-body blockquote{border-right:3px solid var(--accent);padding:16px 20px;background:rgba(120,144,124,0.05);border-radius:0 8px 8px 0;margin:28px 0;font-style:italic;color:var(--text-dim);line-height:1.85;}
+.art-close-btn{position:sticky;top:16px;float:left;margin:16px 16px 0 0;width:36px;height:36px;background:var(--bg-mid);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:var(--tr);z-index:10;flex-shrink:0;}
+.art-close-btn:hover{border-color:var(--accent);color:var(--accent-light);transform:rotate(90deg);}
+
+/* FOOTER */
+#footer{background:var(--card);border-top:1px solid var(--line);padding:64px 0 32px;}
+.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:48px;margin-bottom:48px;}
+.footer-brand .logo-main{font-size:1.1rem;margin-bottom:4px;}
+.footer-brand p{font-size:0.85rem;color:var(--text-muted);line-height:1.8;margin-top:12px;max-width:280px;}
+.footer-col h4{font-size:0.72rem;font-family:var(--font-en);letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-light);margin-bottom:20px;}
+.footer-col ul li{margin-bottom:10px;}
+.footer-col ul a{font-size:0.88rem;color:var(--text-muted);transition:var(--tr);}
+.footer-col ul a:hover{color:var(--accent-light);}
+.footer-bottom{border-top:1px solid var(--line);padding-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.footer-copy{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
+.footer-legal{font-size:0.78rem;color:var(--text-muted);max-width:500px;text-align:center;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.delay-1{transition-delay:0.1s;}.delay-2{transition-delay:0.2s;}.delay-3{transition-delay:0.3s;}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.articles-grid{grid-template-columns:repeat(2,1fr);}.featured-card{grid-template-columns:1fr;}.feat-img{display:none;}.footer-top{grid-template-columns:1fr;}}
+@media(max-width:768px){.nav-links{display:none;}.menu-toggle{display:flex;}.articles-grid{grid-template-columns:1fr;}.art-modal-head{padding:36px 28px 24px;}.art-modal-body{padding:28px 28px 40px;}.footer-top{grid-template-columns:1fr;}.footer-bottom{flex-direction:column;text-align:center;}}
+</style>
+</head>
+<body>
+
+<header id="header">
+<div class="container">
+<div class="header-inner">
+<a href="index.html" class="logo">
+<span class="logo-main en">Hanadi Insights</span>
+<span class="logo-sub">Strategic Market Analysis</span>
+</a>
+<nav>
+<ul class="nav-links">
+<li><a href="index.html">الرئيسية</a></li>
+<li><a href="index.html#insights">التحليلات</a></li>
+<li><a href="articles.html" class="active">المقالات</a></li>
+<li><a href="index.html#consultations">الاستشارات</a></li>
+<li><a href="index.html#about">عن هنادي</a></li>
+<li><a href="index.html#library">المكتبة</a></li>
+<li><a href="index.html#booking" class="nav-cta">احجز موعداً</a></li>
+</ul>
+</nav>
+<div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+</div>
+</div>
+</header>
+
+<nav class="mobile-nav" id="mobileNav">
+<a href="index.html">الرئيسية</a>
+<a href="index.html#insights">التحليلات</a>
+<a href="articles.html">المقالات</a>
+<a href="index.html#consultations">الاستشارات</a>
+<a href="index.html#about">عن هنادي</a>
+<a href="index.html#booking" class="btn btn-green">احجز موعداً</a>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="container">
+<div class="page-hero-inner">
+<div class="page-hero-label en">All Articles</div>
+<h1>مكتبة <span>التحليلات</span></h1>
+<p>أرشيف كامل من المقالات والتحليلات الاقتصادية — قراءة هادئة وعميقة خلف أحداث الأسواق.</p>
+</div>
+</div>
+</section>
+
+<!-- FILTERS -->
+<div class="filters-wrap">
+<div class="container">
+<div class="filters" id="filters">
+<button class="filter-btn active" data-cat="all">الكل</button>
+<button class="filter-btn" data-cat="Geopolitics">جيوسياسية</button>
+<button class="filter-btn" data-cat="Commodities">سلع</button>
+<button class="filter-btn" data-cat="Macro">اقتصاد كلي</button>
+<button class="filter-btn" data-cat="Currencies">عملات</button>
+<button class="filter-btn" data-cat="Energy">طاقة</button>
+</div>
+</div>
+</div>
+
+<!-- FEATURED -->
+<section class="featured-section">
+<div class="container">
+<div class="featured-card reveal" onclick="openArticle(0)">
+<div>
+<div class="feat-label en">Geopolitics</div>
+<h2 class="feat-title">الحرب الإيرانية الأميركية وأثرها على عالم التداول</h2>
+<p class="feat-desc">كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.</p>
+<div class="feat-meta">
+<span>15 May 2025</span>
+<span>8 دقائق</span>
+<span style="color:var(--accent-light);">اقرأ المقال ←</span>
+</div>
+</div>
+<div class="feat-img">◈</div>
+</div>
+</div>
+</section>
+
+<!-- ARTICLES GRID -->
+<section class="articles-section">
+<div class="container">
+<div class="articles-grid" id="articlesGrid"></div>
+<div class="load-more-wrap" id="loadMoreWrap" style="margin-top:40px;"></div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+<div class="container">
+<div class="footer-top">
+<div class="footer-brand">
+<div class="logo"><span class="logo-main en">Hanadi Insights</span><span class="logo-sub en">Strategic Market Analysis</span></div>
+<p>منصة تحليل اقتصادي وأسواق عالمية.</p>
+</div>
+<div class="footer-col">
+<h4>روابط</h4>
+<ul>
+<li><a href="index.html">الرئيسية</a></li>
+<li><a href="index.html#insights">أحدث التحليلات</a></li>
+<li><a href="index.html#consultations">الاستشارات</a></li>
+<li><a href="index.html#booking">حجز موعد</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h4>تواصل</h4>
+<ul>
+<li><a href="index.html#newsletter">النشرة البريدية</a></li>
+<li><a href="index.html#about">عن هنادي</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span class="footer-copy en">© 2025 Hanadi Insights</span>
+<p class="footer-legal">المحتوى لأغراض تعليمية ولا يُعد توصية استثمارية.</p>
+</div>
+</div>
+</footer>
+
+<!-- ARTICLE MODAL -->
+<div class="modal-overlay" id="articleModal">
+<div class="art-modal">
+<button class="art-close-btn" id="artClose">✕</button>
+<div class="art-modal-head">
+<span class="art-modal-tag" id="mTag"></span>
+<h2 class="art-modal-title" id="mTitle"></h2>
+<div class="art-modal-meta"><span id="mDate"></span><span id="mRead"></span></div>
+</div>
+<div class="art-modal-body" id="mBody"></div>
+</div>
+</div>
+
+<script>
+const ALL_ARTICLES=[
+{cat:'Geopolitics',tag:'Geopolitics',title:'الحرب الإيرانية الأميركية وأثرها على عالم التداول',desc:'كيف تؤثر التوترات الجيوسياسية على سلوك السيولة.',date:'15 May 2025',read:'8 دقائق',body:`<p>في كل مرة تشتعل فيها التوترات بين واشنطن وطهران، يتسارع قلب المتداول قبل أن يتحرك السوق. لكن الخطأ الذي يقع فيه كثيرون هو الاستجابة للضوضاء الإعلامية قبل قراءة ما تقوله الأموال الكبيرة.</p><h4>ما الذي يحدث فعلاً في السيولة؟</h4><p>عندما تتصاعد التوترات الجيوسياسية في منطقة الشرق الأوسط، تتحرك ثلاثة أصول بشكل متزامن: الذهب يرتفع، والدولار يتقوى كملاذ آمن، والنفط يقفز. المستثمرون المؤسسيون الكبار لا يبيعون بسبب الخوف — بل يعيدون توزيع المخاطر وفقاً لسيناريوهات محددة سبق أن وضعوها.</p><blockquote>من يشتري على الخوف ويبيع على الخبر، يتصرف كالسوق — لا معه.</blockquote><p>خلاصة: لا تدع العناوين الإخبارية تقود قراراتك. راقب مستويات الذهب ومنحنى العائد الأمريكي.</p>`},
+{cat:'Commodities',tag:'Commodities',title:'الذهب ليس غاليًا... العالم هو القَلِق',desc:'لماذا يرتفع الذهب ليس بسبب قيمته، بل بسبب ما يعكسه عن حالة الثقة.',date:'8 May 2025',read:'7 دقائق',body:`<p>حين يسألني أحدهم: "هل الذهب غالٍ الآن؟" أجيب دائماً: السؤال الصحيح ليس عن سعر الذهب، بل عن حالة الثقة في النظام المالي العالمي.</p><h4>الذهب مرآة، ليس سلعة</h4><p>الذهب لا ينتج دخلاً ولا يدفع أرباحاً. ما يحرّكه هو مستوى القلق الجماعي من استقرار العملات، والسياسات النقدية، والديون السيادية.</p><blockquote>الذهب لا يكذب. عندما يرتفع، اسأل نفسك: من يشتريه وماذا يخاف؟</blockquote><p>المتداول الذكي لا يسأل "هل يجب أن أشتري ذهباً؟" — بل يسأل "ماذا يخبرني سعر الذهب عن حالة العالم؟"</p>`},
+{cat:'Macro',tag:'Macro',title:'الصين: من يراقبها يفهم اتجاه السيولة',desc:'الصين ليست مجرد سوق ناشئة — إنها مقياس لاتجاه التدفقات الدولية.',date:'1 May 2025',read:'9 دقائق',body:`<p>إذا أردت أن تفهم اتجاه السيولة العالمية في الأشهر القادمة، فانظر إلى الصين. ليس لأنها الاقتصاد الأكبر، بل لأن قراراتها تحرّك المواد الخام والتدفقات الاستثمارية بشكل سابق للأحداث.</p><h4>الصين كمؤشر استباقي</h4><p>حين تُحفّز الصين اقتصادها، يرتفع الطلب على النفط والنحاس والحديد الصلب. هذه السلع هي مؤشر استباقي لما ستفعله الأسواق الناشئة.</p><blockquote>الصين تتحرك ببطء، لكن أثرها عميق ودائم.</blockquote><p>المتداول الذي يفهم الصين يملك ميزة حقيقية في قراءة اتجاهات السلع والأسواق الناشئة.</p>`},
+{cat:'Macro',tag:'Macro',title:'الفيدرالي وأسعار الفائدة: سيناريوهات 2025',desc:'ثلاثة سيناريوهات محتملة وكيف تضع محفظتك في كل حالة.',date:'22 Apr 2025',read:'10 دقائق',body:`<p>الفيدرالي أمام معضلة حقيقية: إذا خفض الفائدة مبكّراً فقد يعيد إشعال التضخم، وإذا أبقاها مرتفعة فقد يخنق النمو. فكيف تقرأ هذا المشهد؟</p><h4>السيناريو الأول: تخفيضات سريعة</h4><p>إذا جاءت بيانات التضخم أدنى من المتوقع، سيخفض الفيدرالي بسرعة. هذا سيدفع أسعار الأسهم والعقارات، ويضعف الدولار.</p><h4>السيناريو الثاني: ثبات مطوّل</h4><p>إذا ظل التضخم فوق الهدف وسوق العمل قوياً، سيبقى الفيدرالي متردداً. في هذا السيناريو سيضغط على الذهب والسندات.</p><blockquote>السوق يتحرك بالتوقعات قبل القرار بستة أشهر. من يفهم ذلك فقد دخل السوق عبر الباب الصحيح.</blockquote>`},
+{cat:'Energy',tag:'Energy',title:'النفط بين الطلب الصيني والعرض السعودي',desc:'التوازن الدقيق بين أكبر مستهلك وأكبر مورد يرسم سعر البرميل.',date:'14 Apr 2025',read:'8 دقائق',body:`<p>ثمة ثنائية واحدة تسيطر على سوق النفط: الصين (طلباً) والسعودية (عرضاً). فهم كيف تتفاعل هاتان القوتان يعطيك سبقاً حقيقياً في قراءة سعر الخام.</p><h4>متى تحكم أوبك بلاستطاعة؟</h4><p>بيانات التصنيع الصينية وPMI هي مؤشرك الأول. حين يتراجع الطلب الصيني، تعجز أوبك عن التحكم في السعر بخفض الإنتاج وحده.</p><blockquote>سعر النفط ليس قراراً سياسياً فحسب — بل محصّلة تفاعل قوى اقتصادية هائلة.</blockquote>`},
+{cat:'Currencies',tag:'Currencies',title:'الدولار: قوة مؤقتة أم تحول هيكلي؟',desc:'هيمنة الدولار تواجه تحديات بنيوية لم تشهدها منذ 1971.',date:'5 Apr 2025',read:'11 دقائق',body:`<p>الدولار يظل عملة الاحتياطات العالمية الأولى، ولكن هذا الوضع ليس مضموناً إلى الأبد. ثمة تحولات بنيوية تجري ببطء، لكن بثبات.</p><h4>تحدي اليوان واليورو</h4><p>الصين تزيد ببطء من تسويات اليوان بدُول أخرى، فيما توسع أوروبا في استخدام اليورو في عقود الطاقة. هذا ليس خطراً فورياً على الدولار، لكنه بداية تحول هيكلي أبطأ.</p><blockquote>من يفهم كيف تستبدل العملات الاحتياطية عبر التاريخ، يفهم جيداً ما يجري اليوم.</blockquote>`}
+];
+
+let activeFilter='all';
+
+function renderGrid(filter){
+const grid=document.getElementById('articlesGrid');
+grid.innerHTML='';
+const list=filter==='all'?ALL_ARTICLES:ALL_ARTICLES.filter(a=>a.cat===filter);
+list.forEach((a,i)=>{
+const card=document.createElement('div');
+card.className='art-card reveal'+(i<3?' delay-'+(i+1):'');
+card.innerHTML=`
+<span class="art-tag en">${a.tag}</span>
+<h3 class="art-title">${a.title}</h3>
+<p class="art-desc">${a.desc}</p>
+<div class="art-footer">
+<span class="art-date en">${a.date}</span>
+<span class="art-read en">${a.read} ←</span>
+</div>`;
+card.addEventListener('click',()=>openArticle(i,filter));
+grid.appendChild(card);
+});
+setTimeout(()=>{
+document.querySelectorAll('.art-card.reveal').forEach(el=>observer.observe(el));
+},50);
+}
+
+function openArticle(idx,filter){
+const list=(filter&&filter!=='all')?ALL_ARTICLES.filter(a=>a.cat===filter):ALL_ARTICLES;
+const a=list[idx];
+document.getElementById('mTag').textContent=a.tag;
+document.getElementById('mTitle').textContent=a.title;
+document.getElementById('mDate').textContent='📅 '+a.date;
+document.getElementById('mRead').textContent='⏱ '+a.read;
+document.getElementById('mBody').innerHTML=a.body;
+const m=document.getElementById('articleModal');
+m.classList.add('open');
+m.querySelector('.art-modal').scrollTop=0;
+document.body.style.overflow='hidden';
+}
+
+document.getElementById('artClose').addEventListener('click',()=>{
+document.getElementById('articleModal').classList.remove('open');
+document.body.style.overflow='';
+});
+document.getElementById('articleModal').addEventListener('click',function(e){
+if(e.target===this){this.classList.remove('open');document.body.style.overflow='';}
+});
+
+document.getElementById('filters').addEventListener('click',e=>{
+const btn=e.target.closest('.filter-btn');
+if(!btn)return;
+document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+activeFilter=btn.dataset.cat;
+renderGrid(activeFilter);
+});
+
+// mobile menu
+const menuToggle=document.getElementById('menuToggle');
+const mobileNav=document.getElementById('mobileNav');
+menuToggle.addEventListener('click',()=>mobileNav.classList.toggle('open'));
+mobileNav.querySelectorAll('a').forEach(l=>l.addEventListener('click',()=>mobileNav.classList.remove('open')));
+
+// reveal observer
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+renderGrid('all');
+</script>
+</body>
+</html>
