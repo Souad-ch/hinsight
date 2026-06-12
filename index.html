@@ -334,9 +334,10 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 #scrollTop.visible{opacity:1;pointer-events:all;}
 #scrollTop:hover{background:rgba(120,144,124,0.1);border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 24px rgba(120,144,124,0.2);}
 
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
+/* REVEAL — only hides when JS is active; otherwise content always shows */
+.reveal{transition:opacity 0.7s ease,transform 0.7s ease;}
+.js .reveal{opacity:0;transform:translateY(28px);}
+.js .reveal.visible{opacity:1;transform:translateY(0);}
 .delay-1{transition-delay:0.1s;}.delay-2{transition-delay:0.2s;}.delay-3{transition-delay:0.3s;}.delay-4{transition-delay:0.4s;}
 
 /* RESPONSIVE */
@@ -435,6 +436,7 @@ html{font-size:15px;}
 </style>
 </head>
 <body>
+<script>document.documentElement.classList.add('js');</script>
 <div id="scrollProgress"></div>
 
 <!-- HEADER -->
@@ -965,6 +967,8 @@ const observer=new IntersectionObserver((entries)=>{
 entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
 },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+// safety net: reveal everything after 2.5s in case the observer misfires
+setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),2500);
 
 // NEWSLETTER
 const nlBtn=document.getElementById('nlBtn');

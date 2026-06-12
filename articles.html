@@ -116,9 +116,10 @@ a{text-decoration:none;color:inherit;}
 .mini-footer{border-top:1px solid var(--line);padding:36px 0;text-align:center;}
 .mini-footer p{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
 
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.65s ease,transform 0.65s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
+/* REVEAL — only hides when JS active */
+.reveal{transition:opacity 0.65s ease,transform 0.65s ease;}
+.js .reveal{opacity:0;transform:translateY(20px);}
+.js .reveal.visible{opacity:1;transform:translateY(0);}
 
 #scrollTop{position:fixed;bottom:36px;left:36px;width:46px;height:46px;background:var(--card);border:1px solid rgba(120,144,124,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:var(--tr);color:var(--accent);z-index:500;}
 #scrollTop.visible{opacity:1;pointer-events:all;}
@@ -129,6 +130,7 @@ a{text-decoration:none;color:inherit;}
 </style>
 </head>
 <body>
+<script>document.documentElement.classList.add('js');</script>
 
 <header id="header">
 <div class="container">
@@ -285,6 +287,7 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
 
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),2500);
 
 // تحويل صف Supabase لمقال
 function mapRow(row){

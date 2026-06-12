@@ -118,9 +118,10 @@ a{text-decoration:none;color:inherit;}
 .section-label{font-family:var(--font-en);font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-light);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
 .section-label::before{content:'';display:block;width:22px;height:1px;background:var(--accent-light);}
 
-/* REVEAL */
-.reveal{opacity:0;transform:translateY(20px);transition:opacity 0.65s ease,transform 0.65s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
+/* REVEAL — only hides when JS active */
+.reveal{transition:opacity 0.65s ease,transform 0.65s ease;}
+.js .reveal{opacity:0;transform:translateY(20px);}
+.js .reveal.visible{opacity:1;transform:translateY(0);}
 
 /* FOOTER */
 .mini-footer{border-top:1px solid var(--line);padding:36px 0;text-align:center;}
@@ -135,6 +136,7 @@ a{text-decoration:none;color:inherit;}
 </style>
 </head>
 <body>
+<script>document.documentElement.classList.add('js');</script>
 
 <!-- HEADER -->
 <header id="header">
@@ -417,6 +419,7 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
 // reveal
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),2500);
 </script>
 </body>
 </html>
