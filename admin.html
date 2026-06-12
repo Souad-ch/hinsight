@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لوحة التحكم — Hanadi Insights</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink:#0C0B0F; --ink-mid:#121513; --ink-light:#161818; --ink-border:#3C483E;
+      --gold:#78907C; --gold-bright:#9FBBA4; --gold-dim:#56685C;
+      --cream:#DDDEDD; --cream-dim:#A8B0AC; --white:#EDEEED; --muted:#6B7A72;
+      --line:rgba(120,144,124,0.12); --card:rgba(20,24,22,0.9);
+      --font-ar:'Noto Naskh Arabic',serif; --font-mono:'DM Mono',monospace;
+      --font-en:'Cormorant Garamond',serif;
+      --ease:cubic-bezier(0.16,1,0.3,1);
+      --green:#4ade80; --red:#f87171;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--ink);color:var(--cream);font-family:var(--font-ar);direction:rtl;min-height:100vh;}
+    a{text-decoration:none;color:inherit;}
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+      background:radial-gradient(ellipse at center, rgba(120,144,124,0.05) 0%, transparent 70%);
+    }
+    .login-box {
+      width:100%; max-width:400px; text-align:center;
+      background:var(--card); border:1px solid var(--ink-border); border-radius:6px;
+      padding:48px 40px; box-shadow:0 40px 100px rgba(0,0,0,0.5);
+    }
+    .login-logo { font-family:var(--font-en); font-size:1.8rem; font-weight:600; color:var(--gold-bright); letter-spacing:0.05em; margin-bottom:4px; }
+    .login-sub  { font-family:var(--font-mono); font-size:0.6rem; color:var(--muted); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:44px; }
+    .login-title { font-size:1.25rem; color:var(--white); margin-bottom:8px; font-weight:700; }
+    .login-hint  { font-size:0.8rem; color:var(--muted); margin-bottom:28px; }
+    .login-input {
+      width:100%; background:var(--ink-light); border:1px solid var(--ink-border);
+      border-radius:4px; padding:14px 16px; font-family:var(--font-ar); font-size:1rem;
+      color:var(--cream); outline:none; text-align:center; letter-spacing:0.2em;
+      margin-bottom:14px; transition:border-color 0.3s;
+    }
+    .login-input:focus { border-color:var(--gold); }
+    .login-btn {
+      width:100%; padding:14px; background:linear-gradient(135deg,var(--gold-bright),var(--gold));
+      color:var(--ink); font-family:var(--font-ar); font-size:1rem; font-weight:700;
+      border:none; border-radius:4px; cursor:pointer; transition:all 0.3s var(--ease);
+    }
+    .login-btn:hover { box-shadow:0 0 24px rgba(120,144,124,0.3); transform:translateY(-1px); }
+    .login-error { font-family:var(--font-mono); font-size:0.72rem; color:var(--red); margin-top:12px; display:none; }
+
+    /* ── DASHBOARD ── */
+    #dashboard { display:none; }
+
+    .dash-header {
+      background:rgba(6,8,15,0.92); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--line);
+      padding:0 32px; height:64px;
+      display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:100;
+    }
+    .dash-logo { font-family:var(--font-mono); font-size:0.75rem; color:var(--gold); letter-spacing:0.15em; }
+    .dash-user  { font-family:var(--font-mono); font-size:0.68rem; color:var(--muted); display:flex; align-items:center; gap:12px; }
+    .logout-btn { padding:6px 14px; background:transparent; border:1px solid var(--ink-border); border-radius:4px; color:var(--muted); font-family:var(--font-mono); font-size:0.65rem; cursor:pointer; transition:all 0.3s; }
+    .logout-btn:hover { border-color:var(--red); color:var(--red); }
+
+    .dash-layout { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 64px); }
+
+    /* Sidebar */
+    .dash-sidebar {
+      background:var(--ink-mid); border-left:1px solid var(--line);
+      padding:28px 0;
+    }
+    .side-label { font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); padding:0 20px; margin-bottom:10px; margin-top:20px; }
+    .side-label:first-child { margin-top:0; }
+    .side-link {
+      display:flex; align-items:center; gap:10px; padding:11px 20px;
+      font-size:0.88rem; color:var(--muted); cursor:pointer;
+      transition:all 0.3s var(--ease); border-right:2px solid transparent;
+    }
+    .side-link:hover { color:var(--cream); background:rgba(120,144,124,0.03); }
+    .side-link.active { color:var(--gold); border-right-color:var(--gold); background:rgba(120,144,124,0.05); }
+    .side-icon { font-size:1rem; width:20px; text-align:center; }
+
+    /* Main */
+    .dash-main { padding:36px; background:var(--ink); }
+
+    /* Panels */
+    .panel { display:none; }
+    .panel.active { display:block; }
+
+    .panel-title { font-size:1.4rem; color:var(--white); margin-bottom:8px; font-weight:700; }
+    .panel-sub   { font-size:0.84rem; color:var(--muted); margin-bottom:36px; }
+
+    /* Stats row */
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:36px; }
+    .stat-box { background:var(--card); border:1px solid var(--ink-border); border-radius:4px; padding:24px; transition:border-color 0.3s; }
+    .stat-box:hover { border-color:rgba(120,144,124,0.4); }
+    .stat-box-num   { font-family:var(--font-mono); font-size:1.8rem; font-weight:500; color:var(--gold-bright); line-height:1; margin-bottom:6px; }
+    .stat-box-label { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase; }
+
+    /* Table */
+    .data-table { width:100%; border-collapse:collapse; }
+    .data-table th { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); padding:10px 16px; border-bottom:1px solid var(--line); text-align:right; }
+    .data-table td { padding:14px 16px; border-bottom:1px solid rgba(120,144,124,0.08); font-size:0.86rem; color:var(--cream-dim); }
+    .data-table tr:hover td { background:rgba(120,144,124,0.02); }
+    .data-table .badge { display:inline-block; font-family:var(--font-mono); font-size:0.58rem; padding:3px 8px; border-radius:20px; letter-spacing:0.08em; }
+    .badge-confirmed { background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.2); color:var(--green); }
+    .badge-published  { background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.2); color:var(--green); }
+    .badge-draft      { background:rgba(120,144,124,0.08); border:1px solid rgba(120,144,124,0.2); color:var(--gold); }
+
+    /* Action buttons */
+    .action-btn { padding:5px 12px; font-family:var(--font-mono); font-size:0.62rem; border-radius:4px; cursor:pointer; transition:all 0.25s; background:transparent; }
+    .action-btn.del { border:1px solid rgba(248,113,113,0.2); color:var(--red); }
+    .action-btn.del:hover { background:rgba(248,113,113,0.08); border-color:var(--red); }
+    .action-btn.edit { border:1px solid var(--ink-border); color:var(--muted); margin-left:6px; }
+    .action-btn.edit:hover { border-color:var(--gold); color:var(--gold); }
+
+    /* Article editor */
+    .editor-grid { display:grid; grid-template-columns:1fr 280px; gap:28px; align-items:start; }
+    .form-group { margin-bottom:20px; }
+    .form-label { display:block; font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+    .form-input, .form-select, .form-textarea {
+      width:100%; background:var(--ink-light); border:1px solid var(--ink-border);
+      border-radius:4px; padding:13px 16px; font-family:var(--font-ar); font-size:0.92rem;
+      color:var(--cream); outline:none; transition:border-color 0.3s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--gold); }
+    .form-textarea { min-height:280px; resize:vertical; font-family:var(--font-mono); font-size:0.82rem; line-height:1.7; direction:rtl; }
+
+    /* Rich Text Editor */
+    .rte-toolbar {
+      display:flex; flex-wrap:wrap; gap:4px;
+      background:var(--ink-light); border:1px solid var(--ink-border); border-bottom:none;
+      border-radius:4px 4px 0 0; padding:8px;
+    }
+    .rte-btn {
+      min-width:34px; height:34px; padding:0 10px;
+      background:transparent; border:1px solid transparent; border-radius:4px;
+      color:var(--cream-dim); cursor:pointer; font-family:var(--font-ar);
+      font-size:0.85rem; transition:all 0.2s;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .rte-btn:hover { background:rgba(120,144,124,0.08); color:var(--gold); }
+    .rte-btn.active { background:rgba(120,144,124,0.14); color:var(--gold); border-color:rgba(120,144,124,0.3); }
+    .rte-sep { width:1px; background:var(--ink-border); margin:4px 4px; }
+    .rte-select {
+      background:transparent; border:1px solid var(--ink-border); border-radius:4px;
+      color:var(--cream-dim); font-family:var(--font-ar); font-size:0.8rem;
+      padding:0 8px; height:34px; cursor:pointer; direction:rtl;
+    }
+    .rte-select option { background:var(--ink-mid); }
+
+    .rte-content {
+      width:100%; min-height:320px; max-height:600px; overflow-y:auto;
+      background:var(--ink-light); border:1px solid var(--ink-border); border-radius:0 0 4px 4px;
+      padding:20px 24px; font-family:var(--font-ar); font-size:0.96rem; line-height:1.95;
+      color:var(--cream-dim); outline:none; transition:border-color 0.3s;
+    }
+    .rte-content:focus { border-color:var(--gold); }
+    .rte-content:empty::before { content:attr(data-placeholder); color:var(--muted); }
+    .rte-content h2 { font-size:1.3rem; color:var(--white); margin:24px 0 10px; font-weight:700; }
+    .rte-content h3 { font-size:1.08rem; color:var(--gold); margin:18px 0 8px; font-weight:700; }
+    .rte-content p  { margin-bottom:14px; }
+    .rte-content blockquote {
+      border-right:3px solid var(--gold); padding:12px 18px; margin:18px 0;
+      background:rgba(120,144,124,0.04); border-radius:0 4px 4px 0;
+      font-style:italic; color:var(--cream);
+    }
+    .rte-content ul, .rte-content ol { margin:0 24px 14px; }
+    .rte-content li { margin-bottom:6px; }
+    .rte-content strong { color:var(--white); }
+    .rte-content a { color:var(--gold); text-decoration:underline; }
+
+    .rte-html-view {
+      display:none; width:100%; min-height:320px; max-height:600px;
+      background:var(--ink-light); border:1px solid var(--ink-border); border-radius:0 0 4px 4px;
+      padding:16px 20px; font-family:var(--font-mono); font-size:0.78rem; line-height:1.7;
+      color:var(--cream-dim); direction:ltr; text-align:left; resize:vertical; outline:none;
+    }
+    .rte-mode-active .rte-content    { display:none; }
+    .rte-mode-active .rte-html-view  { display:block; }
+    .form-select { cursor:pointer; direction:rtl; }
+    .form-select option { background:var(--ink-mid); }
+
+    .editor-sidebar { background:var(--card); border:1px solid var(--ink-border); border-radius:4px; padding:24px; }
+    .editor-sidebar h4 { font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; }
+    .publish-toggle { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .toggle-label { font-size:0.86rem; color:var(--cream-dim); }
+    .toggle-switch { position:relative; width:44px; height:24px; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:var(--ink-border); border-radius:24px; cursor:pointer; transition:0.35s; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:var(--muted); border-radius:50%; transition:0.35s; }
+    .toggle-switch input:checked + .toggle-slider { background:rgba(74,222,128,0.3); }
+    .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); background:var(--green); }
+
+    .submit-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--gold-bright),var(--gold)); color:var(--ink); font-family:var(--font-ar); font-size:0.95rem; font-weight:700; border:none; border-radius:4px; cursor:pointer; transition:all 0.3s var(--ease); margin-bottom:10px; }
+    .submit-btn:hover { box-shadow:0 0 20px rgba(120,144,124,0.3); }
+    .draft-btn { width:100%; padding:12px; background:transparent; border:1px solid var(--ink-border); color:var(--muted); font-family:var(--font-ar); font-size:0.88rem; border-radius:4px; cursor:pointer; transition:all 0.3s; }
+    .draft-btn:hover { border-color:var(--gold); color:var(--gold); }
+
+    .toast { position:fixed; bottom:28px; right:28px; background:var(--ink-light); border:1px solid var(--ink-border); border-radius:4px; padding:14px 20px; font-family:var(--font-mono); font-size:0.78rem; color:var(--cream); z-index:999; opacity:0; transform:translateY(10px); transition:all 0.4s var(--ease); pointer-events:none; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .toast.success { border-color:rgba(74,222,128,0.3); color:var(--green); }
+    .toast.error   { border-color:rgba(248,113,113,0.3); color:var(--red); }
+
+    .spinner { width:16px; height:16px; border-radius:50%; border:2px solid rgba(6,8,15,0.3); border-top-color:var(--ink); animation:spin 0.7s linear infinite; display:inline-block; vertical-align:middle; }
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .slug-preview { font-family:var(--font-mono); font-size:0.65rem; color:var(--muted); margin-top:6px; direction:ltr; text-align:left; }
+
+    @media(max-width:900px){
+      .dash-layout{grid-template-columns:1fr;}
+      .dash-sidebar{
+        display:flex; flex-direction:row; align-items:center; gap:2px;
+        overflow-x:auto; -webkit-overflow-scrolling:touch;
+        padding:10px 12px; border-left:none; border-bottom:1px solid var(--line);
+        position:sticky; top:64px; z-index:90;
+        scrollbar-width:none;
+      }
+      .dash-sidebar::-webkit-scrollbar{ display:none; }
+      .side-label{ display:none; }
+      .side-link{
+        flex-shrink:0; white-space:nowrap; border-right:none;
+        border-bottom:2px solid transparent; padding:9px 14px;
+        border-radius:4px;
+      }
+      .side-link.active{ border-right-color:transparent; border-bottom-color:var(--gold); background:rgba(120,144,124,0.06); }
+      .stats-row{grid-template-columns:repeat(2,1fr);}
+      .editor-grid{grid-template-columns:1fr;}
+      .dash-main{padding:24px 20px;}
+    }
+    @media(max-width:600px){
+      .dash-header{padding:0 16px;}
+      .dash-logo{font-size:0.65rem;}
+      .panel-title{font-size:1.2rem;}
+      .stats-row{grid-template-columns:1fr 1fr; gap:10px;}
+      .stat-box{padding:16px;}
+      .stat-box-num{font-size:1.4rem;}
+      .data-table{font-size:0.78rem; display:block; overflow-x:auto; white-space:nowrap;}
+      .data-table th, .data-table td{padding:9px 10px;}
+      .rte-toolbar{gap:2px;}
+      .rte-btn{min-width:30px; height:30px; font-size:0.78rem;}
+      .rte-select{font-size:0.74rem; height:30px; padding:0 6px;}
+    }
+    @media(max-width:380px){
+      .stats-row{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Hanadi Insights</div>
+    <div class="login-sub">Admin Dashboard</div>
+    <h2 class="login-title">تسجيل الدخول</h2>
+    <p class="login-hint">أدخل كلمة السر للوصول للوحة التحكم</p>
+    <input type="password" class="login-input" id="pwInput" placeholder="••••••••" />
+    <button class="login-btn" id="loginBtn">دخول</button>
+    <div class="login-error" id="loginError">كلمة السر غير صحيحة.</div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <header class="dash-header">
+    <div class="dash-logo">HANADI INSIGHTS / ADMIN</div>
+    <div class="dash-user">
+      <span>هنادي</span>
+      <button class="logout-btn" id="logoutBtn">خروج</button>
+    </div>
+  </header>
+  <div class="dash-layout">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="side-label">الرئيسية</div>
+      <div class="side-link active" data-panel="overview"><span class="side-icon">📊</span>نظرة عامة</div>
+      <div class="side-label">المحتوى</div>
+      <div class="side-link" data-panel="new-article"><span class="side-icon">✏️</span>مقال جديد</div>
+      <div class="side-link" data-panel="articles"><span class="side-icon">📰</span>إدارة المقالات</div>
+      <div class="side-label">الحجوزات</div>
+      <div class="side-link" data-panel="bookings"><span class="side-icon">📅</span>الحجوزات</div>
+      <div class="side-label">أخرى</div>
+      <div class="side-link" data-panel="subscribers"><span class="side-icon">📧</span>المشتركون</div>
+      <div class="side-link" onclick="window.open('index.html','_blank')"><span class="side-icon">🌐</span>الموقع</div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+
+      <!-- OVERVIEW -->
+      <div class="panel active" id="panel-overview">
+        <div class="panel-title">نظرة عامة</div>
+        <div class="panel-sub">ملخص سريع لأبرز البيانات</div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-box-num" id="stat-articles">—</div><div class="stat-box-label">مقالات منشورة</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="stat-bookings">—</div><div class="stat-box-label">حجوزات هذا الشهر</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="stat-subscribers">—</div><div class="stat-box-label">مشترك بالنشرة</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="stat-drafts">—</div><div class="stat-box-label">مسودات</div></div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--ink-border);border-radius:4px;padding:24px;">
+          <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;">آخر الحجوزات</div>
+          <table class="data-table" id="overviewBookings"><tr><td style="color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">جارٍ التحميل...</td></tr></table>
+        </div>
+      </div>
+
+      <!-- NEW ARTICLE -->
+      <div class="panel" id="panel-new-article">
+        <div class="panel-title" id="editorTitle">مقال جديد</div>
+        <div class="panel-sub">اكتب وانشر مباشرة على الموقع</div>
+        <div class="editor-grid">
+          <div>
+            <div class="form-group">
+              <label class="form-label">عنوان المقال *</label>
+              <input type="text" class="form-input" id="artTitle" placeholder="عنوان واضح وجذاب..."/>
+              <div class="slug-preview" id="slugPreview"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">مقتطف (يظهر في القائمة) *</label>
+              <textarea class="form-textarea" id="artExcerpt" style="min-height:80px;font-family:var(--font-ar);font-size:0.92rem;" placeholder="ملخص قصير 2-3 جمل..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">المحتوى الكامل *</label>
+              <div class="rte-toolbar" id="rteToolbar">
+                <select class="rte-select" id="rteFormat">
+                  <option value="p">نص عادي</option>
+                  <option value="h2">عنوان رئيسي</option>
+                  <option value="h3">عنوان فرعي</option>
+                </select>
+                <div class="rte-sep"></div>
+                <button type="button" class="rte-btn" data-cmd="bold" title="عريض"><strong>B</strong></button>
+                <button type="button" class="rte-btn" data-cmd="italic" title="مائل"><em>I</em></button>
+                <button type="button" class="rte-btn" data-cmd="underline" title="تسطير"><u>U</u></button>
+                <div class="rte-sep"></div>
+                <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="قائمة نقطية">☰</button>
+                <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="قائمة مرقمة">①</button>
+                <button type="button" class="rte-btn" data-cmd="formatBlock" data-value="blockquote" title="اقتباس">❝</button>
+                <div class="rte-sep"></div>
+                <button type="button" class="rte-btn" data-cmd="createLink" title="رابط">🔗</button>
+                <button type="button" class="rte-btn" data-cmd="removeFormat" title="إزالة التنسيق">✕</button>
+                <div class="rte-sep"></div>
+                <button type="button" class="rte-btn" id="rteToggleHtml" title="عرض/تعديل HTML مباشرة">&lt;/&gt;</button>
+              </div>
+              <div class="rte-content" id="rteContent" contenteditable="true" data-placeholder="اكتبي محتوى المقال هنا... استخدمي الأزرار فوق للتنسيق"></div>
+              <textarea class="rte-html-view" id="rteHtmlView" spellcheck="false"></textarea>
+            </div>
+          </div>
+          <div class="editor-sidebar">
+            <h4>إعدادات النشر</h4>
+            <div class="form-group">
+              <label class="form-label">التصنيف</label>
+              <select class="form-select" id="artTag">
+                <option>Geopolitics</option>
+                <option>Commodities</option>
+                <option>Macro</option>
+                <option>Forex</option>
+                <option>Crypto</option>
+                <option>تحليل</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">الكاتب</label>
+              <input type="text" class="form-input" id="artAuthor" value="هنادي"/>
+            </div>
+            <div class="publish-toggle">
+              <span class="toggle-label">نشر فوراً</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="artPublish" checked/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <input type="hidden" id="editingSlug"/>
+            <button class="submit-btn" id="submitArticle">نشر المقال</button>
+            <button class="draft-btn" id="saveDraft">حفظ كمسودة</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ARTICLES LIST -->
+      <div class="panel" id="panel-articles">
+        <div class="panel-title">إدارة المقالات</div>
+        <div class="panel-sub">تعديل أو حذف المقالات المنشورة والمسودات</div>
+        <table class="data-table" id="articlesTable">
+          <thead><tr><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr></thead>
+          <tbody id="articlesBody"><tr><td colspan="5" style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">جارٍ التحميل...</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- BOOKINGS -->
+      <div class="panel" id="panel-bookings">
+        <div class="panel-title">الحجوزات</div>
+        <div class="panel-sub">جميع طلبات الاستشارة الواردة</div>
+        <table class="data-table" id="bookingsTable">
+          <thead><tr><th>العميل</th><th>البريد</th><th>نوع الجلسة</th><th>التاريخ</th><th>الوقت</th><th>الحالة</th></tr></thead>
+          <tbody id="bookingsBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">جارٍ التحميل...</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- SUBSCRIBERS -->
+      <div class="panel" id="panel-subscribers">
+        <div class="panel-title">المشتركون بالنشرة</div>
+        <div class="panel-sub">قائمة المشتركين في النشرة البريدية الأسبوعية</div>
+        <table class="data-table" id="subsTable">
+          <thead><tr><th>البريد الإلكتروني</th><th>تاريخ الاشتراك</th></tr></thead>
+          <tbody id="subsBody"><tr><td colspan="2" style="text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">جارٍ التحميل...</td></tr></tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ── CONFIG ──────────────────────────────────
+const SUPABASE_URL = 'https://ozxwyyeyxmpkhsygntoy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
+// ⚠️ غيري هاد الباسورد
+const ADMIN_PASSWORD = 'Hanadi@2025!';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── AUTH ─────────────────────────────────────
+const isLoggedIn = () => sessionStorage.getItem('hi_admin') === '1';
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  loadOverview();
+}
+
+if (isLoggedIn()) showDashboard();
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const pw = document.getElementById('pwInput').value;
+  if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('hi_admin','1');
+    showDashboard();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+  }
+});
+document.getElementById('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('loginBtn').click(); });
+document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem('hi_admin'); location.reload(); });
+
+// ── NAVIGATION ───────────────────────────────
+document.querySelectorAll('.side-link[data-panel]').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    link.classList.add('active');
+    const panel = document.getElementById('panel-' + link.dataset.panel);
+    if (panel) { panel.classList.add('active'); loadPanel(link.dataset.panel); }
+  });
+});
+
+function loadPanel(name) {
+  if (name === 'articles')    loadArticles();
+  if (name === 'bookings')    loadBookings();
+  if (name === 'subscribers') loadSubscribers();
+  if (name === 'overview')    loadOverview();
+  if (name === 'new-article') resetEditor();
+}
+
+// ── TOAST ────────────────────────────────────
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3500);
+}
+
+// ── OVERVIEW ─────────────────────────────────
+async function loadOverview() {
+  try {
+    const [{ count: artCount }, { count: draftCount }, { count: bookCount }, subRes] = await Promise.all([
+      sb.from('articles').select('*',{count:'exact',head:true}).eq('published',true),
+      sb.from('articles').select('*',{count:'exact',head:true}).eq('published',false),
+      sb.from('bookings').select('*',{count:'exact',head:true}).gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+      sb.from('newsletter_subscribers').select('*',{count:'exact',head:true})
+    ]);
+    document.getElementById('stat-articles').textContent = artCount ?? 0;
+    document.getElementById('stat-drafts').textContent    = draftCount ?? 0;
+    document.getElementById('stat-bookings').textContent  = bookCount ?? 0;
+    document.getElementById('stat-subscribers').textContent = (subRes && subRes.count != null) ? subRes.count : '—';
+  } catch(e) {
+    console.warn('overview stats error', e);
+  }
+
+  // Last 5 bookings
+  const { data: bk } = await sb.from('bookings').select('*').order('created_at',{ascending:false}).limit(5);
+  const tbody = document.getElementById('overviewBookings');
+  tbody.innerHTML = bk && bk.length ? bk.map(b => `
+    <tr>
+      <td>${b.client_name}</td>
+      <td>${b.consultation_type}</td>
+      <td>${b.date} ${b.time}</td>
+      <td><span class="badge badge-confirmed">${b.status}</span></td>
+    </tr>`).join('') : '<tr><td colspan="4" style="color:var(--muted);text-align:center;">لا توجد حجوزات بعد.</td></tr>';
+}
+
+// ── ARTICLES ─────────────────────────────────
+async function loadArticles() {
+  const { data } = await sb.from('articles').select('*').order('created_at',{ascending:false});
+  const tbody = document.getElementById('articlesBody');
+  if (!data || !data.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);">لا توجد مقالات.</td></tr>'; return; }
+  tbody.innerHTML = data.map(a => `
+    <tr>
+      <td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.title}</td>
+      <td><span class="badge" style="background:rgba(120,144,124,0.08);border:1px solid rgba(120,144,124,0.18);color:var(--gold);">${a.tag}</span></td>
+      <td><span class="badge ${a.published ? 'badge-published' : 'badge-draft'}">${a.published ? 'منشور' : 'مسودة'}</span></td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${new Date(a.created_at).toLocaleDateString('ar-SA')}</td>
+      <td>
+        <button class="action-btn edit" onclick="editArticle('${a.slug}')">تعديل</button>
+        <button class="action-btn del"  onclick="deleteArticle('${a.id}','${a.slug}')">حذف</button>
+      </td>
+    </tr>`).join('');
+}
+
+async function editArticle(slug) {
+  const { data } = await sb.from('articles').select('*').eq('slug',slug).single();
+  if (!data) return;
+  // Switch to editor
+  document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-panel="new-article"]').classList.add('active');
+  document.getElementById('panel-new-article').classList.add('active');
+  // Fill fields
+  document.getElementById('editorTitle').textContent = 'تعديل المقال';
+  document.getElementById('artTitle').value    = data.title;
+  document.getElementById('artExcerpt').value  = data.excerpt || '';
+  document.getElementById('rteContent').innerHTML = data.content || '';
+  syncHtmlView();
+  document.getElementById('artTag').value      = data.tag;
+  document.getElementById('artAuthor').value   = data.author;
+  document.getElementById('artPublish').checked = data.published;
+  document.getElementById('editingSlug').value  = data.slug;
+  document.getElementById('slugPreview').textContent = 'slug: ' + data.slug;
+}
+
+async function deleteArticle(id, slug) {
+  if (!confirm(`هل أنت متأكد من حذف المقال؟`)) return;
+  const { error } = await sb.from('articles').delete().eq('id', id);
+  if (error) { showToast('خطأ في الحذف', 'error'); return; }
+  showToast('✓ تم الحذف بنجاح');
+  loadArticles();
+}
+
+// ── SLUG GENERATOR ───────────────────────────
+document.getElementById('artTitle').addEventListener('input', function() {
+  const slug = this.value.trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w؀-ۿ-]/g, '')
+    .substring(0, 60);
+  if (!document.getElementById('editingSlug').value)
+    document.getElementById('slugPreview').textContent = slug ? 'slug: ' + slug : '';
+});
+
+function generateSlug(title) {
+  return title.trim().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w؀-ۿ-]/g, '')
+    .substring(0, 60) + '-' + Date.now().toString(36);
+}
+
+async function submitArticle(publish) {
+  const title   = document.getElementById('artTitle').value.trim();
+  const excerpt = document.getElementById('artExcerpt').value.trim();
+  const content = getEditorContent().trim();
+  const tag     = document.getElementById('artTag').value;
+  const author  = document.getElementById('artAuthor').value.trim() || 'هنادي';
+  const editSlug = document.getElementById('editingSlug').value;
+
+  if (!title || !excerpt || !content) { showToast('يرجى ملء جميع الحقول المطلوبة', 'error'); return; }
+
+  const btn = document.getElementById('submitArticle');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    if (editSlug) {
+      // Update existing
+      const { error } = await sb.from('articles').update({ title, excerpt, content, tag, author, published: publish }).eq('slug', editSlug);
+      if (error) throw error;
+      showToast('✓ تم تحديث المقال بنجاح');
+    } else {
+      // Insert new
+      const slug = generateSlug(title);
+      const { error } = await sb.from('articles').insert([{ title, slug, excerpt, content, tag, author, published: publish }]);
+      if (error) throw error;
+      showToast(publish ? '✓ تم نشر المقال بنجاح!' : '✓ تم حفظ المسودة');
+    }
+    resetEditor();
+  } catch(e) {
+    showToast('خطأ: ' + (e.message || 'حاولي مرة أخرى'), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'نشر المقال';
+  }
+}
+
+document.getElementById('submitArticle').addEventListener('click', () => submitArticle(document.getElementById('artPublish').checked));
+
+// ── RICH TEXT EDITOR ──────────────────────────
+const rteContent = document.getElementById('rteContent');
+const rteHtmlView = document.getElementById('rteHtmlView');
+const editorGrid = document.querySelector('.editor-grid');
+
+// Toolbar buttons
+document.getElementById('rteToolbar').addEventListener('click', e => {
+  const btn = e.target.closest('.rte-btn[data-cmd]');
+  if (!btn) return;
+  rteContent.focus();
+  const cmd = btn.dataset.cmd;
+
+  if (cmd === 'createLink') {
+    const url = prompt('أدخلي الرابط (URL):', 'https://');
+    if (url) document.execCommand('createLink', false, url);
+  } else if (cmd === 'formatBlock') {
+    document.execCommand('formatBlock', false, btn.dataset.value);
+  } else {
+    document.execCommand(cmd, false, null);
+  }
+});
+
+// Heading / paragraph dropdown
+document.getElementById('rteFormat').addEventListener('change', function() {
+  rteContent.focus();
+  document.execCommand('formatBlock', false, this.value);
+  this.value = 'p';
+});
+
+// Toggle raw HTML view
+document.getElementById('rteToggleHtml').addEventListener('click', function() {
+  if (editorGrid.classList.contains('rte-mode-active')) {
+    // Switch back to visual: parse HTML view back into content
+    rteContent.innerHTML = rteHtmlView.value;
+    editorGrid.classList.remove('rte-mode-active');
+    this.classList.remove('active');
+  } else {
+    // Switch to HTML: show current content as HTML
+    rteHtmlView.value = formatHtml(rteContent.innerHTML);
+    editorGrid.classList.add('rte-mode-active');
+    this.classList.add('active');
+  }
+});
+
+// Get final content (from whichever view is active)
+function getEditorContent() {
+  if (editorGrid.classList.contains('rte-mode-active')) {
+    return rteHtmlView.value;
+  }
+  return rteContent.innerHTML;
+}
+
+function syncHtmlView() {
+  rteHtmlView.value = formatHtml(rteContent.innerHTML);
+}
+
+// Light HTML pretty-printer for readability in HTML view
+function formatHtml(html) {
+  return html
+    .replace(/></g, '>\n<')
+    .trim();
+}
+
+
+document.getElementById('saveDraft').addEventListener('click', () => submitArticle(false));
+
+function resetEditor() {
+  document.getElementById('editorTitle').textContent = 'مقال جديد';
+  ['artTitle','artExcerpt'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('rteContent').innerHTML = '';
+  document.getElementById('rteHtmlView').value = '';
+  document.querySelector('.editor-grid').classList.remove('rte-mode-active');
+  document.getElementById('artAuthor').value  = 'هنادي';
+  document.getElementById('artTag').value     = 'Geopolitics';
+  document.getElementById('artPublish').checked = true;
+  document.getElementById('editingSlug').value  = '';
+  document.getElementById('slugPreview').textContent = '';
+  document.getElementById('submitArticle').disabled = false;
+  document.getElementById('submitArticle').textContent = 'نشر المقال';
+}
+
+// ── BOOKINGS ─────────────────────────────────
+async function loadBookings() {
+  const { data } = await sb.from('bookings').select('*').order('created_at',{ascending:false});
+  const tbody = document.getElementById('bookingsBody');
+  if (!data || !data.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);">لا توجد حجوزات بعد.</td></tr>'; return; }
+  tbody.innerHTML = data.map(b => `
+    <tr>
+      <td>${b.client_name}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;direction:ltr;">${b.client_email}</td>
+      <td>${b.consultation_type}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.date}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.time}</td>
+      <td><span class="badge badge-confirmed">${b.status}</span></td>
+    </tr>`).join('');
+}
+
+// ── SUBSCRIBERS ──────────────────────────────
+async function loadSubscribers() {
+  try {
+    const { data } = await sb.from('newsletter_subscribers').select('*').order('created_at',{ascending:false});
+    const tbody = document.getElementById('subsBody');
+    if (!data || !data.length) { tbody.innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--muted);">لا يوجد مشتركون بعد.</td></tr>'; return; }
+    tbody.innerHTML = data.map(s => `
+      <tr>
+        <td style="font-family:var(--font-mono);direction:ltr;">${s.email}</td>
+        <td style="font-family:var(--font-mono);font-size:0.72rem;">${new Date(s.created_at).toLocaleDateString('ar-SA')}</td>
+      </tr>`).join('');
+  } catch(e) {
+    document.getElementById('subsBody').innerHTML = '<tr><td colspan="2" style="text-align:center;color:var(--muted);">جدول المشتركين غير موجود بعد — أضيفيه من SQL Editor.</td></tr>';
+  }
+}
+</script>
+</body>
+</html>
