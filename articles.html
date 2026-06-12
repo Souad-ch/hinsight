@@ -208,8 +208,15 @@ a{text-decoration:none;color:inherit;}
 
 <div id="scrollTop">↑</div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const ARTICLES=[
+// Supabase — يجلب المقالات المنشورة من لوحة التحكم
+const SUPABASE_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
+const SUPABASE_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
+const sbClient=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+
+// المقالات الاحتياطية (تظهر فوراً وتُستبدل بمقالات Supabase إن وُجدت)
+let ARTICLES=[
 {id:1,tag:'Geopolitics',title:'الحرب الإيرانية الأميركية وأثرها على عالم التداول',excerpt:'كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.',date:'15 May 2025',readTime:'8 دقائق قراءة',body:`<p>في كل مرة تشتعل فيها التوترات بين واشنطن وطهران، يتسارع قلب المتداول قبل أن يتحرك السوق. لكن الخطأ الذي يقع فيه كثيرون هو الاستجابة للضوضاء الإعلامية قبل قراءة ما تقوله الأموال الكبيرة.</p><h4>ما الذي يحدث فعلاً في السيولة؟</h4><p>عندما تتصاعد التوترات الجيوسياسية في الشرق الأوسط، تتحرك ثلاثة أصول بشكل متزامن: الذهب يرتفع، والدولار يتقوى كملاذ آمن، والنفط يقفز. الحركة الأكثر أهمية هي خروج السيولة من الأسواق الناشئة نحو السندات الأمريكية قصيرة الأجل.</p><blockquote>من يشتري على الخوف ويبيع على الخبر، يتصرف كالسوق — لا معه.</blockquote><p>راقب مستويات الذهب ومنحنى العائد الأمريكي — فهما يخبرانك بما يفكر فيه الكبار قبل أن يُعلنوه.</p>`},
 {id:2,tag:'Commodities',title:'الذهب ليس غاليًا... العالم هو القَلِق',excerpt:'لماذا يرتفع الذهب ليس بسبب قيمته، بل بسبب ما يعكسه عن حالة الثقة في النظام المالي العالمي.',date:'8 May 2025',readTime:'7 دقائق قراءة',body:`<p>السؤال الصحيح ليس "هل الذهب غالٍ؟" بل "ما حالة الثقة في النظام المالي العالمي؟"</p><h4>الذهب مرآة، ليس سلعة</h4><p>الذهب لا ينتج دخلاً. ما يحرّكه هو مستوى القلق الجماعي من استقرار العملات والسياسات النقدية. في 2024-2025 شهدنا شراءً قياسياً من البنوك المركزية — وهذه إشارة نادرة الأهمية.</p><blockquote>الذهب لا يكذب. عندما يرتفع، اسأل نفسك: من يشتريه وماذا يخاف؟</blockquote>`},
 {id:3,tag:'Macro',title:'الصين: من يراقبها يفهم اتجاه السيولة',excerpt:'الصين ليست مجرد سوق ناشئة — إنها مقياس لاتجاه التدفقات الدولية.',date:'1 May 2025',readTime:'9 دقائق قراءة',body:`<p>إذا أردت أن تفهم اتجاه السيولة العالمية في الأشهر القادمة، فانظر إلى الصين. قراراتها تحرّك المواد الخام والعملات والتدفقات الاستثمارية بشكل مؤثر وسابق للأحداث.</p><h4>الصين كمؤشر استباقي</h4><p>ثلاثة مؤشرات يجب أن تكون على شاشتك: مؤشر PMI الصناعي، صادرات النحاس، وسعر صرف اليوان أمام الدولار.</p><blockquote>الصين تتحرك ببطء، لكن أثرها عميق ودائم.</blockquote>`},
@@ -218,7 +225,7 @@ const ARTICLES=[
 {id:6,tag:'Geopolitics',title:'البحر الأحمر وتأثيره على سلاسل الإمداد العالمية',excerpt:'كيف أعادت التوترات في البحر الأحمر رسم خرائط الشحن والتأمين وأسعار البضائع؟',date:'10 Apr 2025',readTime:'6 دقائق قراءة',body:`<p>نحو 12% من التجارة العالمية تمر عبر مضيق باب المندب — وحين يتعرض هذا الممر للتهديد، ترتفع تكاليف الشحن وتتأخر سلاسل الإمداد.</p><h4>الأثر على السوق</h4><p>الشركات الكبرى اضطرت لتحويل شحناتها عبر رأس الرجاء الصالح، مما أضاف أسابيع وتكاليف إضافية تنعكس على أسعار المستهلك.</p>`}
 ];
 
-let currentTag='all',currentSearch='';
+let currentTag='all',currentSearch='',currentFiltered=[];
 
 function renderArticles(){
   const grid=document.getElementById('articlesGrid');
@@ -229,13 +236,14 @@ function renderArticles(){
     const searchMatch=!q||a.title.includes(currentSearch)||a.excerpt.includes(currentSearch)||a.tag.toLowerCase().includes(q);
     return tagMatch&&searchMatch;
   });
+  currentFiltered=filtered;
   countEl.innerHTML=`عرض <span>${filtered.length}</span> من <span>${ARTICLES.length}</span> مقال`;
   if(!filtered.length){
     grid.innerHTML=`<div class="no-results"><div class="no-results-icon">🔍</div><div style="font-size:1.15rem;color:var(--text);margin-bottom:8px;">لا توجد نتائج</div><div style="font-size:0.9rem;color:var(--text-muted);">جربي كلمة بحث مختلفة أو صنفاً آخر</div></div>`;
     return;
   }
   grid.innerHTML=filtered.map((a,i)=>`
-    <div class="art-card" style="transition-delay:${i*0.055}s" onclick="openModal(${a.id})">
+    <div class="art-card" style="transition-delay:${i*0.055}s" onclick="openModal(${i})">
       <div class="art-card-num en">${String(i+1).padStart(2,'0')}</div>
       <span class="art-card-tag en">${a.tag}</span>
       <h3 class="art-card-title">${a.title}</h3>
@@ -248,8 +256,8 @@ function renderArticles(){
   setTimeout(()=>document.querySelectorAll('.art-card').forEach((c,i)=>{setTimeout(()=>c.classList.add('visible'),i*55);}),30);
 }
 
-function openModal(id){
-  const a=ARTICLES.find(x=>x.id===id);if(!a)return;
+function openModal(i){
+  const a=currentFiltered[i];if(!a)return;
   document.getElementById('artTag').textContent=a.tag;
   document.getElementById('artTitle').textContent=a.title;
   document.getElementById('artDate').textContent='📅 '+a.date;
@@ -278,7 +286,30 @@ scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smoot
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
+// تحويل صف Supabase لمقال
+function mapRow(row){
+  const txt=(row.content||'').replace(/<[^>]+>/g,'');
+  const mins=Math.max(1,Math.round(txt.length/700));
+  let dateStr='';
+  try{dateStr=new Date(row.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{dateStr='';}
+  return {id:row.id,tag:row.tag||'تحليل',title:row.title,excerpt:row.excerpt||'',date:dateStr,readTime:mins+' دقائق قراءة',body:row.content||''};
+}
+
+// جلب المقالات المنشورة من Supabase واستبدال الاحتياطية
+async function loadFromSupabase(){
+  if(!sbClient)return;
+  try{
+    const {data,error}=await sbClient.from('articles').select('*').eq('published',true).order('created_at',{ascending:false});
+    if(error){console.warn('articles supabase:',error.message);return;}
+    if(data&&data.length){
+      ARTICLES=data.map(mapRow);
+      renderArticles();
+    }
+  }catch(err){console.warn('articles load:',err);}
+}
+
 renderArticles();
+loadFromSupabase();
 </script>
 </body>
 </html>

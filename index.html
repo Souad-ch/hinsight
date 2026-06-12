@@ -532,7 +532,7 @@ html{font-size:15px;}
 <div class="green-line"></div>
 <p class="section-subtitle">قراءة معمّقة في أبرز الأحداث التي تحرّك الأسواق العالمية.</p>
 </div>
-<div class="insights-grid">
+<div class="insights-grid" id="insightsGrid">
 <div class="insight-card reveal delay-1" onclick="openArticle(0)">
 <span class="card-tag en">Geopolitics</span>
 <h3 class="card-title">الحرب الإيرانية الأميركية وأثرها على عالم التداول</h3>
@@ -840,10 +840,16 @@ html{font-size:15px;}
 </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const ARTICLES = [
+const SUPABASE_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
+const SUPABASE_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
+const sbClient=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+
+let ARTICLES = [
 {
 tag:'Geopolitics',title:'الحرب الإيرانية الأميركية وأثرها على عالم التداول',
+excerpt:'كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.',
 date:'15 May 2025',readTime:'8 دقائق قراءة',
 body:`
 <p>في كل مرة تشتعل فيها التوترات بين واشنطن وطهران، يتسارع قلب المتداول قبل أن يتحرك السوق. لكن الخطأ الذي يقع فيه كثيرون هو الاستجابة للضوضاء الإعلامية قبل قراءة ما تقوله الأموال الكبيرة.</p>
@@ -903,6 +909,36 @@ function closeArticle(){
 document.getElementById('articleModal').classList.remove('open');
 document.body.style.overflow='';
 }
+
+// جلب أحدث 3 تحليلات منشورة من Supabase وتحديث البطاقات
+function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+async function loadLatestArticles(){
+if(!sbClient)return;
+try{
+const {data,error}=await sbClient.from('articles').select('*').eq('published',true).order('created_at',{ascending:false}).limit(3);
+if(error){console.warn('insights supabase:',error.message);return;}
+if(!data||!data.length)return;
+ARTICLES=data.map(r=>{
+const txt=(r.content||'').replace(/<[^>]+>/g,'');
+const mins=Math.max(1,Math.round(txt.length/700));
+let d='';try{d=new Date(r.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{}
+return {tag:r.tag||'تحليل',title:r.title,excerpt:r.excerpt||'',date:d,readTime:mins+' دقائق قراءة',body:r.content||''};
+});
+const grid=document.getElementById('insightsGrid');
+if(!grid)return;
+grid.innerHTML=ARTICLES.map((a,i)=>`
+<div class="insight-card reveal visible delay-${i+1}" onclick="openArticle(${i})">
+<span class="card-tag en">${escHtml(a.tag)}</span>
+<h3 class="card-title">${escHtml(a.title)}</h3>
+<p class="card-desc">${escHtml(a.excerpt)}</p>
+<div class="card-footer">
+<span class="card-date en">${escHtml(a.date)}</span>
+<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
+</div>
+</div>`).join('');
+}catch(err){console.warn('insights load:',err);}
+}
+loadLatestArticles();
 document.getElementById('artModalClose').addEventListener('click',closeArticle);
 document.getElementById('articleModal').addEventListener('click',function(e){if(e.target===this)closeArticle();});
 
