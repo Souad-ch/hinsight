@@ -354,7 +354,7 @@ form.addEventListener('submit', async(e)=>{
   };
 
   setLoading(true);
-  let savedOk=false, emailOk=false;
+  let savedOk=false, emailSent=false;
 
   // 1) Save to Supabase (so it shows in the admin dashboard)
   try{
@@ -383,12 +383,12 @@ form.addEventListener('submit', async(e)=>{
         message   : payload.message,
         to_email  : 'souchamaa35@gmail.com'
       });
-      emailOk=true;
+      emailSent=true;
     }catch(err){ console.warn('emailjs:',err); }
   }
 
   // 3) Decide outcome
-  if(savedOk||emailOk){
+  if(savedOk||emailSent){
     document.getElementById('formContent').style.display='none';
     document.getElementById('successState').style.display='block';
   }else{
