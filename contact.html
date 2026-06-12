@@ -269,31 +269,29 @@ a{text-decoration:none;color:inherit;}
 
 <div id="scrollTop">↑</div>
 
-<!-- EmailJS -->
+<!-- EmailJS + Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 /*
   ── إعداد EmailJS ──────────────────────────────────────────
-  1. سجّلي على emailjs.com (مجاني)
-  2. أضيفي "Email Service" (Gmail مثلاً)
-  3. أنشئي "Email Template" وضعي فيه:
-       From: {{from_name}} <{{from_email}}>
-       To:   بريدك الإلكتروني
-       Subject: طلب استشارة من {{from_name}}
-       Body:
-         الاسم: {{from_name}}
-         الهاتف: {{phone}}
-         الإيميل: {{from_email}}
-         نوع الجلسة: {{session}}
-         الرسالة: {{message}}
-  4. استبدلي القيم الثلاث أدناه بمعلوماتك:
+  Service ID و Template ID جاهزين.
+  ⚠️ ناقص فقط الـ Public Key — بتلاقيه في:
+     EmailJS → Account → General → Public Key
+  حطّيه مكان '' أدناه وبيشتغل إرسال الإيميل مباشرة.
+  (حتى بدونه، الفورم بينحفظ في Supabase ويظهر بلوحة التحكم.)
   ──────────────────────────────────────────────────────────
 */
-const EJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // ← من Account > API Keys
-const EJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // ← من Email Services
-const EJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // ← من Email Templates
+const EJS_PUBLIC_KEY  = '';                  // ← ضعي الـ Public Key هنا
+const EJS_SERVICE_ID  = 'service_c8o89cr';
+const EJS_TEMPLATE_ID = 'template_llcycmu';
 
-emailjs.init(EJS_PUBLIC_KEY);
+// Supabase
+const SUPABASE_URL = 'https://ozxwyyeyxmpkhsygntoy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
+const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+if(EJS_PUBLIC_KEY) emailjs.init(EJS_PUBLIC_KEY);
 
 const form = document.getElementById('contactForm');
 const submitBtn = document.getElementById('submitBtn');
@@ -336,40 +334,67 @@ form.addEventListener('submit', async(e)=>{
 
   if(!valid){ showError('يرجى تعبئة جميع الحقول المطلوبة بشكل صحيح.'); return; }
 
-  // Check if EmailJS is configured
-  if(EJS_PUBLIC_KEY==='YOUR_PUBLIC_KEY'){
-    // Fallback: open email client
-    const subject=encodeURIComponent('طلب استشارة من '+name.value.trim());
+  const payload={
+    name   : name.value.trim(),
+    phone  : phone.value.trim(),
+    email  : email.value.trim(),
+    session: session.value||'استفسار عام',
+    message: message.value.trim()
+  };
+
+  setLoading(true);
+  let savedOk=false, emailOk=false;
+
+  // 1) Save to Supabase (so it shows in the admin dashboard)
+  try{
+    const now=new Date();
+    const {error}=await sbClient.from('bookings').insert([{
+      client_name : payload.name,
+      client_phone: payload.phone,
+      client_email: payload.email,
+      consultation_type: payload.session,
+      message: payload.message,
+      date : now.toISOString().slice(0,10),
+      time : now.toTimeString().slice(0,5),
+      status: 'pending'
+    }]);
+    if(!error) savedOk=true; else console.warn('supabase:',error.message);
+  }catch(err){ console.warn('supabase exception:',err); }
+
+  // 2) Send email via EmailJS (if Public Key is set)
+  if(EJS_PUBLIC_KEY){
+    try{
+      await emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+        from_name : payload.name,
+        phone     : payload.phone,
+        from_email: payload.email,
+        session   : payload.session,
+        message   : payload.message,
+        to_email  : 'souchamaa35@gmail.com'
+      });
+      emailOk=true;
+    }catch(err){ console.warn('emailjs:',err); }
+  }
+
+  // 3) Decide outcome
+  if(savedOk||emailOk){
+    document.getElementById('formContent').style.display='none';
+    document.getElementById('successState').style.display='block';
+  }else{
+    // Fallback: open the user's mail client with everything prefilled
+    const subject=encodeURIComponent('طلب استشارة من '+payload.name);
     const body=encodeURIComponent(
-      'الاسم: '+name.value.trim()+'\n'+
-      'الهاتف: '+phone.value.trim()+'\n'+
-      'الإيميل: '+email.value.trim()+'\n'+
-      'نوع الجلسة: '+(session.value||'غير محدد')+'\n\n'+
-      'الرسالة:\n'+message.value.trim()
+      'الاسم: '+payload.name+'\n'+
+      'الهاتف: '+payload.phone+'\n'+
+      'الإيميل: '+payload.email+'\n'+
+      'نوع الجلسة: '+payload.session+'\n\n'+
+      'الرسالة:\n'+payload.message
     );
     window.location.href='mailto:souchamaa35@gmail.com?subject='+subject+'&body='+body;
     document.getElementById('formContent').style.display='none';
     document.getElementById('successState').style.display='block';
-    return;
   }
-
-  setLoading(true);
-  try{
-    await emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
-      from_name : name.value.trim(),
-      phone     : phone.value.trim(),
-      from_email: email.value.trim(),
-      session   : session.value||'غير محدد',
-      message   : message.value.trim(),
-      to_email  : 'souchamaa35@gmail.com'
-    });
-    document.getElementById('formContent').style.display='none';
-    document.getElementById('successState').style.display='block';
-  }catch(err){
-    console.error(err);
-    showError('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى أو التواصل مباشرة.');
-    setLoading(false);
-  }
+  setLoading(false);
 });
 
 // Remove error on input

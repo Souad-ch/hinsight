@@ -113,11 +113,20 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 .section-head{margin-bottom:60px;}
 
 /* TICKER */
-.ticker-wrap{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:12px 0;}
-.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 30s linear infinite;}
+.ticker-wrap{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:12px 0;position:relative;}
+.ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
+.ticker-wrap::before{right:0;background:linear-gradient(270deg,var(--card),transparent);}
+.ticker-wrap::after{left:0;background:linear-gradient(90deg,var(--card),transparent);}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 40s linear infinite;will-change:transform;}
+.ticker-wrap:hover .ticker-inner{animation-play-state:paused;}
 @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 .ticker-item{font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);padding:0 32px;display:inline-flex;align-items:center;gap:12px;}
+.ticker-item .ti-val{transition:color 0.3s,background 0.3s;border-radius:4px;padding:1px 4px;}
 .ticker-item .ti-up{color:#4caf88;}.ticker-item .ti-down{color:#c0392b;}
+@keyframes flashUp{0%{background:rgba(76,175,136,0.28);}100%{background:transparent;}}
+@keyframes flashDown{0%{background:rgba(192,57,43,0.28);}100%{background:transparent;}}
+.ti-val.flash-up{animation:flashUp 0.7s ease;}
+.ti-val.flash-down{animation:flashDown 0.7s ease;}
 .ticker-sep{color:var(--accent-dim);}
 
 /* INSIGHTS */
@@ -366,9 +375,67 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 .trust-badges{flex-direction:column;align-items:center;}
 .hero-badge{display:none;}
 }
+
+/* ── EXTRA ANIMATIONS ── */
+@keyframes titleShine{0%{background-position:200% center;}100%{background-position:-200% center;}}
+.hero-title span{background:linear-gradient(110deg,var(--accent) 20%,var(--accent-light) 40%,#cfe3d3 50%,var(--accent-light) 60%,var(--accent) 80%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:titleShine 6s linear infinite;}
+@keyframes badgePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+@keyframes iconFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.method-card:hover .method-icon{animation:iconFloat 1.6s ease-in-out infinite;}
+@keyframes arrowNudge{0%,100%{transform:translateX(0);}50%{transform:translateX(-4px);}}
+.insight-card:hover .read-more-btn .arr{animation:arrowNudge 0.9s ease-in-out infinite;}
+/* magnetic lift already on cards; add subtle scale to library/report icons */
+.lib-card:hover .lib-index{transform:scale(1.12);}
+.report-card:hover .report-icon{transform:translateY(-4px) rotate(-3deg);transition:var(--tr);}
+/* scroll progress bar */
+#scrollProgress{position:fixed;top:0;right:0;height:2px;background:linear-gradient(270deg,var(--accent-light),var(--accent));width:0;z-index:1100;transition:width 0.1s linear;box-shadow:0 0 10px rgba(159,187,164,0.5);}
+
+/* ── TABLET (iPad) ── */
+@media(max-width:1024px){
+.section{padding:80px 0;}
+.hero-inner{gap:48px;}
+.ticker-item{font-size:0.72rem;padding:0 24px;}
+.cons-grid{grid-template-columns:repeat(2,1fr);}
+.booking-wrapper{max-width:100%;}
+}
+@media(min-width:769px) and (max-width:1024px){
+.cons-card.featured{grid-column:1/-1;}
+}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+html{font-size:15px;}
+.section{padding:64px 0;}
+.section-head{margin-bottom:40px;}
+.container{padding:0 18px;}
+#hero{padding:100px 0 60px;min-height:auto;}
+.hero-title{font-size:clamp(2rem,8vw,2.8rem);}
+.hero-buttons{flex-direction:column;width:100%;}
+.hero-buttons .btn{width:100%;justify-content:center;}
+.cons-grid{grid-template-columns:1fr;}
+.ticker-wrap::before,.ticker-wrap::after{width:40px;}
+.ticker-item{font-size:0.7rem;padding:0 18px;}
+.cal-grid-wrap{padding:12px 14px 0;}
+.cal-header{padding:12px 16px;}
+.qa-question{padding:18px 20px;font-size:0.92rem;}
+.qa-answer-inner{padding:0 20px 18px;padding-top:14px;}
+#scrollTop{bottom:20px;left:20px;width:42px;height:42px;}
+.reveal{transform:translateY(20px);}
+}
+@media(max-width:480px){
+.hero-title{font-size:1.85rem;}
+.section-title{font-size:1.5rem;}
+.trust-badges{gap:24px;}
+.qa-question span{font-size:0.86rem;}
+.qa-q-icon{width:24px;height:24px;font-size:0.68rem;}
+.cal-day{min-height:30px;}
+.day-n{font-size:0.72rem;}
+.btn{padding:12px 24px;font-size:0.9rem;}
+}
 </style>
 </head>
 <body>
+<div id="scrollProgress"></div>
 
 <!-- HEADER -->
 <header id="header">
@@ -847,6 +914,13 @@ mobileNav.querySelectorAll('a').forEach(l=>l.addEventListener('click',()=>mobile
 
 // SCROLL TOP
 const scrollTopBtn=document.getElementById('scrollTop');
+const scrollProgress=document.getElementById('scrollProgress');
+window.addEventListener('scroll',()=>{
+scrollTopBtn.classList.toggle('visible',window.scrollY>400);
+const h=document.documentElement;
+const pct=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+if(scrollProgress)scrollProgress.style.width=pct+'%';
+});
 window.addEventListener('scroll',()=>scrollTopBtn.classList.toggle('visible',window.scrollY>400));
 scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
@@ -999,34 +1073,48 @@ document.querySelectorAll('.qa-item.open').forEach(i=>i.classList.remove('open')
 if(!isOpen)item.classList.add('open');
 }
 
-// LIVE TICKER
+// LIVE TICKER — updates prices in place (keeps scroll smooth) with flash on change
 const TICKER_DATA=[
-{sym:'XAU/USD',base:2341.50,dec:2},
-{sym:'EUR/USD',base:1.0832,dec:4},
-{sym:'WTI Crude',base:78.94,dec:2},
-{sym:'S&P 500',base:5248.3,dec:1},
-{sym:'USD/JPY',base:153.20,dec:2},
-{sym:'BTC/USD',base:62410,dec:0},
-{sym:'GBP/USD',base:1.2710,dec:4},
-{sym:'NAS 100',base:18340,dec:0},
+{sym:'XAU/USD',base:2341.50,dec:2,price:2341.50},
+{sym:'EUR/USD',base:1.0832,dec:4,price:1.0832},
+{sym:'WTI Crude',base:78.94,dec:2,price:78.94},
+{sym:'S&P 500',base:5248.3,dec:1,price:5248.3},
+{sym:'USD/JPY',base:153.20,dec:2,price:153.20},
+{sym:'BTC/USD',base:62410,dec:0,price:62410},
+{sym:'GBP/USD',base:1.2710,dec:4,price:1.2710},
+{sym:'NAS 100',base:18340,dec:0,price:18340},
 ];
-function buildTicker(){
+function fmt(n,dec){return n.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
+function buildTickerOnce(){
 const wrap=document.getElementById('ticker');
 if(!wrap)return;
 let html='';
-TICKER_DATA.forEach(d=>{
-const chg=((Math.random()-0.48)*d.base*0.008);
-const price=(d.base+chg).toFixed(d.dec);
-const pct=((chg/d.base)*100).toFixed(2);
-const up=chg>=0;
-const cls=up?'ti-up':'ti-down';
-const arr=up?'▲':'▼';
-html+=`<span class="ticker-item"><b>${d.sym}</b> <span class="${cls}">${arr} ${price} ${up?'+':''}${pct}%</span></span><span class="ticker-sep">·</span>`;
+// two copies for seamless marquee loop; index each value cell for in-place updates
+for(let copy=0;copy<2;copy++){
+TICKER_DATA.forEach((d,i)=>{
+const pct=((d.price-d.base)/d.base*100).toFixed(2);
+const up=d.price>=d.base;
+html+=`<span class="ticker-item"><b>${d.sym}</b> <span class="ti-val ${up?'ti-up':'ti-down'}" data-k="${copy}-${i}">${up?'▲':'▼'} ${fmt(d.price,d.dec)} ${up?'+':''}${pct}%</span></span><span class="ticker-sep">·</span>`;
 });
-html+=html;
+}
 wrap.innerHTML=html;
 }
-buildTicker();
-setInterval(buildTicker,4000);
+function tickTicker(){
+TICKER_DATA.forEach((d,i)=>{
+const drift=(Math.random()-0.49)*d.base*0.0015;
+d.price=Math.max(d.base*0.9,d.price+drift);
+const pct=((d.price-d.base)/d.base*100).toFixed(2);
+const up=d.price>=d.base;
+document.querySelectorAll(`.ti-val[data-k$="-${i}"]`).forEach(el=>{
+el.textContent=`${up?'▲':'▼'} ${fmt(d.price,d.dec)} ${up?'+':''}${pct}%`;
+el.classList.remove('ti-up','ti-down');
+el.classList.add(up?'ti-up':'ti-down');
+el.classList.add(drift>=0?'flash-up':'flash-down');
+setTimeout(()=>el.classList.remove('flash-up','flash-down'),700);
+});
+});
+}
+buildTickerOnce();
+setInterval(tickTicker,2500);
 </script>
 </body>
