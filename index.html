@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Hanadi Insights — تحليل الأسواق العالمية</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230C0B0F'/%3E%3Crect x='3' y='3' width='94' height='94' rx='20' fill='none' stroke='%2378907C' stroke-width='3'/%3E%3Ctext x='50' y='70' font-family='Georgia,serif' font-size='62' font-weight='600' fill='%239FBBA4' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
@@ -297,6 +298,19 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 .report-name{font-size:1.05rem;color:var(--text);margin-bottom:8px;}
 .report-date{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);margin-bottom:24px;}
 
+/* TESTIMONIALS */
+#testimonials{background:var(--bg-mid);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.testi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;position:relative;transition:var(--tr);display:flex;flex-direction:column;}
+.testi-card::before{content:'\201D';position:absolute;top:14px;left:24px;font-family:var(--font-en);font-size:4rem;line-height:1;color:rgba(120,144,124,0.16);}
+.testi-card:hover{border-color:rgba(120,144,124,0.4);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.testi-stars{color:var(--accent-light);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;}
+.testi-text{font-size:0.95rem;color:var(--text-dim);line-height:1.95;margin-bottom:24px;flex:1;}
+.testi-person{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:20px;}
+.testi-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dim));display:flex;align-items:center;justify-content:center;color:var(--bg);font-weight:700;font-size:1.1rem;flex-shrink:0;font-family:var(--font-en);}
+.testi-name{font-size:0.95rem;color:var(--text);margin-bottom:2px;}
+.testi-role{font-size:0.78rem;color:var(--text-muted);}
+
 /* ARTICLES CTA */
 #articles-cta{background:var(--bg-mid);padding:80px 0;}
 .articles-cta-inner{display:flex;align-items:center;justify-content:space-between;gap:40px;padding:48px 56px;border:1px solid rgba(120,144,124,0.2);border-radius:12px;background:linear-gradient(135deg,rgba(120,144,124,0.04) 0%,transparent 60%);animation:glowPulse 4s ease-in-out infinite;}
@@ -356,6 +370,7 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 .cons-grid{grid-template-columns:1fr;}
 .library-grid{grid-template-columns:repeat(2,1fr);}
 .reports-grid{grid-template-columns:1fr;}
+.testi-grid{grid-template-columns:1fr;}
 .footer-top{grid-template-columns:1fr;}
 .articles-cta-inner{flex-direction:column;text-align:center;}
 }
@@ -436,7 +451,15 @@ html{font-size:15px;}
 </style>
 </head>
 <body>
-<script>document.documentElement.classList.add('js');</script>
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  function revealAll(){document.querySelectorAll('.reveal:not(.visible)').forEach(function(e){e.classList.add('visible');});}
+  if(document.readyState!=='loading'){setTimeout(revealAll,1000);}
+  else{document.addEventListener('DOMContentLoaded',function(){setTimeout(revealAll,1000);});}
+  window.addEventListener('load',function(){setTimeout(revealAll,200);});
+})();
+</script>
 <div id="scrollProgress"></div>
 
 <!-- HEADER -->
@@ -732,6 +755,35 @@ html{font-size:15px;}
 <div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name">تقرير الذهب الشهري</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
 <div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name">تقرير الاقتصاد العالمي</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
 <div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name">تقرير السيولة والأسواق</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+</div>
+</div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Testimonials</span>
+<h2 class="section-title">ماذا يقول المتدربون</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">آراء بعض من رافقوا هنادي في رحلة فهم الأسواق.</p>
+</div>
+<div class="testi-grid">
+<div class="testi-card reveal delay-1">
+<div class="testi-stars">★★★★★</div>
+<p class="testi-text">منهجية هنادي غيّرت طريقة تفكيري في السوق بالكامل. صرت أفهم لماذا يتحرك السعر بدل أن أطارده. تحليل هادئ وعميق بعيد عن الضجيج.</p>
+<div class="testi-person"><div class="testi-avatar en">أ</div><div><div class="testi-name">أحمد المصري</div><div class="testi-role">متداول فوركس</div></div></div>
+</div>
+<div class="testi-card reveal delay-2">
+<div class="testi-stars">★★★★★</div>
+<p class="testi-text">جلسة قراءة السوق كانت نقطة تحول. وضوح في الرؤية وربط ذكي بين السياسة والاقتصاد والسيولة. أنصح بها كل مستثمر جاد.</p>
+<div class="testi-person"><div class="testi-avatar en">ل</div><div><div class="testi-name">لمى الحسن</div><div class="testi-role">مستثمرة</div></div></div>
+</div>
+<div class="testi-card reveal delay-3">
+<div class="testi-stars">★★★★★</div>
+<p class="testi-text">خبرة حقيقية تنبع من سنوات في السوق، لا مجرد توصيات. تعلّمت كيف أقرأ الأخبار وأفهم نية البنوك المركزية. محتوى يستحق كل دقيقة.</p>
+<div class="testi-person"><div class="testi-avatar en">خ</div><div><div class="testi-name">خالد العتيبي</div><div class="testi-role">مدير محفظة</div></div></div>
+</div>
 </div>
 </div>
 </section>
