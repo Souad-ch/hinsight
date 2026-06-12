@@ -869,6 +869,7 @@ html{font-size:15px;}
 <p class="modal-slot-info" id="modalSlotInfo"></p>
 <div class="form-group"><label class="form-label">الاسم الكامل</label><input type="text" class="form-input" id="bookName" placeholder="أدخل اسمك الكامل"/></div>
 <div class="form-group"><label class="form-label">رقم واتساب / الهاتف</label><input type="text" class="form-input" id="bookPhone" placeholder="+966 5x xxx xxxx" dir="ltr"/></div>
+<div class="form-group"><label class="form-label">البريد الإلكتروني</label><input type="email" class="form-input" id="bookEmail" placeholder="your@email.com" dir="ltr"/></div>
 <div class="modal-actions"><button class="btn btn-ghost" id="modalCancelBtn">إلغاء</button><button class="btn btn-green" id="modalConfirmBtn">تأكيد الحجز</button></div>
 </div>
 <div class="success-msg" id="successMsg">
@@ -896,10 +897,16 @@ html{font-size:15px;}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
 const SUPABASE_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
 const SUPABASE_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
 const sbClient=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+// EmailJS
+const EJS_PUBLIC_KEY='6NHm0wz_2eclb5bbW';
+const EJS_SERVICE_ID='service_c8o89cr';
+const EJS_TEMPLATE_ID='template_llcycmu';
+if(window.emailjs&&EJS_PUBLIC_KEY){try{emailjs.init(EJS_PUBLIC_KEY);}catch(e){}}
 
 let ARTICLES = [
 {
@@ -1122,8 +1129,10 @@ const dateStr=d.getDate()+' '+AR_MONTHS[d.getMonth()]+' '+d.getFullYear();
 document.getElementById('modalSlotInfo').textContent=dateStr+' — '+SLOT_AR[slot];
 document.getElementById('bookName').value='';
 document.getElementById('bookPhone').value='';
+document.getElementById('bookEmail').value='';
 document.getElementById('bookName').style.borderColor='';
 document.getElementById('bookPhone').style.borderColor='';
+document.getElementById('bookEmail').style.borderColor='';
 document.getElementById('modalForm').style.display='';
 document.getElementById('successMsg').style.display='none';
 document.getElementById('bookingModal').classList.add('open');
@@ -1137,22 +1146,56 @@ pendingDate=null;pendingSlot=null;
 document.getElementById('modalClose').addEventListener('click',closeBookingModal);
 document.getElementById('modalCancelBtn').addEventListener('click',closeBookingModal);
 document.getElementById('bookingModal').addEventListener('click',function(e){if(e.target===this)closeBookingModal();});
-document.getElementById('modalConfirmBtn').addEventListener('click',()=>{
+document.getElementById('modalConfirmBtn').addEventListener('click',async()=>{
 const name=document.getElementById('bookName').value.trim();
 const phone=document.getElementById('bookPhone').value.trim();
+const email=document.getElementById('bookEmail').value.trim();
+const emailOk=!email||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 if(!name||!phone){
 document.getElementById('bookName').style.borderColor=name?'':'#c0392b';
 document.getElementById('bookPhone').style.borderColor=phone?'':'#c0392b';
 return;
 }
-saveBooking(toDateKey(pendingDate),pendingSlot,name,phone);
+document.getElementById('bookEmail').style.borderColor=emailOk?'':'#c0392b';
+if(!emailOk)return;
+
+const btn=document.getElementById('modalConfirmBtn');
+btn.disabled=true;const orig=btn.textContent;btn.textContent='...جارٍ الحجز';
 const dateStr=pendingDate.getDate()+' '+AR_MONTHS[pendingDate.getMonth()]+' '+pendingDate.getFullYear();
-document.getElementById('successDetail').textContent=dateStr+' — '+SLOT_AR[pendingSlot];
+const slotLabel=SLOT_AR[pendingSlot];
+
+// 1) محلياً (للتقويم)
+saveBooking(toDateKey(pendingDate),pendingSlot,name,phone);
+
+// 2) Supabase (يظهر بلوحة التحكم)
+try{
+if(sbClient)await sbClient.from('bookings').insert([{
+client_name:name,client_phone:phone,client_email:email||null,
+consultation_type:'حجز موعد عبر التقويم',
+message:'حجز موعد: '+dateStr+' الساعة '+slotLabel,
+date:toDateKey(pendingDate),time:pendingSlot,status:'pending'
+}]);
+}catch(e){console.warn('booking supabase:',e);}
+
+// 3) إيميل لهنادي
+try{
+if(window.emailjs&&EJS_PUBLIC_KEY){
+await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
+from_name:name,phone:phone,from_email:email||'لم يُدخل',
+session:'حجز موعد عبر التقويم',
+message:'حجز موعد جديد: '+dateStr+' — '+slotLabel,
+to_email:'souchamaa35@gmail.com'
+});
+}
+}catch(e){console.warn('booking email:',e);}
+
+document.getElementById('successDetail').textContent=dateStr+' — '+slotLabel;
 document.getElementById('modalForm').style.display='none';
 document.getElementById('successMsg').style.display='block';
+btn.disabled=false;btn.textContent=orig;
 buildCalendar();
 if(selectedDate)showSlots(selectedDate);
-setTimeout(closeBookingModal,3000);
+setTimeout(closeBookingModal,3500);
 });
 
 buildWeekdays();
