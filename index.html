@@ -485,17 +485,17 @@ html{font-size:15px;}
 @media(max-width:600px){.carousel-track>*{flex:0 0 100%;}}
 /* QA CAROUSEL */
 .qa-carousel-wrap{position:relative;overflow:hidden;}
-.qa-carousel-track{display:flex;gap:24px;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);}
-.qa-card{min-width:calc(33.333% - 16px);background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;display:flex;flex-direction:column;gap:18px;flex-shrink:0;}
+.qa-carousel-track{display:flex;gap:24px;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);will-change:transform;}
+.qa-card{flex:0 0 calc(33.333% - 16px);min-width:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;}
 .qa-card-icon{width:40px;height:40px;border-radius:50%;background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.25);display:flex;align-items:center;justify-content:center;font-family:var(--font-en);font-size:1rem;font-weight:700;color:var(--accent-light);flex-shrink:0;}
 .qa-card-q{font-size:1rem;color:var(--text);font-weight:700;line-height:1.5;}
 .qa-card-a{font-size:0.9rem;color:var(--text-dim);line-height:1.85;flex:1;}
 .qa-carousel-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:28px;}
 .qa-dots{display:flex;gap:8px;}
-.qa-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-dim);transition:all 0.3s;}
+.qa-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-dim);transition:all 0.3s;cursor:pointer;}
 .qa-dot.active{width:20px;border-radius:3px;background:var(--accent-light);}
-@media(max-width:768px){.qa-card{min-width:calc(100% - 0px);}}
-@media(max-width:1024px) and (min-width:769px){.qa-card{min-width:calc(50% - 12px);}}
+@media(max-width:768px){.qa-card{flex:0 0 100%;}}
+@media(max-width:1024px) and (min-width:769px){.qa-card{flex:0 0 calc(50% - 12px);}}
 /* ARTICLES PREVIEW */
 .articles-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
 .art-prev-card{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius);padding:32px;display:flex;flex-direction:column;gap:14px;transition:var(--tr);}
@@ -1140,6 +1140,10 @@ const _SEC_MAP={
     {field:'title',   sel:'.section-title',  fn:(el,v)=>el.textContent=v},
     {field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v},
   ]},
+  'articles-preview':{el:'#articles-preview', updates:[
+    {field:'title',   sel:'.section-title',  fn:(el,v)=>el.textContent=v},
+    {field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v},
+  ]},
 };
 
 // ── CAROUSEL BUILDER ──────────────────────────
@@ -1199,27 +1203,38 @@ function makeCarousel(gridEl){
   buildDots();render();
 }
 
-// QA Carousel
+// QA Carousel — percentage-based, RTL-safe
 let qaIdx=0;
+let _qaInitDone=false;
 function initQACarousel(){
+  const wrap=document.querySelector('.qa-carousel-wrap');
   const track=document.getElementById('qaTrack');
   const dots=document.getElementById('qaDots');
-  if(!track||!dots)return;
-  const cards=track.querySelectorAll('.qa-card');
-  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
-  const total=Math.ceil(cards.length/visible);
+  if(!track||!dots||!wrap)return;
+  const cards=[...track.querySelectorAll('.qa-card')];
+  if(!cards.length)return;
+  const vis=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const gap=24;
+  // Size each card as exact percentage of track
+  cards.forEach(c=>{
+    c.style.flex=`0 0 calc(${100/vis}% - ${gap*(vis-1)/vis}px)`;
+    c.style.minWidth='0';
+  });
+  const total=Math.ceil(cards.length/vis);
   dots.innerHTML=Array.from({length:total},(_,i)=>`<span class="qa-dot${i===0?' active':''}" onclick="goQA(${i})"></span>`).join('');
-  goQA(0);
-  let sx=0;
-  track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
-  track.addEventListener('touchend',e=>{const dx=sx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)moveQA(dx>0?1:-1);});
+  if(!_qaInitDone){
+    let sx=0;
+    track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+    track.addEventListener('touchend',e=>{const dx=sx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)moveQA(dx>0?1:-1);});
+    _qaInitDone=true;
+  }
+  goQA(Math.min(qaIdx,total-1));
 }
 function moveQA(dir){
   const track=document.getElementById('qaTrack');
   if(!track)return;
-  const cards=track.querySelectorAll('.qa-card');
-  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
-  const total=Math.ceil(cards.length/visible);
+  const vis=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const total=Math.ceil(track.querySelectorAll('.qa-card').length/vis);
   qaIdx=Math.max(0,Math.min(total-1,qaIdx+dir));
   goQA(qaIdx);
 }
@@ -1227,14 +1242,18 @@ function goQA(i){
   qaIdx=i;
   const track=document.getElementById('qaTrack');
   if(!track)return;
-  const cards=track.querySelectorAll('.qa-card');
-  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
-  const cardW=cards[0]?cards[0].offsetWidth+24:0;
-  track.style.transform=`translateX(${i*visible*cardW}px)`;
+  const cards=[...track.querySelectorAll('.qa-card')];
+  const vis=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const totalPages=Math.ceil(cards.length/vis);
+  // translateX % is relative to the track element itself.
+  // Track has cards.length cards; one page = vis cards = (vis/cards.length * 100)% of track width.
+  // To advance i pages: translate -(i * vis/cards.length * 100)%.
+  const pct=cards.length?-(i*vis/cards.length*100):0;
+  track.style.transform=`translateX(${pct}%)`;
   document.querySelectorAll('.qa-dot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
 }
 document.addEventListener('DOMContentLoaded',initQACarousel);
-window.addEventListener('resize',initQACarousel);
+window.addEventListener('resize',()=>{_qaInitDone=false;initQACarousel();});
 
 // ── SITE THEME (colors + fonts + template) ──
 const GFONT_MAP={
@@ -1629,43 +1648,7 @@ document.querySelectorAll('.qa-item.open').forEach(i=>i.classList.remove('open')
 if(!isOpen)item.classList.add('open');
 }
 
-// QA Carousel
-let qaIdx=0;
-function initQACarousel(){
-  const track=document.getElementById('qaTrack');
-  const dots=document.getElementById('qaDots');
-  if(!track||!dots)return;
-  const cards=track.querySelectorAll('.qa-card');
-  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
-  const total=Math.ceil(cards.length/visible);
-  dots.innerHTML=Array.from({length:total},(_,i)=>`<span class="qa-dot${i===0?' active':''}" onclick="goQA(${i})"></span>`).join('');
-  goQA(0);
-  // touch
-  let sx=0;
-  track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
-  track.addEventListener('touchend',e=>{const dx=sx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)moveQA(dx>0?1:-1);});
-}
-function moveQA(dir){
-  const track=document.getElementById('qaTrack');
-  if(!track)return;
-  const cards=track.querySelectorAll('.qa-card');
-  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
-  const total=Math.ceil(cards.length/visible);
-  qaIdx=Math.max(0,Math.min(total-1,qaIdx+dir));
-  goQA(qaIdx);
-}
-function goQA(i){
-  qaIdx=i;
-  const track=document.getElementById('qaTrack');
-  if(!track)return;
-  const cards=track.querySelectorAll('.qa-card');
-  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
-  const cardW=cards[0]?cards[0].offsetWidth+24:0;
-  track.style.transform=`translateX(${i*visible*cardW}px)`;
-  document.querySelectorAll('.qa-dot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
-}
-document.addEventListener('DOMContentLoaded',initQACarousel);
-window.addEventListener('resize',initQACarousel);
+// QA Carousel functions defined above (search initQACarousel)
 
 // LIVE TICKER — updates prices in place (keeps scroll smooth) with flash on change
 const TICKER_DATA=[
