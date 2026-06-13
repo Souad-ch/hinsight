@@ -352,7 +352,11 @@
     .color-pick input[type=color]{width:40px;height:36px;border:1px solid var(--ink-border);border-radius:6px;background:transparent;cursor:pointer;padding:2px;flex-shrink:0;}
     .color-hex{flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--ink-border);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream);outline:none;direction:ltr;text-align:left;text-transform:uppercase;}
     .color-hex:focus{border-color:var(--gold);}
-    .font-preview{margin-top:12px;padding:16px;background:rgba(255,255,255,0.02);border:1px solid var(--ink-border);border-radius:6px;font-size:1.15rem;color:var(--cream);text-align:center;transition:font-family 0.2s;}
+    .font-preview{margin-top:12px;padding:20px;background:rgba(255,255,255,0.02);border:1px solid var(--ink-border);border-radius:6px;color:var(--cream);}
+    .font-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+    .font-row{display:flex;flex-direction:column;gap:8px;}
+    .font-row-label{font-size:0.9rem;color:var(--cream);display:flex;flex-direction:column;gap:2px;}
+    .font-row-label small{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);letter-spacing:0.05em;}
   </style>
 </head>
 <body>
@@ -576,22 +580,33 @@
         </div>
 
         <div class="section-card">
-          <div class="section-card-title">الخط العربي</div>
-          <div class="form-group" style="max-width:420px;">
-            <select class="form-select" id="fontSelect">
-              <option value="DIN Next LT Arabic">DIN Next LT Arabic — (يتطلب رفع ملفات الخط)</option>
-              <option value="Noto Naskh Arabic">Noto Naskh Arabic — كلاسيكي</option>
-              <option value="Cairo">Cairo — هندسي حديث (الأقرب لـ DIN Next)</option>
-              <option value="IBM Plex Sans Arabic">IBM Plex Sans Arabic — عصري نظيف</option>
-              <option value="Tajawal">Tajawal — بسيط أنيق</option>
-              <option value="Almarai">Almarai — واضح للقراءة</option>
-              <option value="Noto Kufi Arabic">Noto Kufi Arabic — كوفي عصري</option>
-              <option value="El Messiri">El Messiri — راقٍ</option>
-            </select>
-            <div class="font-preview" id="fontPreview">معاينة الخط: قراءة الأسواق من خلف الأحداث ١٢٣٤٥</div>
+          <div class="section-card-title">الخطوط — لكل عنصر خط مستقل</div>
+          <div class="font-grid">
+            <div class="font-row">
+              <div class="font-row-label">📰 العناوين<small>h1, h2, العناوين الرئيسية</small></div>
+              <select class="form-select fontSel" id="fontHeading" data-target="heading"></select>
+            </div>
+            <div class="font-row">
+              <div class="font-row-label">📝 النص الأساسي<small>الفقرات والوصف</small></div>
+              <select class="form-select fontSel" id="fontBody" data-target="body"></select>
+            </div>
+            <div class="font-row">
+              <div class="font-row-label">🔘 الأزرار<small>أزرار الحجز والروابط</small></div>
+              <select class="form-select fontSel" id="fontButton" data-target="button"></select>
+            </div>
+            <div class="font-row">
+              <div class="font-row-label">🔤 الإنجليزي / الشعار<small>النصوص اللاتينية واللوغو</small></div>
+              <select class="form-select fontSel" id="fontEnglish" data-target="english"></select>
+            </div>
+          </div>
+          <div class="font-preview" id="fontPreview" style="margin-top:16px;">
+            <div style="font-size:1.5rem;margin-bottom:8px;" id="fpHeading">عنوان: أقرأ الأسواق من خلف الأحداث</div>
+            <div style="font-size:0.95rem;opacity:0.85;margin-bottom:12px;" id="fpBody">نص أساسي: منصة تحليل اقتصادي وأسواق عالمية تربط السياسة بالاقتصاد ١٢٣٤٥</div>
+            <span style="display:inline-block;padding:8px 18px;background:var(--gold);color:var(--ink);border-radius:6px;font-size:0.85rem;margin-left:8px;" id="fpButton">احجز استشارة</span>
+            <span style="font-size:1rem;color:var(--gold-bright);" id="fpEnglish">Strategic Market Analysis</span>
           </div>
           <div class="builder-help" style="margin-top:8px;">
-            💡 خط <strong>DIN Next LT Arabic</strong> مدفوع (Monotype) — البديل المجاني الأقرب له هو <strong>Cairo</strong>. لو اشتريتِ ترخيص الخط وملفاته أقدر أركّبه لكِ.
+            💡 اختاري خطاً مختلفاً لكل عنصر. خط <strong>DIN Next LT Arabic</strong> مركّب ومتاح. المعاينة فوق تتحدث فوراً.
           </div>
         </div>
 
@@ -1271,9 +1286,29 @@ function renderTemplates(){
   }).join('');
 }
 
+// Font catalogs
+const FONTS_AR=['DIN Next LT Arabic','Noto Naskh Arabic','Cairo','IBM Plex Sans Arabic','Tajawal','Almarai','Noto Kufi Arabic','El Messiri'];
+const FONTS_EN=['Cormorant Garamond','Playfair Display','Marcellus','Poppins','Montserrat'];
+const GF_LOAD={'Noto Naskh Arabic':'Noto+Naskh+Arabic:wght@400;600','Cairo':'Cairo:wght@400;700','IBM Plex Sans Arabic':'IBM+Plex+Sans+Arabic:wght@400;600','Tajawal':'Tajawal:wght@400;700','Almarai':'Almarai:wght@400;700','Noto Kufi Arabic':'Noto+Kufi+Arabic:wght@400;600','El Messiri':'El+Messiri:wght@400;600','Cormorant Garamond':'Cormorant+Garamond:wght@400;600','Playfair Display':'Playfair+Display:wght@400;600','Marcellus':'Marcellus','Poppins':'Poppins:wght@400;600','Montserrat':'Montserrat:wght@400;600'};
+const FONT_SELECTS=[['fontHeading','heading','fpHeading'],['fontBody','body','fpBody'],['fontButton','button','fpButton'],['fontEnglish','english','fpEnglish']];
+
+function loadAdminFont(name){
+  if(!name||name==='DIN Next LT Arabic'||!GF_LOAD[name])return;
+  const id='fontld_'+name.replace(/\s/g,'');
+  if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family='+GF_LOAD[name]+'&display=swap';document.head.appendChild(l);}
+}
+
+function buildFontSelects(){
+  const arOpts=FONTS_AR.map(f=>`<option value="${f}">${f}${f==='DIN Next LT Arabic'?' (مركّب)':''}</option>`).join('');
+  ['fontHeading','fontBody','fontButton'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.innerHTML)el.innerHTML=arOpts;});
+  const enEl=document.getElementById('fontEnglish');
+  if(enEl&&!enEl.innerHTML)enEl.innerHTML=FONTS_EN.map(f=>`<option value="${f}">${f}</option>`).join('');
+}
+
 function applyTemplate(key){
   const t=THEME_TEMPLATES[key];if(!t)return;
-  currentTheme={template:key,font_ar:t.font_ar,colors:{...t.colors}};
+  const fonts=currentTheme&&currentTheme.fonts?currentTheme.fonts:{heading:t.font_ar,body:t.font_ar,button:t.font_ar,english:'Cormorant Garamond'};
+  currentTheme={template:key,fonts:{heading:t.font_ar,body:t.font_ar,button:t.font_ar,english:fonts.english||'Cormorant Garamond'},colors:{...t.colors}};
   fillThemeInputs();
   document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===key));
 }
@@ -1285,34 +1320,47 @@ function fillThemeInputs(){
     const cp=document.getElementById(id);const tx=document.getElementById(id+'T');
     if(cp)cp.value=v;if(tx)tx.value=v;
   });
-  const fs=document.getElementById('fontSelect');
-  if(fs)fs.value=currentTheme.font_ar||'Noto Naskh Arabic';
+  const f=currentTheme.fonts||{};
+  if(document.getElementById('fontHeading'))document.getElementById('fontHeading').value=f.heading||'DIN Next LT Arabic';
+  if(document.getElementById('fontBody'))document.getElementById('fontBody').value=f.body||'DIN Next LT Arabic';
+  if(document.getElementById('fontButton'))document.getElementById('fontButton').value=f.button||'DIN Next LT Arabic';
+  if(document.getElementById('fontEnglish'))document.getElementById('fontEnglish').value=f.english||'Cormorant Garamond';
   updateFontPreview();
 }
 
 function updateFontPreview(){
-  const font=document.getElementById('fontSelect').value;
-  const MAP={'Noto Naskh Arabic':'Noto+Naskh+Arabic:wght@400;600','Cairo':'Cairo:wght@400;700','IBM Plex Sans Arabic':'IBM+Plex+Sans+Arabic:wght@400;600','Tajawal':'Tajawal:wght@400;700','Almarai':'Almarai:wght@400;700','Noto Kufi Arabic':'Noto+Kufi+Arabic:wght@400;600','El Messiri':'El+Messiri:wght@400;600'};
-  // DIN Next is a local font hosted on the live site — preview falls back to system here
-  if(MAP[font]){
-    const id='fontld_'+font.replace(/\s/g,'');
-    if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family='+MAP[font]+'&display=swap';document.head.appendChild(l);}
-  }
-  document.getElementById('fontPreview').style.fontFamily="'"+font+"',sans-serif";
+  FONT_SELECTS.forEach(([selId,key,prevId])=>{
+    const sel=document.getElementById(selId);const prev=document.getElementById(prevId);
+    if(!sel||!prev)return;
+    const font=sel.value;
+    loadAdminFont(font);
+    prev.style.fontFamily="'"+font+"',sans-serif";
+  });
 }
 
 async function loadTheme(){
   renderTemplates();
+  buildFontSelects();
   const{data}=await sb.from('site_settings').select('*').eq('id',1).single();
   if(data&&data.theme){currentTheme=data.theme;}
-  else{currentTheme={template:'emerald',...JSON.parse(JSON.stringify(THEME_TEMPLATES.emerald))};delete currentTheme.name;}
+  else{currentTheme={template:'emerald',colors:{...THEME_TEMPLATES.emerald.colors}};}
   if(!currentTheme.colors)currentTheme.colors={...THEME_TEMPLATES.emerald.colors};
+  // Migrate old single font_ar to granular fonts; default to DIN Next
+  if(!currentTheme.fonts){
+    const old=currentTheme.font_ar||'DIN Next LT Arabic';
+    currentTheme.fonts={heading:old,body:old,button:old,english:'Cormorant Garamond'};
+  }
   document.getElementById('sheetsWebhook').value=(data&&data.sheets_webhook)||'';
   fillThemeInputs();
   if(currentTheme.template)document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===currentTheme.template));
 }
 
-function resetThemeDefault(){applyTemplate('emerald');showToast('تم تحديد الافتراضي — اضغطي حفظ');}
+function resetThemeDefault(){
+  currentTheme={template:'emerald',colors:{...THEME_TEMPLATES.emerald.colors},fonts:{heading:'DIN Next LT Arabic',body:'DIN Next LT Arabic',button:'DIN Next LT Arabic',english:'Cormorant Garamond'}};
+  fillThemeInputs();
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl==='emerald'));
+  showToast('تم تحديد الافتراضي — اضغطي حفظ');
+}
 
 // Wire color inputs (sync color<->hex)
 CK.forEach(([id,key])=>{
@@ -1321,19 +1369,28 @@ CK.forEach(([id,key])=>{
     if(e.target.id===id+'T'){const cp=document.getElementById(id);let v=e.target.value.trim();if(/^#?[0-9a-fA-F]{6}$/.test(v)){if(v[0]!=='#')v='#'+v;cp.value=v;if(currentTheme)currentTheme.colors[key]=v;}}
   });
 });
-document.getElementById('fontSelect').addEventListener('change',function(){updateFontPreview();if(currentTheme)currentTheme.font_ar=this.value;});
+// Wire font selects
+FONT_SELECTS.forEach(([selId,key])=>{
+  const el=document.getElementById(selId);
+  if(el)el.addEventListener('change',function(){if(currentTheme){if(!currentTheme.fonts)currentTheme.fonts={};currentTheme.fonts[key]=this.value;}updateFontPreview();});
+});
 
 document.getElementById('saveThemeBtn').addEventListener('click',async function(){
   if(!currentTheme)return;
-  // pull latest from inputs
   CK.forEach(([id,key])=>{const cp=document.getElementById(id);if(cp)currentTheme.colors[key]=cp.value;});
-  currentTheme.font_ar=document.getElementById('fontSelect').value;
+  currentTheme.fonts={
+    heading:document.getElementById('fontHeading').value,
+    body:document.getElementById('fontBody').value,
+    button:document.getElementById('fontButton').value,
+    english:document.getElementById('fontEnglish').value
+  };
+  delete currentTheme.font_ar; // remove legacy key
   const webhook=document.getElementById('sheetsWebhook').value.trim();
   this.disabled=true;this.innerHTML='<span class="spinner"></span>';
   const{error}=await sb.from('site_settings').upsert({id:1,theme:currentTheme,sheets_webhook:webhook||null,updated_at:new Date().toISOString()},{onConflict:'id'});
   this.disabled=false;this.innerHTML='💾 حفظ ونشر على الموقع';
   if(error){showToast('خطأ: '+error.message,'error');return;}
-  showToast('✓ تم حفظ القالب — افتحي الموقع لتشوفيه');
+  showToast('✓ تم حفظ الخطوط — افتحي الموقع لتشوفيه');
 });
 
 // SUBSCRIBERS

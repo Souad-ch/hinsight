@@ -17,11 +17,12 @@
 --accent-dim:#506155;--glow:rgba(159,187,164,0.12);--text:#DDDEDD;
 --text-dim:#8a9a8c;--text-muted:#4a5a4c;--line:rgba(120,144,124,0.18);
 --font-ar:'DIN Next LT Arabic','Noto Naskh Arabic',sans-serif;--font-en:'Cormorant Garamond',serif;
+--font-heading:var(--font-ar);--font-body:var(--font-ar);--font-btn:var(--font-ar);
 --radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;font-size:16px;}
-body{background:var(--bg);color:var(--text);font-family:var(--font-ar);font-weight:600;line-height:1.75;overflow-x:hidden;direction:rtl;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:600;line-height:1.75;overflow-x:hidden;direction:rtl;}
 p,span,a,li,.card-desc,.cons-desc,.note-text,.about-text,.section-subtitle,.method-desc,.art-modal-body p,.hero-text{font-weight:600;}
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5;}
 a{text-decoration:none;color:inherit;}img{display:block;max-width:100%;}ul{list-style:none;}
@@ -29,7 +30,7 @@ a{text-decoration:none;color:inherit;}img{display:block;max-width:100%;}ul{list-
 
 /* TYPOGRAPHY */
 .en{font-family:var(--font-en);letter-spacing:0.04em;}
-h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
+h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weight:700;line-height:1.3;}
 .section-label{font-family:var(--font-en);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-light);display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;}
 .section-label::before{content:'';display:block;width:24px;height:1px;background:var(--accent-light);}
 .section-title{font-size:clamp(1.8rem,3vw,2.6rem);color:var(--text);margin-bottom:16px;}
@@ -50,7 +51,7 @@ h1,h2,h3,h4{font-family:var(--font-ar);font-weight:700;line-height:1.3;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:var(--radius);font-family:var(--font-ar);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--tr);border:none;outline:none;position:relative;overflow:hidden;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:var(--radius);font-family:var(--font-btn);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--tr);border:none;outline:none;position:relative;overflow:hidden;}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 60%);opacity:0;transition:var(--tr);}
 .btn:hover::after{opacity:1;}
 .btn-green{background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:var(--bg);}
@@ -1132,13 +1133,31 @@ const GFONT_MAP={
   'IBM Plex Sans Arabic':'IBM+Plex+Sans+Arabic:wght@300;400;500;600;700',
   'Almarai':'Almarai:wght@300;400;700;800',
   'Noto Kufi Arabic':'Noto+Kufi+Arabic:wght@400;500;600;700',
-  'El Messiri':'El+Messiri:wght@400;500;600;700'
+  'El Messiri':'El+Messiri:wght@400;500;600;700',
+  // English / Latin fonts
+  'Cormorant Garamond':'Cormorant+Garamond:wght@400;500;600;700',
+  'Playfair Display':'Playfair+Display:wght@400;500;600;700',
+  'Marcellus':'Marcellus',
+  'Poppins':'Poppins:wght@300;400;500;600;700',
+  'Montserrat':'Montserrat:wght@300;400;500;600;700'
 };
+function loadFontFamily(name){
+  if(!name||name==='DIN Next LT Arabic')return; // local font, already declared
+  if(!GFONT_MAP[name])return;
+  const id='gf_'+name.replace(/\s/g,'');
+  if(document.getElementById(id))return;
+  const link=document.createElement('link');link.id=id;link.rel='stylesheet';
+  link.href='https://fonts.googleapis.com/css2?family='+GFONT_MAP[name]+'&display=swap';
+  document.head.appendChild(link);
+}
 async function loadSiteTheme(){
   if(!sbClient)return;
   try{
     const {data}=await sbClient.from('site_settings').select('*').eq('id',1).single();
-    if(!data||!data.theme)return;
+    if(!data)return;
+    // Google Sheets webhook (read once, used by booking)
+    if(data.sheets_webhook)window.__SHEETS_WEBHOOK=data.sheets_webhook;
+    if(!data.theme)return;
     const t=data.theme;const r=document.documentElement;
     // Colors
     if(t.colors){const c=t.colors;
@@ -1149,18 +1168,19 @@ async function loadSiteTheme(){
       if(c.accent){r.style.setProperty('--border','color-mix(in srgb,'+c.accent+' 18%,transparent)');
         r.style.setProperty('--line','color-mix(in srgb,'+c.accent+' 22%,transparent)');}
     }
-    // Arabic font
-    if(t.font_ar){
-      if(GFONT_MAP[t.font_ar]){
-        const link=document.createElement('link');link.rel='stylesheet';
-        link.href='https://fonts.googleapis.com/css2?family='+GFONT_MAP[t.font_ar]+'&display=swap';
-        document.head.appendChild(link);
-      }
-      // 'DIN Next LT Arabic' is a local @font-face (in fonts/ folder) — no google link needed
-      r.style.setProperty('--font-ar',"'"+t.font_ar+"',sans-serif");
-    }
-    // Google Sheets webhook (read once, used by booking)
-    if(data.sheets_webhook)window.__SHEETS_WEBHOOK=data.sheets_webhook;
+    // Per-element fonts (granular typography)
+    const fonts=t.fonts||{};
+    // Backward compat: old single font_ar = body+heading+button
+    if(t.font_ar&&!t.fonts){fonts.body=t.font_ar;fonts.heading=t.font_ar;fonts.button=t.font_ar;}
+    const applyFont=(varName,fontName,fallback)=>{
+      if(!fontName)return;
+      loadFontFamily(fontName);
+      r.style.setProperty(varName,"'"+fontName+"',"+(fallback||'sans-serif'));
+    };
+    applyFont('--font-body',   fonts.body,   "'Noto Naskh Arabic',sans-serif");
+    applyFont('--font-heading',fonts.heading,"'Noto Naskh Arabic',sans-serif");
+    applyFont('--font-btn',    fonts.button, "'Noto Naskh Arabic',sans-serif");
+    applyFont('--font-en',     fonts.english,'serif');
   }catch(e){console.warn('theme:',e);}
 }
 loadSiteTheme();
