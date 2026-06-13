@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لوحة الحجوزات — Hanadi Insights</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230C0B0F'/%3E%3Crect x='3' y='3' width='94' height='94' rx='20' fill='none' stroke='%2378907C' stroke-width='3'/%3E%3Ctext x='50' y='70' font-family='Georgia,serif' font-size='62' font-weight='600' fill='%239FBBA4' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --ink:#0C0B0F;--ink-mid:#101312;--ink-light:#161918;--ink-border:rgba(120,144,124,0.18);
+      --gold:#78907C;--gold-bright:#9FBBA4;--gold-dim:#56685C;
+      --cream:#DDDEDD;--cream-dim:#A8B0AC;--white:#F0F2F0;--muted:#6B7A72;
+      --line:rgba(120,144,124,0.1);--card:rgba(18,22,20,0.95);
+      --font-ar:'Noto Naskh Arabic',serif;--font-mono:'DM Mono',monospace;
+      --font-en:'Cormorant Garamond',serif;
+      --ease:cubic-bezier(0.16,1,0.3,1);--tr:0.4s var(--ease);
+      --green:#4ade80;--red:#f87171;--radius:6px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--ink);color:var(--cream);font-family:var(--font-ar);direction:rtl;min-height:100vh;overflow-x:hidden;}
+    a{text-decoration:none;color:inherit;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.4;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+    @keyframes borderGlow{0%,100%{box-shadow:0 0 0 rgba(120,144,124,0);}50%{box-shadow:0 0 20px rgba(120,144,124,0.15);}}
+    #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse 70% 70% at 50% 40%,rgba(120,144,124,0.06) 0%,transparent 70%);}
+    .login-box{width:100%;max-width:420px;text-align:center;background:linear-gradient(145deg,rgba(22,25,24,0.98),rgba(14,18,16,0.98));border:1px solid var(--ink-border);border-radius:12px;padding:52px 44px;box-shadow:0 60px 120px rgba(0,0,0,0.6),0 0 80px rgba(120,144,124,0.04);animation:fadeUp 0.7s var(--ease) both;}
+    .login-emblem{width:56px;height:56px;border-radius:50%;border:1px solid rgba(120,144,124,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;background:rgba(120,144,124,0.06);font-family:var(--font-en);font-size:1.4rem;color:var(--gold-bright);animation:borderGlow 3s ease-in-out infinite;}
+    .login-logo{font-family:var(--font-en);font-size:1.7rem;font-weight:600;color:var(--gold-bright);letter-spacing:0.05em;margin-bottom:4px;}
+    .login-sub{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:0.25em;text-transform:uppercase;margin-bottom:44px;}
+    .login-title{font-size:1.2rem;color:var(--white);margin-bottom:6px;font-weight:700;}
+    .login-hint{font-size:0.8rem;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+    .login-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--ink-border);border-radius:var(--radius);padding:15px 18px;font-family:var(--font-ar);font-size:1rem;color:var(--cream);outline:none;text-align:center;letter-spacing:0.15em;margin-bottom:14px;transition:border-color 0.3s,box-shadow 0.3s;}
+    .login-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(120,144,124,0.1);}
+    .login-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--ink);font-family:var(--font-ar);font-size:1rem;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all 0.35s var(--ease);}
+    .login-btn:hover{box-shadow:0 12px 36px rgba(120,144,124,0.35);transform:translateY(-2px);}
+    .login-error{font-family:var(--font-mono);font-size:0.72rem;color:var(--red);margin-top:12px;display:none;animation:fadeUp 0.3s ease both;}
+    #dashboard{display:none;}
+    .dash-header{background:rgba(10,12,11,0.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--line);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .dash-logo{font-family:var(--font-mono);font-size:0.72rem;color:var(--gold);letter-spacing:0.18em;display:flex;align-items:center;gap:12px;}
+    .dash-logo::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s ease infinite;}
+    .dash-user{font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);display:flex;align-items:center;gap:12px;}
+    .logout-btn{padding:6px 16px;background:transparent;border:1px solid rgba(248,113,113,0.15);border-radius:var(--radius);color:rgba(248,113,113,0.6);font-family:var(--font-mono);font-size:0.65rem;cursor:pointer;transition:all 0.3s;}
+    .logout-btn:hover{border-color:var(--red);color:var(--red);background:rgba(248,113,113,0.05);}
+    .back-link{font-family:var(--font-mono);font-size:0.65rem;color:var(--gold-dim);padding:6px 14px;border:1px solid var(--ink-border);border-radius:var(--radius);transition:all 0.3s;}
+    .back-link:hover{border-color:var(--gold);color:var(--gold);}
+    .dash-main{padding:40px;max-width:1400px;margin:0 auto;}
+    .panel-title{font-size:1.45rem;color:var(--white);margin-bottom:6px;font-weight:700;}
+    .panel-sub{font-size:0.84rem;color:var(--muted);margin-bottom:36px;}
+    .section-card{background:linear-gradient(145deg,rgba(18,22,20,0.95),rgba(12,15,13,0.95));border:1px solid var(--ink-border);border-radius:var(--radius);padding:28px;margin-bottom:24px;}
+    .section-card-title{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;display:flex;align-items:center;gap:10px;}
+    .section-card-title::after{content:'';flex:1;height:1px;background:linear-gradient(270deg,transparent,var(--ink-border));}
+    .data-table{width:100%;border-collapse:collapse;}
+    .data-table th{font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);padding:10px 16px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;}
+    .data-table td{padding:14px 16px;border-bottom:1px solid rgba(120,144,124,0.05);font-size:0.86rem;color:var(--cream-dim);transition:color 0.2s;}
+    .data-table tbody tr{transition:background 0.2s;}
+    .data-table tbody tr:hover td{background:rgba(120,144,124,0.03);color:var(--cream);}
+    .data-table .badge{display:inline-block;font-family:var(--font-mono);font-size:0.58rem;padding:3px 10px;border-radius:20px;letter-spacing:0.08em;}
+    .badge-confirmed,.badge-published{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);}
+    .badge-pending{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);color:#fbbf24;}
+    .badge-cancelled{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--red);}
+    .skeleton{background:linear-gradient(90deg,rgba(120,144,124,0.06) 25%,rgba(120,144,124,0.12) 50%,rgba(120,144,124,0.06) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:3px;height:14px;display:inline-block;}
+    .form-input,.form-select{background:rgba(255,255,255,0.03);border:1px solid var(--ink-border);border-radius:var(--radius);padding:13px 16px;font-family:var(--font-ar);font-size:0.92rem;color:var(--cream);outline:none;transition:border-color 0.3s,box-shadow 0.3s;}
+    .form-input:focus,.form-select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(120,144,124,0.08);}
+    .form-select{cursor:pointer;direction:rtl;}.form-select option{background:var(--ink-mid);}
+    .submit-btn{padding:10px 18px;background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--ink);font-family:var(--font-ar);font-size:0.92rem;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all 0.35s var(--ease);}
+    .submit-btn:hover{box-shadow:0 8px 24px rgba(120,144,124,0.3);transform:translateY(-1px);}
+    .empty-state{text-align:center;padding:48px 24px;color:var(--muted);font-family:var(--font-mono);font-size:0.78rem;}
+    .empty-state .empty-icon{font-size:2.5rem;margin-bottom:14px;opacity:0.4;}
+    .toast{position:fixed;bottom:28px;right:28px;background:var(--ink-light);border:1px solid var(--ink-border);border-radius:var(--radius);padding:14px 20px;font-family:var(--font-mono);font-size:0.78rem;color:var(--cream);z-index:9999;opacity:0;transform:translateY(12px);transition:all 0.45s var(--ease);pointer-events:none;display:flex;align-items:center;gap:10px;}
+    .toast.show{opacity:1;transform:translateY(0);}
+    .toast.success{border-color:rgba(74,222,128,0.25);color:var(--green);}
+    .toast.error{border-color:rgba(248,113,113,0.25);color:var(--red);}
+    .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(0,0,0,0.15);border-top-color:var(--ink);animation:spin 0.7s linear infinite;display:inline-block;vertical-align:middle;}
+    @media(max-width:600px){.dash-header{padding:0 16px;}.dash-main{padding:24px 16px;}.data-table{font-size:0.78rem;display:block;overflow-x:auto;white-space:nowrap;}}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-emblem">H</div>
+    <div class="login-logo">Hanadi Insights</div>
+    <div class="login-sub">Bookings Dashboard</div>
+    <h2 class="login-title">تسجيل الدخول</h2>
+    <p class="login-hint">أدخلي بريدك وكلمة السر للوصول إلى لوحة الحجوزات</p>
+    <input type="email" class="login-input" id="emailInput" placeholder="البريد الإلكتروني" dir="ltr" autocomplete="username"/>
+    <input type="password" class="login-input" id="pwInput" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="login-btn" id="loginBtn">دخول</button>
+    <div class="login-error" id="loginError">⚠ البريد أو كلمة السر غير صحيحة.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header class="dash-header">
+    <div class="dash-logo">HANADI INSIGHTS · BOOKINGS</div>
+    <div class="dash-user">
+      <a href="admin.html" class="back-link">← لوحة التحكم</a>
+      <button class="logout-btn" id="logoutBtn">خروج</button>
+    </div>
+  </header>
+
+  <main class="dash-main">
+    <div class="panel-title">لوحة الحجوزات</div>
+    <div class="panel-sub">جميع طلبات الاستشارة الواردة — بحث وتصفية وتصدير</div>
+
+    <div class="section-card" style="margin-bottom:16px;">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="bookingSearch" class="form-input" placeholder="🔍 بحث باسم أو إيميل..." style="flex:1;min-width:180px;padding:10px 14px;font-size:0.85rem;" oninput="filterBookings()"/>
+        <select id="bookingStatus" class="form-select" style="width:140px;" onchange="filterBookings()">
+          <option value="">كل الحالات</option>
+          <option value="confirmed">مؤكد</option>
+          <option value="pending">قيد الانتظار</option>
+          <option value="cancelled">ملغي</option>
+        </select>
+        <button class="submit-btn" style="background:rgba(120,144,124,0.15);color:var(--gold-bright);border:1px solid var(--ink-border);" onclick="exportBookingsCSV()">⬇ تصدير Excel</button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-title">الحجوزات</div>
+      <table class="data-table">
+        <thead><tr><th>العميل</th><th>الهاتف</th><th>الإيميل</th><th>نوع الجلسة</th><th>التاريخ</th><th>الوقت</th><th>الرسالة</th><th>الحالة</th><th></th></tr></thead>
+        <tbody id="bookingsBody"><tr><td colspan="9" class="empty-state">جارٍ التحميل...</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
+const SUPABASE_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+function showDashboard(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  loadBookings();
+}
+function showLogin(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('dashboard').style.display='none';
+}
+sb.auth.getSession().then(({data})=>{ if(data.session) showDashboard(); else showLogin(); });
+
+async function doLogin(){
+  const email=document.getElementById('emailInput').value.trim();
+  const pw=document.getElementById('pwInput').value;
+  const errEl=document.getElementById('loginError');
+  errEl.style.display='none';
+  const{error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){errEl.style.display='block';document.getElementById('pwInput').value='';}
+  else{showDashboard();}
+}
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('emailInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pwInput').focus();});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();location.reload();});
+
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+type;
+  setTimeout(()=>t.className='toast',3500);
+}
+
+let _allBookings=[];
+async function loadBookings(){
+  const{data}=await sb.from('bookings').select('*').order('created_at',{ascending:false});
+  _allBookings=data||[];
+  renderBookings(_allBookings);
+}
+function renderBookings(list){
+  const tbody=document.getElementById('bookingsBody');
+  if(!list.length){tbody.innerHTML='<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📅</div>لا توجد حجوزات بعد.</div></td></tr>';return;}
+  tbody.innerHTML=list.map(b=>{
+    const st=b.status||'confirmed';
+    const badgeCls=st==='confirmed'?'badge-confirmed':st==='cancelled'?'badge-cancelled':'badge-pending';
+    const stLabel=st==='confirmed'?'مؤكد':st==='cancelled'?'ملغي':'قيد الانتظار';
+    return `<tr>
+      <td>${b.client_name||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;direction:ltr;">${b.client_phone||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;direction:ltr;">${b.client_email||'—'}</td>
+      <td>${b.consultation_type||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.date||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.time||'—'}</td>
+      <td style="max-width:160px;font-size:0.78rem;color:var(--cream-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${(b.message||'').replace(/"/g,'&quot;')}">${b.message||'—'}</td>
+      <td><span class="badge ${badgeCls}">${stLabel}</span></td>
+      <td>
+        <select style="background:rgba(255,255,255,0.04);border:1px solid var(--ink-border);color:var(--cream);border-radius:4px;padding:4px 6px;font-family:var(--font-ar);font-size:0.72rem;cursor:pointer;" onchange="updateBookingStatus('${b.id}',this.value)">
+          <option value="">تغيير</option>
+          <option value="confirmed">مؤكد</option>
+          <option value="pending">انتظار</option>
+          <option value="cancelled">ملغي</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function filterBookings(){
+  const q=(document.getElementById('bookingSearch').value||'').toLowerCase();
+  const st=document.getElementById('bookingStatus').value;
+  const filtered=_allBookings.filter(b=>{
+    const matchQ=!q||(b.client_name||'').toLowerCase().includes(q)||(b.client_email||'').toLowerCase().includes(q);
+    const matchSt=!st||(b.status||'confirmed')===st;
+    return matchQ&&matchSt;
+  });
+  renderBookings(filtered);
+}
+async function updateBookingStatus(id,status){
+  if(!status)return;
+  await sb.from('bookings').update({status}).eq('id',id);
+  showToast('تم تحديث الحالة');
+  loadBookings();
+}
+function exportBookingsCSV(){
+  if(!_allBookings.length){showToast('لا توجد بيانات للتصدير','error');return;}
+  const headers=['الاسم','الهاتف','الإيميل','نوع الجلسة','التاريخ','الوقت','الرسالة','الحالة','تاريخ الحجز'];
+  const rows=_allBookings.map(b=>[
+    b.client_name||'',b.client_phone||'',b.client_email||'',
+    b.consultation_type||'',b.date||'',b.time||'',
+    (b.message||'').replace(/,/g,' '),b.status||'confirmed',
+    b.created_at?new Date(b.created_at).toLocaleDateString('ar'):''
+  ]);
+  const csv='﻿'+[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`bookings_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('تم التصدير بنجاح ✓');
+}
+</script>
+</body>
+</html>

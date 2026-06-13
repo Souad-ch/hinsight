@@ -17,6 +17,7 @@
 --accent-dim:#506155;--glow:rgba(159,187,164,0.12);--text:#DDDEDD;
 --text-dim:#8a9a8c;--text-muted:#4a5a4c;--line:rgba(120,144,124,0.18);
 --font-ar:'DIN Next LT Arabic','Noto Naskh Arabic',sans-serif;--font-en:'Cormorant Garamond',serif;
+--font-num:'DIN Next LT Arabic','Noto Naskh Arabic',sans-serif;
 --font-heading:var(--font-ar);--font-body:var(--font-ar);--font-btn:var(--font-ar);
 --radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
 }
@@ -482,6 +483,29 @@ html{font-size:15px;}
 .carousel-dot.active{background:var(--accent-light);width:20px;border-radius:4px;}
 @media(max-width:900px){.carousel-track>*{flex:0 0 calc(50% - 12px);}}
 @media(max-width:600px){.carousel-track>*{flex:0 0 100%;}}
+/* QA CAROUSEL */
+.qa-carousel-wrap{position:relative;overflow:hidden;}
+.qa-carousel-track{display:flex;gap:24px;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);}
+.qa-card{min-width:calc(33.333% - 16px);background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;display:flex;flex-direction:column;gap:18px;flex-shrink:0;}
+.qa-card-icon{width:40px;height:40px;border-radius:50%;background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.25);display:flex;align-items:center;justify-content:center;font-family:var(--font-en);font-size:1rem;font-weight:700;color:var(--accent-light);flex-shrink:0;}
+.qa-card-q{font-size:1rem;color:var(--text);font-weight:700;line-height:1.5;}
+.qa-card-a{font-size:0.9rem;color:var(--text-dim);line-height:1.85;flex:1;}
+.qa-carousel-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:28px;}
+.qa-dots{display:flex;gap:8px;}
+.qa-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-dim);transition:all 0.3s;}
+.qa-dot.active{width:20px;border-radius:3px;background:var(--accent-light);}
+@media(max-width:768px){.qa-card{min-width:calc(100% - 0px);}}
+@media(max-width:1024px) and (min-width:769px){.qa-card{min-width:calc(50% - 12px);}}
+/* ARTICLES PREVIEW */
+.articles-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.art-prev-card{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius);padding:32px;display:flex;flex-direction:column;gap:14px;transition:var(--tr);}
+.art-prev-card:hover{border-color:rgba(120,144,124,0.35);transform:translateY(-3px);}
+.art-prev-title{font-size:1.05rem;color:var(--text);font-weight:700;line-height:1.5;}
+.art-prev-desc{font-size:0.88rem;color:var(--text-dim);line-height:1.8;flex:1;}
+.art-prev-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;}
+@media(max-width:768px){.articles-preview-grid{grid-template-columns:1fr;}}
+/* NUMBERS FONT */
+.num,.badge-num,.card-date,.trust-badge .num,time,[dir="ltr"]{font-family:var(--font-num);}
 </style>
 </head>
 <body>
@@ -514,7 +538,7 @@ html{font-size:15px;}
 <li><a href="#about">عن هنادي</a></li>
 <li><a href="#library">المكتبة</a></li>
 <li><a href="#reports">التقارير</a></li>
-<li><a href="#booking" class="nav-cta">احجز موعداً</a></li>
+<li id="navCtaItem" style="display:none;"><a href="#booking" class="nav-cta">احجز موعداً</a></li>
 </ul>
 </nav>
 <div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
@@ -533,7 +557,7 @@ html{font-size:15px;}
 <a href="#library">المكتبة</a>
 <a href="#reports">التقارير</a>
 <a href="#newsletter">النشرة البريدية</a>
-<a href="#booking" class="btn btn-green">احجز موعداً</a>
+<span id="mobileNavCta" style="display:none;"><a href="#booking" class="btn btn-green">احجز موعداً</a></span>
 </nav>
 
 <!-- TICKER -->
@@ -566,7 +590,7 @@ html{font-size:15px;}
 <p class="hero-text">منصة تحليل اقتصادي وأسواق عالمية تربط السياسة، الاقتصاد، السيولة، وسلوك المستثمرين بلغة يفهمها المتداول.</p>
 <div class="hero-buttons">
 <a href="#insights" class="btn btn-green">اقرأ آخر التحليلات</a>
-<a href="#booking" class="btn btn-outline">احجز استشارة</a>
+<span id="heroBookingBtn"><a href="#booking" class="btn btn-outline">احجز استشارة</a></span>
 </div>
 <div class="trust-badges">
 <div class="trust-badge"><span class="num en">منذ 1998</span><span class="lbl">خبرة في الأسواق</span></div>
@@ -621,7 +645,7 @@ html{font-size:15px;}
 </div>
 </div>
 <div style="text-align:center;margin-top:44px;" class="reveal">
-<a href="articles.html" class="btn btn-outline">عرض جميع المقالات →</a>
+<a href="analyses.html" class="btn btn-outline">عرض جميع التحليلات →</a>
 </div>
 </div>
 </section>
@@ -645,7 +669,7 @@ html{font-size:15px;}
 </div>
 </section>
 
-<!-- NOTES / Q&A -->
+<!-- QUICK INSIGHTS -->
 <section class="section" id="notes">
 <div class="container">
 <div class="section-head reveal">
@@ -654,35 +678,69 @@ html{font-size:15px;}
 <div class="green-line"></div>
 <p class="section-subtitle">أسئلة يطرحها المتداولون — إجابات هنادي.</p>
 </div>
-<div class="qa-list reveal">
-<div class="qa-item open">
-<button class="qa-question" onclick="toggleQA(this)">
-<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>لماذا لا يتحرك الذهب دائمًا مع الخبر؟</span></div>
-<span class="qa-arrow">▾</span>
-</button>
-<div class="qa-answer"><div class="qa-answer-inner">الأسواق لا تسعّر الأحداث — بل تسعّر التوقعات. حين يُعلَن الخبر، يكون السوق قد هضمه مسبقاً. الذهب يتحرك مع التوقعات المستقبلية للتضخم والسياسة النقدية، لا مع العناوين.</div></div>
+<div class="qa-carousel-wrap reveal">
+  <div class="qa-carousel-track" id="qaTrack">
+    <div class="qa-card">
+      <div class="qa-card-icon">س</div>
+      <h3 class="qa-card-q">لماذا لا يتحرك الذهب دائمًا مع الخبر؟</h3>
+      <p class="qa-card-a">الأسواق لا تسعّر الأحداث — بل تسعّر التوقعات. حين يُعلَن الخبر، يكون السوق قد هضمه مسبقاً. الذهب يتحرك مع التوقعات المستقبلية للتضخم والسياسة النقدية، لا مع العناوين.</p>
+    </div>
+    <div class="qa-card">
+      <div class="qa-card-icon">س</div>
+      <h3 class="qa-card-q">ما الذي يراقبه المستثمرون هذا الأسبوع؟</h3>
+      <p class="qa-card-a">الأنظار تتجه نحو بيانات التضخم الأمريكي (CPI) وتصريحات الفيدرالي. أي مفاجأة في الأرقام ستُعيد رسم توقعات أسعار الفائدة — وهذا يؤثر مباشرة على الدولار والذهب والأسهم.</p>
+    </div>
+    <div class="qa-card">
+      <div class="qa-card-icon">س</div>
+      <h3 class="qa-card-q">متى يصبح الخبر مستهلكًا في السوق؟</h3>
+      <p class="qa-card-a">حين يعرفه الجميع، لم يعد له قيمة سعرية. السوق يعيش على المستقبل. الخبر المُسعَّر هو خبر قديم حتى لو نُشر اليوم — ابحث دائماً عما لم يُسعَّر بعد.</p>
+    </div>
+    <div class="qa-card">
+      <div class="qa-card-icon">س</div>
+      <h3 class="qa-card-q">ما الفرق بين الخوف والسيولة في الأزمات؟</h3>
+      <p class="qa-card-a">الخوف انفعال — يدفعك للبيع العشوائي. السيولة قرار — تُحرّك الأموال الكبيرة نحو ملاذات محددة كالدولار والسندات والذهب. تعلّم قراءة حركة السيولة لا مشاعر الجموع.</p>
+    </div>
+  </div>
+  <div class="qa-carousel-nav">
+    <button class="qa-prev carousel-btn" onclick="moveQA(-1)">‹</button>
+    <div class="qa-dots" id="qaDots"></div>
+    <button class="qa-next carousel-btn" onclick="moveQA(1)">›</button>
+  </div>
 </div>
-<div class="qa-item">
-<button class="qa-question" onclick="toggleQA(this)">
-<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>ما الذي يراقبه المستثمرون هذا الأسبوع؟</span></div>
-<span class="qa-arrow">▾</span>
-</button>
-<div class="qa-answer"><div class="qa-answer-inner">الأنظار تتجه نحو بيانات التضخم الأمريكي (CPI) وتصريحات الفيدرالي. أي مفاجأة في الأرقام ستُعيد رسم توقعات أسعار الفائدة — وهذا يؤثر مباشرة على الدولار والذهب والأسهم.</div></div>
 </div>
-<div class="qa-item">
-<button class="qa-question" onclick="toggleQA(this)">
-<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>متى يصبح الخبر مستهلكًا في السوق؟</span></div>
-<span class="qa-arrow">▾</span>
-</button>
-<div class="qa-answer"><div class="qa-answer-inner">حين يعرفه الجميع، لم يعد له قيمة سعرية. السوق يعيش على المستقبل. الخبر المُسعَّر هو خبر قديم حتى لو نُشر اليوم — ابحث دائماً عما لم يُسعَّر بعد.</div></div>
+</section>
+
+<!-- ARTICLES PREVIEW -->
+<section class="section" id="articles-preview">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Articles</span>
+<h2 class="section-title">أحدث المقالات</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">مقالات تحليلية تربط الاقتصاد بالواقع.</p>
 </div>
-<div class="qa-item">
-<button class="qa-question" onclick="toggleQA(this)">
-<div style="display:flex;align-items:center;gap:14px;"><div class="qa-q-icon">س</div><span>ما الفرق بين الخوف والسيولة في الأزمات؟</span></div>
-<span class="qa-arrow">▾</span>
-</button>
-<div class="qa-answer"><div class="qa-answer-inner">الخوف انفعال — يدفعك للبيع العشوائي. السيولة قرار — تُحرّك الأموال الكبيرة نحو ملاذات محددة كالدولار والسندات والذهب. تعلّم قراءة حركة السيولة لا مشاعر الجموع.</div></div>
+<div class="articles-preview-grid reveal">
+  <div class="art-prev-card">
+    <span class="card-tag en">Economy</span>
+    <h3 class="art-prev-title">كيف تقرأ بيانات التضخم قبل أن تتحرك الأسواق</h3>
+    <p class="art-prev-desc">دليل عملي لفهم مؤشر CPI وPCE وكيف يترجمها المتداول الحقيقي إلى فرص وليس مجرد أخبار.</p>
+    <div class="art-prev-footer"><span class="card-date en">2 Jun 2025</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
+  </div>
+  <div class="art-prev-card">
+    <span class="card-tag en">Psychology</span>
+    <h3 class="art-prev-title">لماذا يخسر المتداول الذكي في سوق صاعد؟</h3>
+    <p class="art-prev-desc">ليست المشكلة في التحليل — بل في علم النفس. كيف تتخلى عن الانحياز والتحقق الذاتي؟</p>
+    <div class="art-prev-footer"><span class="card-date en">25 May 2025</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
+  </div>
+  <div class="art-prev-card">
+    <span class="card-tag en">Macro</span>
+    <h3 class="art-prev-title">الدولار ليس فقط عملة — إنه سلاح جيوسياسي</h3>
+    <p class="art-prev-desc">قراءة في كيف يُستخدم الدولار أداةً للضغط والعقوبات وتحريك التحالفات المالية الدولية.</p>
+    <div class="art-prev-footer"><span class="card-date en">18 May 2025</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
+  </div>
 </div>
+<div style="text-align:center;margin-top:44px;" class="reveal">
+<a href="articles.html" class="btn btn-outline">عرض جميع المقالات →</a>
 </div>
 </div>
 </section>
@@ -1141,6 +1199,43 @@ function makeCarousel(gridEl){
   buildDots();render();
 }
 
+// QA Carousel
+let qaIdx=0;
+function initQACarousel(){
+  const track=document.getElementById('qaTrack');
+  const dots=document.getElementById('qaDots');
+  if(!track||!dots)return;
+  const cards=track.querySelectorAll('.qa-card');
+  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const total=Math.ceil(cards.length/visible);
+  dots.innerHTML=Array.from({length:total},(_,i)=>`<span class="qa-dot${i===0?' active':''}" onclick="goQA(${i})"></span>`).join('');
+  goQA(0);
+  let sx=0;
+  track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  track.addEventListener('touchend',e=>{const dx=sx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)moveQA(dx>0?1:-1);});
+}
+function moveQA(dir){
+  const track=document.getElementById('qaTrack');
+  if(!track)return;
+  const cards=track.querySelectorAll('.qa-card');
+  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const total=Math.ceil(cards.length/visible);
+  qaIdx=Math.max(0,Math.min(total-1,qaIdx+dir));
+  goQA(qaIdx);
+}
+function goQA(i){
+  qaIdx=i;
+  const track=document.getElementById('qaTrack');
+  if(!track)return;
+  const cards=track.querySelectorAll('.qa-card');
+  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const cardW=cards[0]?cards[0].offsetWidth+24:0;
+  track.style.transform=`translateX(${i*visible*cardW}px)`;
+  document.querySelectorAll('.qa-dot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
+}
+document.addEventListener('DOMContentLoaded',initQACarousel);
+window.addEventListener('resize',initQACarousel);
+
 // ── SITE THEME (colors + fonts + template) ──
 const GFONT_MAP={
   'Noto Naskh Arabic':'Noto+Naskh+Arabic:wght@400;500;600;700',
@@ -1187,6 +1282,13 @@ async function loadSiteTheme(){
       if(c.accent){r.style.setProperty('--border','color-mix(in srgb,'+c.accent+' 18%,transparent)');
         r.style.setProperty('--line','color-mix(in srgb,'+c.accent+' 22%,transparent)');}
     }
+    // Hero booking button visibility
+    if(t.hero_booking_hidden) document.getElementById('heroBookingBtn').style.display='none';
+    // Nav CTA visibility
+    if(t.nav_cta_visible){
+      const el=document.getElementById('navCtaItem');if(el)el.style.display='';
+      const mel=document.getElementById('mobileNavCta');if(mel)mel.style.display='';
+    }
     // Per-element fonts (granular typography)
     const fonts=t.fonts||{};
     // Backward compat: old single font_ar = body+heading+button
@@ -1200,6 +1302,13 @@ async function loadSiteTheme(){
     applyFont('--font-heading',fonts.heading,"'Noto Naskh Arabic',sans-serif");
     applyFont('--font-btn',    fonts.button, "'Noto Naskh Arabic',sans-serif");
     applyFont('--font-en',     fonts.english,'serif');
+    // Hero booking button visibility
+    if(t.hero_booking_hidden) document.getElementById('heroBookingBtn').style.display='none';
+    // Nav CTA visibility
+    if(t.nav_cta_visible){
+      const el=document.getElementById('navCtaItem');if(el)el.style.display='';
+      const mel=document.getElementById('mobileNavCta');if(mel)mel.style.display='';
+    }
   }catch(e){console.warn('theme:',e);}
 }
 loadSiteTheme();
@@ -1279,6 +1388,20 @@ async function loadPageSections(){
           }
         }
       }
+    });
+
+    // Sync nav visibility with sections
+    const visMap={};
+    (data||[]).forEach(s=>{visMap[s.section_key||s.id]=s.visible!==false;});
+    document.querySelectorAll('.nav-links li a').forEach(a=>{
+      const h=a.getAttribute('href');if(!h||!h.startsWith('#'))return;
+      const key=h.slice(1);
+      if(key in visMap){const li=a.closest('li');if(li)li.style.display=visMap[key]?'':'none';}
+    });
+    document.querySelectorAll('#mobileNav a').forEach(a=>{
+      const h=a.getAttribute('href');if(!h||!h.startsWith('#'))return;
+      const key=h.slice(1);
+      if(key in visMap)a.style.display=visMap[key]?'':'none';
     });
 
     // Reorder sections in DOM based on order_index
@@ -1505,13 +1628,51 @@ setTimeout(closeBookingModal,3500);
 buildWeekdays();
 buildCalendar();
 
-// Q&A TOGGLE
+// Q&A TOGGLE (legacy, kept for backwards compat)
 function toggleQA(btn){
 const item=btn.closest('.qa-item');
 const isOpen=item.classList.contains('open');
 document.querySelectorAll('.qa-item.open').forEach(i=>i.classList.remove('open'));
 if(!isOpen)item.classList.add('open');
 }
+
+// QA Carousel
+let qaIdx=0;
+function initQACarousel(){
+  const track=document.getElementById('qaTrack');
+  const dots=document.getElementById('qaDots');
+  if(!track||!dots)return;
+  const cards=track.querySelectorAll('.qa-card');
+  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const total=Math.ceil(cards.length/visible);
+  dots.innerHTML=Array.from({length:total},(_,i)=>`<span class="qa-dot${i===0?' active':''}" onclick="goQA(${i})"></span>`).join('');
+  goQA(0);
+  // touch
+  let sx=0;
+  track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+  track.addEventListener('touchend',e=>{const dx=sx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)moveQA(dx>0?1:-1);});
+}
+function moveQA(dir){
+  const track=document.getElementById('qaTrack');
+  if(!track)return;
+  const cards=track.querySelectorAll('.qa-card');
+  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const total=Math.ceil(cards.length/visible);
+  qaIdx=Math.max(0,Math.min(total-1,qaIdx+dir));
+  goQA(qaIdx);
+}
+function goQA(i){
+  qaIdx=i;
+  const track=document.getElementById('qaTrack');
+  if(!track)return;
+  const cards=track.querySelectorAll('.qa-card');
+  const visible=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const cardW=cards[0]?cards[0].offsetWidth+24:0;
+  track.style.transform=`translateX(${i*visible*cardW}px)`;
+  document.querySelectorAll('.qa-dot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
+}
+document.addEventListener('DOMContentLoaded',initQACarousel);
+window.addEventListener('resize',initQACarousel);
 
 // LIVE TICKER — updates prices in place (keeps scroll smooth) with flash on change
 const TICKER_DATA=[

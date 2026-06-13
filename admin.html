@@ -403,9 +403,11 @@
     <aside class="dash-sidebar">
       <div class="side-label">الرئيسية</div>
       <div class="side-link active" data-panel="overview"><span class="side-icon">📊</span>نظرة عامة</div>
-      <div class="side-label">المحتوى</div>
-      <div class="side-link" data-panel="new-article"><span class="side-icon">✏️</span>مقال جديد</div>
-      <div class="side-link" data-panel="articles"><span class="side-icon">📰</span>إدارة المقالات</div>
+      <div class="side-label">التحليلات</div>
+      <div class="side-link" data-panel="new-article"><span class="side-icon">✏️</span>تحليل جديد</div>
+      <div class="side-link" data-panel="articles"><span class="side-icon">📊</span>إدارة التحليلات</div>
+      <div class="side-link" data-panel="new-blog"><span class="side-icon">✏️</span>مقال جديد</div>
+      <div class="side-link" data-panel="blog"><span class="side-icon">📰</span>إدارة المقالات</div>
       <div class="side-label">الحجوزات</div>
       <div class="side-link" data-panel="bookings"><span class="side-icon">📅</span>الحجوزات</div>
       <div class="side-label">الموقع</div>
@@ -438,8 +440,8 @@
 
       <!-- NEW ARTICLE -->
       <div class="panel" id="panel-new-article">
-        <div class="panel-title" id="editorTitle">مقال جديد</div>
-        <div class="panel-sub">اكتبي وانشري مباشرة على الموقع</div>
+        <div class="panel-title" id="editorTitle">تحليل جديد</div>
+        <div class="panel-sub">اكتبي وانشري تحليلاً مباشرة على الموقع</div>
         <div class="editor-grid">
           <div>
             <div class="form-group">
@@ -499,16 +501,16 @@
               </label>
             </div>
             <input type="hidden" id="editingSlug"/>
-            <button class="submit-btn" id="submitArticle">نشر المقال</button>
+            <button class="submit-btn" id="submitArticle">نشر التحليل</button>
             <button class="draft-btn" id="saveDraft">حفظ كمسودة</button>
           </div>
         </div>
       </div>
 
-      <!-- ARTICLES LIST -->
+      <!-- ANALYSES LIST -->
       <div class="panel" id="panel-articles">
-        <div class="panel-title">إدارة المقالات</div>
-        <div class="panel-sub">تعديل أو حذف المقالات المنشورة والمسودات</div>
+        <div class="panel-title">إدارة التحليلات</div>
+        <div class="panel-sub">تعديل أو حذف التحليلات المنشورة والمسودات</div>
         <div class="section-card">
           <table class="data-table">
             <thead><tr><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr></thead>
@@ -517,10 +519,88 @@
         </div>
       </div>
 
+      <!-- NEW BLOG POST -->
+      <div class="panel" id="panel-new-blog">
+        <div class="panel-title" id="blogEditorTitle">مقال جديد</div>
+        <div class="panel-sub">اكتبي مقالاً تحليلياً وانشريه مباشرة</div>
+        <div class="editor-grid">
+          <div>
+            <div class="form-group">
+              <label class="form-label">عنوان المقال *</label>
+              <input type="text" class="form-input" id="blogTitle" placeholder="عنوان واضح وجذاب..."/>
+              <div class="slug-preview" id="blogSlugPreview"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">مقتطف (يظهر في القائمة) *</label>
+              <textarea class="form-textarea" id="blogExcerpt" style="min-height:80px;font-family:var(--font-ar);font-size:0.92rem;" placeholder="ملخص قصير 2-3 جمل..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">المحتوى الكامل *</label>
+              <div class="rte-toolbar" id="blogRteToolbar">
+                <select class="rte-select" id="blogRteFormat">
+                  <option value="p">نص عادي</option>
+                  <option value="h2">عنوان رئيسي</option>
+                  <option value="h3">عنوان فرعي</option>
+                </select>
+                <div class="rte-sep"></div>
+                <button type="button" class="rte-btn" data-cmd="bold"><strong>B</strong></button>
+                <button type="button" class="rte-btn" data-cmd="italic"><em>I</em></button>
+                <button type="button" class="rte-btn" data-cmd="underline"><u>U</u></button>
+                <div class="rte-sep"></div>
+                <button type="button" class="rte-btn" data-cmd="insertUnorderedList">☰</button>
+                <button type="button" class="rte-btn" data-cmd="insertOrderedList">①</button>
+                <button type="button" class="rte-btn" data-cmd="formatBlock" data-value="blockquote">❝</button>
+              </div>
+              <div class="rte-content" id="blogRteContent" contenteditable="true" data-placeholder="اكتبي محتوى المقال هنا..."></div>
+            </div>
+          </div>
+          <div class="editor-sidebar">
+            <h4>إعدادات النشر</h4>
+            <div class="form-group">
+              <label class="form-label">التصنيف</label>
+              <select class="form-select" id="blogTag">
+                <option>Economy</option><option>Psychology</option>
+                <option>Macro</option><option>Markets</option>
+                <option>مقال</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">الكاتب</label>
+              <input type="text" class="form-input" id="blogAuthor" value="هنادي"/>
+            </div>
+            <div class="publish-toggle">
+              <span class="toggle-label">نشر فوراً</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="blogPublish" checked/>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <input type="hidden" id="blogEditingSlug"/>
+            <button class="submit-btn" id="submitBlog">نشر المقال</button>
+            <button class="draft-btn" id="saveBlogDraft">حفظ كمسودة</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOG LIST -->
+      <div class="panel" id="panel-blog">
+        <div class="panel-title">إدارة المقالات</div>
+        <div class="panel-sub">تعديل أو حذف المقالات المنشورة والمسودات</div>
+        <div class="section-card">
+          <table class="data-table">
+            <thead><tr><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr></thead>
+            <tbody id="blogBody"><tr><td colspan="5" class="empty-state">جارٍ التحميل...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- BOOKINGS -->
       <div class="panel" id="panel-bookings">
         <div class="panel-title">الحجوزات</div>
         <div class="panel-sub">جميع طلبات الاستشارة الواردة</div>
+        <div style="margin-bottom:20px;">
+          <a href="bookings.html" target="_blank" class="submit-btn" style="display:inline-flex;align-items:center;gap:8px;width:auto;padding:12px 22px;text-decoration:none;">فتح لوحة الحجوزات المستقلة ←</a>
+        </div>
         <div class="section-card" style="margin-bottom:16px;">
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
             <input type="text" id="bookingSearch" class="form-input" placeholder="🔍 بحث باسم أو إيميل..." style="flex:1;min-width:180px;padding:10px 14px;font-size:0.85rem;" oninput="filterBookings()"/>
@@ -647,6 +727,18 @@
         </div>
 
         <div class="section-card">
+          <div class="section-card-title">إعدادات إضافية</div>
+          <div class="publish-toggle">
+            <span class="toggle-label">إظهار زر "احجز استشارة" في قسم Hero</span>
+            <label class="toggle-switch"><input type="checkbox" id="heroBookingToggle" checked/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="publish-toggle" style="margin-top:12px;">
+            <span class="toggle-label">إظهار زر "احجز موعداً" في شريط التنقل</span>
+            <label class="toggle-switch"><input type="checkbox" id="navCtaToggle"/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="section-card">
           <div class="section-card-title">ربط الحجوزات بـ Google Sheets</div>
           <div class="form-group" style="max-width:560px;">
             <label class="form-label">رابط Google Apps Script (Web App URL)</label>
@@ -736,6 +828,8 @@ function loadPanel(name){
   if(name==='new-article') resetEditor();
   if(name==='builder')     loadBuilder();
   if(name==='theme')       loadTheme();
+  if(name==='blog')        loadBlogArticles();
+  if(name==='new-blog')    resetBlogEditor();
 }
 
 // TOAST
@@ -847,11 +941,11 @@ async function submitArticle(publish){
       const slug=generateSlug(title);
       const {error}=await sb.from('articles').insert([{title,slug,excerpt,content,tag,author,published:publish}]);
       if(error)throw error;
-      showToast(publish?'✓ تم نشر المقال!':'✓ تم حفظ المسودة');
+      showToast(publish?'✓ تم نشر التحليل!':'✓ تم حفظ المسودة');
     }
     resetEditor();
   }catch(e){showToast('خطأ: '+(e.message||'حاولي مرة أخرى'),'error');}
-  finally{btn.disabled=false;btn.textContent='نشر المقال';}
+  finally{btn.disabled=false;btn.textContent='نشر التحليل';}
 }
 document.getElementById('submitArticle').addEventListener('click',()=>submitArticle(document.getElementById('artPublish').checked));
 document.getElementById('saveDraft').addEventListener('click',()=>submitArticle(false));
@@ -882,7 +976,95 @@ function resetEditor(){
   document.getElementById('artAuthor').value='هنادي';document.getElementById('artTag').value='Geopolitics';
   document.getElementById('artPublish').checked=true;document.getElementById('editingSlug').value='';
   document.getElementById('slugPreview').textContent='';document.getElementById('submitArticle').disabled=false;
-  document.getElementById('submitArticle').textContent='نشر المقال';
+  document.getElementById('submitArticle').textContent='نشر التحليل';
+}
+
+// BLOG EDITOR
+document.getElementById('blogTitle').addEventListener('input',function(){
+  const slug=this.value.trim().toLowerCase().replace(/\s+/g,'-').replace(/[^\w؀-ۿ-]/g,'').substring(0,60);
+  if(!document.getElementById('blogEditingSlug').value)
+    document.getElementById('blogSlugPreview').textContent=slug?'slug: '+slug:'';
+});
+
+document.getElementById('blogRteToolbar').addEventListener('click',e=>{
+  const btn=e.target.closest('.rte-btn[data-cmd][data-rte="blog"]');if(!btn)return;
+  document.getElementById('blogRteContent').focus();const cmd=btn.dataset.cmd;
+  if(cmd==='createLink'){const url=prompt('أدخلي الرابط:','https://');if(url)document.execCommand('createLink',false,url);}
+  else if(cmd==='formatBlock')document.execCommand('formatBlock',false,btn.dataset.value);
+  else document.execCommand(cmd,false,null);
+});
+document.getElementById('blogRteFormat').addEventListener('change',function(){document.getElementById('blogRteContent').focus();document.execCommand('formatBlock',false,this.value);this.value='p';});
+
+async function submitBlogArticle(publish){
+  const title=document.getElementById('blogTitle').value.trim();
+  const excerpt=document.getElementById('blogExcerpt').value.trim();
+  const content=document.getElementById('blogRteContent').innerHTML.trim();
+  const tag=document.getElementById('blogTag').value;
+  const author=document.getElementById('blogAuthor').value.trim()||'هنادي';
+  const editSlug=document.getElementById('blogEditingSlug').value;
+  if(!title||!excerpt||!content){showToast('يرجى ملء جميع الحقول المطلوبة','error');return;}
+  const btn=document.getElementById('submitBlog');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  try{
+    if(editSlug){
+      const{error}=await sb.from('articles').update({title,excerpt,content,tag,author,published:publish,content_type:'article'}).eq('slug',editSlug);
+      if(error)throw error;
+      showToast('✓ تم تحديث المقال');
+    }else{
+      const slug=generateSlug(title);
+      const{error}=await sb.from('articles').insert([{title,slug,excerpt,content,tag,author,published:publish,content_type:'article'}]);
+      if(error)throw error;
+      showToast(publish?'✓ تم نشر المقال!':'✓ تم حفظ المسودة');
+    }
+    resetBlogEditor();
+  }catch(e){showToast('خطأ: '+(e.message||'حاولي مرة أخرى'),'error');}
+  finally{btn.disabled=false;btn.textContent='نشر المقال';}
+}
+
+document.getElementById('submitBlog').addEventListener('click',()=>submitBlogArticle(document.getElementById('blogPublish').checked));
+document.getElementById('saveBlogDraft').addEventListener('click',()=>submitBlogArticle(false));
+
+function resetBlogEditor(){
+  ['blogTitle','blogExcerpt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('blogRteContent').innerHTML='';
+  document.getElementById('blogAuthor').value='هنادي';
+  document.getElementById('blogTag').value='Economy';
+  document.getElementById('blogPublish').checked=true;
+  document.getElementById('blogEditingSlug').value='';
+  document.getElementById('blogSlugPreview').textContent='';
+  document.getElementById('submitBlog').disabled=false;
+  document.getElementById('submitBlog').textContent='نشر المقال';
+}
+
+async function loadBlogArticles(){
+  const{data}=await sb.from('articles').select('*').eq('content_type','article').order('created_at',{ascending:false});
+  const tbody=document.getElementById('blogBody');
+  if(!data||!data.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📝</div>لا توجد مقالات بعد.</div></td></tr>';return;}
+  tbody.innerHTML=data.map(a=>`
+    <tr>
+      <td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.title}</td>
+      <td><span class="badge" style="background:rgba(120,144,124,0.08);border:1px solid rgba(120,144,124,0.18);color:var(--gold);">${a.tag}</span></td>
+      <td><span class="badge ${a.published?'badge-published':'badge-draft'}">${a.published?'منشور':'مسودة'}</span></td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${new Date(a.created_at).toLocaleDateString('ar-SA')}</td>
+      <td><button class="action-btn edit" onclick="editBlogArticle('${a.slug}')">تعديل</button><button class="action-btn del" onclick="deleteArticle('${a.id}')">حذف</button></td>
+    </tr>`).join('');
+}
+
+async function editBlogArticle(slug){
+  const{data}=await sb.from('articles').select('*').eq('slug',slug).single();
+  if(!data)return;
+  document.querySelectorAll('.side-link').forEach(l=>l.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('[data-panel="new-blog"]').classList.add('active');
+  document.getElementById('panel-new-blog').classList.add('active');
+  document.getElementById('blogTitle').value=data.title;
+  document.getElementById('blogExcerpt').value=data.excerpt||'';
+  document.getElementById('blogRteContent').innerHTML=data.content||'';
+  document.getElementById('blogTag').value=data.tag;
+  document.getElementById('blogAuthor').value=data.author;
+  document.getElementById('blogPublish').checked=data.published;
+  document.getElementById('blogEditingSlug').value=data.slug;
+  document.getElementById('blogSlugPreview').textContent='slug: '+data.slug;
 }
 
 // BOOKINGS
@@ -1505,6 +1687,8 @@ async function loadTheme(){
   }
   if(!currentTheme.style)currentTheme.style='classic';
   document.getElementById('sheetsWebhook').value=(data&&data.sheets_webhook)||'';
+  document.getElementById('heroBookingToggle').checked = !currentTheme.hero_booking_hidden;
+  document.getElementById('navCtaToggle').checked = !!currentTheme.nav_cta_visible;
   fillThemeInputs();
   if(currentTheme.template)document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===currentTheme.template));
   document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active-style',c.dataset.style===currentTheme.style));
@@ -1541,6 +1725,8 @@ document.getElementById('saveThemeBtn').addEventListener('click',async function(
     english:document.getElementById('fontEnglish').value
   };
   delete currentTheme.font_ar; // remove legacy key
+  currentTheme.hero_booking_hidden = !document.getElementById('heroBookingToggle').checked;
+  currentTheme.nav_cta_visible = document.getElementById('navCtaToggle').checked;
   const webhook=document.getElementById('sheetsWebhook').value.trim();
   this.disabled=true;this.innerHTML='<span class="spinner"></span>';
   const{error}=await sb.from('site_settings').upsert({id:1,theme:currentTheme,sheets_webhook:webhook||null,updated_at:new Date().toISOString()},{onConflict:'id'});
