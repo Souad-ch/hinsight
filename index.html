@@ -1428,11 +1428,11 @@ async function loadPageSections(){
         body.insertBefore(el,refEl);
       }
     });
-    // Move any remaining body-level sections/divs not in the ordered list to end
-    // (prevents unknown sections floating above the ordered ones)
-    const movedEls=new Set(Object.values(_SEC_MAP).map(m=>document.querySelector(m.el)).filter(Boolean));
-    document.querySelectorAll('body>section,body>div.ticker-wrap').forEach(el=>{
-      if(!movedEls.has(el)&&el.id!=='footer'&&el.style.display!=='none'){
+    // Move any remaining body-level sections not yet reordered to end
+    // (sections absent from Supabase table would otherwise float above ordered ones)
+    const alreadyMoved=new Set(ordered.map(k=>_SEC_MAP[k]&&document.querySelector(_SEC_MAP[k].el)).filter(Boolean));
+    document.querySelectorAll('body>section,body>.ticker-wrap').forEach(el=>{
+      if(!alreadyMoved.has(el)&&el.id!=='footer'){
         body.insertBefore(el,refEl);
       }
     });
