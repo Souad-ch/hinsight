@@ -1213,10 +1213,11 @@ function makeCarousel(gridEl){
   function render(){
     const ps=perSlide();
     const gapPx=24;
-    const cardW=`calc(${100/ps}% - ${gapPx*(ps-1)/ps}px)`;
-    cards.forEach(c=>{c.style.flex=`0 0 ${cardW}`;c.style.minWidth='0';});
-    const offset=cur*ps*(100/ps);
-    track.style.transform=`translateX(${offset}%)`;
+    const wrapW=wrap.offsetWidth||wrap.getBoundingClientRect().width||600;
+    const cardW=(wrapW - gapPx*(ps-1))/ps;
+    cards.forEach(c=>{c.style.flex=`0 0 ${cardW}px`;c.style.minWidth='0';c.style.boxSizing='border-box';});
+    const slideW=cardW+gapPx;
+    track.style.transform=`translateX(${cur*ps*slideW}px)`;
     btnPrev.disabled=cur===0;btnNext.disabled=cur>=totalPages()-1;
     [...dotsWrap.children].forEach((d,i)=>d.classList.toggle('active',i===cur));
   }
