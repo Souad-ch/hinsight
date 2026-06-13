@@ -1302,13 +1302,6 @@ async function loadSiteTheme(){
     applyFont('--font-heading',fonts.heading,"'Noto Naskh Arabic',sans-serif");
     applyFont('--font-btn',    fonts.button, "'Noto Naskh Arabic',sans-serif");
     applyFont('--font-en',     fonts.english,'serif');
-    // Hero booking button visibility
-    if(t.hero_booking_hidden) document.getElementById('heroBookingBtn').style.display='none';
-    // Nav CTA visibility
-    if(t.nav_cta_visible){
-      const el=document.getElementById('navCtaItem');if(el)el.style.display='';
-      const mel=document.getElementById('mobileNavCta');if(mel)mel.style.display='';
-    }
   }catch(e){console.warn('theme:',e);}
 }
 loadSiteTheme();
