@@ -20,6 +20,22 @@
 --font-heading:var(--font-ar);--font-body:var(--font-ar);--font-btn:var(--font-ar);
 --radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
 }
+/* ══ DESIGN SKINS — أنماط التصميم (تتغيّر من لوحة التحكم) ══ */
+/* ناعم: زوايا دائرية + أزرار حبّة + ظلال */
+html[data-style="soft"]{--radius:20px;}
+html[data-style="soft"] .insight-card,html[data-style="soft"] .cons-card,html[data-style="soft"] .lib-card,html[data-style="soft"] .report-card,html[data-style="soft"] .testi-card,html[data-style="soft"] .qa-item{box-shadow:0 12px 40px rgba(0,0,0,0.22);}
+html[data-style="soft"] .btn,html[data-style="soft"] .nav-cta{border-radius:999px!important;}
+/* حادّ: زوايا قائمة + تباعد حروف (طابع تحريري) */
+html[data-style="sharp"]{--radius:0px;}
+html[data-style="sharp"] .section-title,html[data-style="sharp"] .hero-title{letter-spacing:0.03em;}
+html[data-style="sharp"] .btn,html[data-style="sharp"] .nav-cta{border-radius:0!important;letter-spacing:0.06em;}
+/* زجاجي: شفافية + تمويه خلفي */
+html[data-style="glass"]{--radius:16px;}
+html[data-style="glass"] .insight-card,html[data-style="glass"] .cons-card,html[data-style="glass"] .lib-card,html[data-style="glass"] .report-card,html[data-style="glass"] .testi-card{background:color-mix(in srgb,var(--card) 65%,transparent)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 32px rgba(0,0,0,0.28);}
+/* جريء: حدود سميكة + ظل صلب */
+html[data-style="bold"]{--radius:6px;}
+html[data-style="bold"] .insight-card,html[data-style="bold"] .cons-card,html[data-style="bold"] .lib-card,html[data-style="bold"] .report-card,html[data-style="bold"] .testi-card{border-width:2px;box-shadow:6px 6px 0 var(--border);}
+html[data-style="bold"] .btn,html[data-style="bold"] .nav-cta{border-radius:6px!important;font-weight:800!important;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;font-size:16px;}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:600;line-height:1.75;overflow-x:hidden;direction:rtl;}
@@ -1159,6 +1175,9 @@ async function loadSiteTheme(){
     if(data.sheets_webhook)window.__SHEETS_WEBHOOK=data.sheets_webhook;
     if(!data.theme)return;
     const t=data.theme;const r=document.documentElement;
+    // Design skin (نمط التصميم)
+    if(t.style&&t.style!=='classic')r.setAttribute('data-style',t.style);
+    else r.removeAttribute('data-style');
     // Colors
     if(t.colors){const c=t.colors;
       const set=(k,v)=>{if(v)r.style.setProperty(k,v);};

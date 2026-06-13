@@ -360,6 +360,15 @@
     .font-row-label{font-size:0.9rem;color:var(--cream);display:flex;flex-direction:column;gap:2px;}
     .font-row-label small{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);letter-spacing:0.05em;}
     .apply-all-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;margin-bottom:18px;background:rgba(120,144,124,0.05);border:1px dashed rgba(120,144,124,0.25);border-radius:8px;}
+    .style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+    .style-card{border:1px solid var(--ink-border);border-radius:10px;padding:16px;cursor:pointer;transition:all 0.25s;background:rgba(255,255,255,0.02);text-align:center;}
+    .style-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+    .style-card.active-style{border-color:var(--gold-bright);box-shadow:0 0 0 2px rgba(120,144,124,0.25);background:rgba(120,144,124,0.06);}
+    .style-demo{height:46px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .style-demo .sd-card{width:42px;height:34px;background:var(--gold);opacity:0.25;}
+    .style-demo .sd-btn{padding:6px 14px;background:var(--gold-bright);color:var(--ink);font-size:0.6rem;font-weight:700;}
+    .style-name{font-size:0.85rem;color:var(--cream);font-weight:600;}
+    .style-sub{font-size:0.65rem;color:var(--muted);margin-top:3px;font-family:var(--font-mono);}
     .apply-all-label{font-size:0.85rem;color:var(--cream);}
   </style>
 </head>
@@ -582,6 +591,11 @@
         <div class="section-card">
           <div class="section-card-title">القوالب الجاهزة</div>
           <div class="tpl-grid" id="tplGrid"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-title">نمط التصميم (شكل البطاقات والأزرار)</div>
+          <div class="style-grid" id="styleGrid"></div>
         </div>
 
         <div class="section-card">
@@ -1383,6 +1397,36 @@ function renderTemplates(){
   }).join('');
 }
 
+// ── أنماط التصميم (Design Skins) ──
+const DESIGN_STYLES={
+  classic:{name:'كلاسيكي',sub:'الافتراضي',radius:'8px'},
+  soft:   {name:'ناعم',   sub:'دائري + حبّة',radius:'18px',pill:true},
+  sharp:  {name:'حادّ',   sub:'تحريري',radius:'0px'},
+  glass:  {name:'زجاجي',  sub:'شفاف + تمويه',radius:'14px',glass:true},
+  bold:   {name:'جريء',   sub:'حدود سميكة',radius:'4px',bold:true},
+};
+function renderStyles(){
+  const grid=document.getElementById('styleGrid');
+  if(!grid)return;
+  grid.innerHTML=Object.entries(DESIGN_STYLES).map(([k,s])=>{
+    const cardR = s.radius;
+    const btnR  = s.pill?'999px':s.radius;
+    const cardExtra = s.glass?'opacity:0.4;backdrop-filter:blur(2px);' : s.bold?'opacity:0.3;box-shadow:3px 3px 0 var(--gold);' : '';
+    return `<div class="style-card" data-style="${k}" onclick="selectStyle('${k}')">
+      <div class="style-demo">
+        <span class="sd-card" style="border-radius:${cardR};${cardExtra}"></span>
+        <span class="sd-btn" style="border-radius:${btnR};">زر</span>
+      </div>
+      <div class="style-name">${s.name}</div>
+      <div class="style-sub">${s.sub}</div>
+    </div>`;
+  }).join('');
+}
+function selectStyle(key){
+  if(currentTheme)currentTheme.style=key;
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active-style',c.dataset.style===key));
+}
+
 // Font catalogs
 const FONTS_AR=['DIN Next LT Arabic','Noto Naskh Arabic','Cairo','IBM Plex Sans Arabic','Tajawal','Almarai','Noto Kufi Arabic','El Messiri'];
 const FONTS_EN=['Cormorant Garamond','Playfair Display','Marcellus','Poppins','Montserrat'];
@@ -1415,7 +1459,8 @@ function applyFontToAll(){
 function applyTemplate(key){
   const t=THEME_TEMPLATES[key];if(!t)return;
   const fonts=currentTheme&&currentTheme.fonts?currentTheme.fonts:{heading:t.font_ar,body:t.font_ar,button:t.font_ar,english:'Cormorant Garamond'};
-  currentTheme={template:key,fonts:{heading:t.font_ar,body:t.font_ar,button:t.font_ar,english:fonts.english||'Cormorant Garamond'},colors:{...t.colors}};
+  const keepStyle=(currentTheme&&currentTheme.style)||'classic';
+  currentTheme={template:key,style:keepStyle,fonts:{heading:t.font_ar,body:t.font_ar,button:t.font_ar,english:fonts.english||'Cormorant Garamond'},colors:{...t.colors}};
   fillThemeInputs();
   document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===key));
 }
@@ -1447,6 +1492,7 @@ function updateFontPreview(){
 
 async function loadTheme(){
   renderTemplates();
+  renderStyles();
   buildFontSelects();
   const{data}=await sb.from('site_settings').select('*').eq('id',1).single();
   if(data&&data.theme){currentTheme=data.theme;}
@@ -1457,15 +1503,18 @@ async function loadTheme(){
     const old=currentTheme.font_ar||'DIN Next LT Arabic';
     currentTheme.fonts={heading:old,body:old,button:old,english:'Cormorant Garamond'};
   }
+  if(!currentTheme.style)currentTheme.style='classic';
   document.getElementById('sheetsWebhook').value=(data&&data.sheets_webhook)||'';
   fillThemeInputs();
   if(currentTheme.template)document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===currentTheme.template));
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active-style',c.dataset.style===currentTheme.style));
 }
 
 function resetThemeDefault(){
-  currentTheme={template:'emerald',colors:{...THEME_TEMPLATES.emerald.colors},fonts:{heading:'DIN Next LT Arabic',body:'DIN Next LT Arabic',button:'DIN Next LT Arabic',english:'Cormorant Garamond'}};
+  currentTheme={template:'emerald',style:'classic',colors:{...THEME_TEMPLATES.emerald.colors},fonts:{heading:'DIN Next LT Arabic',body:'DIN Next LT Arabic',button:'DIN Next LT Arabic',english:'Cormorant Garamond'}};
   fillThemeInputs();
   document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl==='emerald'));
+  document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active-style',c.dataset.style==='classic'));
   showToast('تم تحديد الافتراضي — اضغطي حفظ');
 }
 
