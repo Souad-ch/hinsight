@@ -424,7 +424,8 @@ form.addEventListener('submit', async(e)=>{
         to_email  : 'souchamaa35@gmail.com'
       });
       emailSent=true;
-      // 2b) تأكيد للعميل على إيميله
+      // 2b) تأكيد للعميل (معطّل حالياً — فعّليه بإنشاء قالب template_confirm وإزالة /* */)
+      /*
       try{
         await emailjs.send(EJS_SERVICE_ID, EJS_CONFIRM_TPL, {
           to_name    : payload.name,
@@ -435,6 +436,7 @@ form.addEventListener('submit', async(e)=>{
           appt_time  : payload.apptTime
         });
       }catch(err){ console.warn('confirm email:',err); }
+      */
     }catch(err){ console.warn('emailjs:',err); }
   }
 
