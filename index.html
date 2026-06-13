@@ -1051,6 +1051,65 @@ const _SEC_MAP={
   ]},
 };
 
+// ── SITE THEME (colors + fonts + template) ──
+const GFONT_MAP={
+  'Noto Naskh Arabic':'Noto+Naskh+Arabic:wght@400;500;600;700',
+  'Cairo':'Cairo:wght@400;500;600;700;800',
+  'Tajawal':'Tajawal:wght@400;500;700;800',
+  'IBM Plex Sans Arabic':'IBM+Plex+Sans+Arabic:wght@300;400;500;600;700',
+  'Almarai':'Almarai:wght@300;400;700;800',
+  'Noto Kufi Arabic':'Noto+Kufi+Arabic:wght@400;500;600;700',
+  'El Messiri':'El+Messiri:wght@400;500;600;700'
+};
+async function loadSiteTheme(){
+  if(!sbClient)return;
+  try{
+    const {data}=await sbClient.from('site_settings').select('*').eq('id',1).single();
+    if(!data||!data.theme)return;
+    const t=data.theme;const r=document.documentElement;
+    // Colors
+    if(t.colors){const c=t.colors;
+      const set=(k,v)=>{if(v)r.style.setProperty(k,v);};
+      set('--bg',c.bg);set('--bg-mid',c.bg_mid);set('--card',c.card);
+      set('--accent',c.accent);set('--accent-light',c.accent_light);
+      set('--text',c.text);set('--text-dim',c.text_dim);
+      if(c.accent){r.style.setProperty('--border','color-mix(in srgb,'+c.accent+' 18%,transparent)');
+        r.style.setProperty('--line','color-mix(in srgb,'+c.accent+' 22%,transparent)');}
+    }
+    // Arabic font
+    if(t.font_ar&&GFONT_MAP[t.font_ar]){
+      const link=document.createElement('link');link.rel='stylesheet';
+      link.href='https://fonts.googleapis.com/css2?family='+GFONT_MAP[t.font_ar]+'&display=swap';
+      document.head.appendChild(link);
+      r.style.setProperty('--font-ar',"'"+t.font_ar+"',sans-serif");
+    }
+  }catch(e){console.warn('theme:',e);}
+}
+loadSiteTheme();
+
+// ── LIVE TESTIMONIALS from Supabase ──
+async function loadLiveTestimonials(){
+  if(!sbClient)return;
+  try{
+    const {data}=await sbClient.from('testimonials').select('*').eq('visible',true).order('order_index',{ascending:true});
+    if(!data||!data.length)return;
+    const grid=document.querySelector('#testimonials .testi-grid');
+    if(!grid)return;
+    grid.innerHTML=data.map((t,i)=>{
+      const initial=(t.name||'؟').trim().charAt(0);
+      const stars='★'.repeat(t.rating||5)+'☆'.repeat(5-(t.rating||5));
+      return `<div class="testi-card reveal delay-${(i%3)+1}">
+        <div class="testi-stars">${stars}</div>
+        <p class="testi-text">${(t.text||'').replace(/</g,'&lt;')}</p>
+        <div class="testi-person"><div class="testi-avatar en">${initial}</div>
+        <div><div class="testi-name">${(t.name||'').replace(/</g,'&lt;')}</div>
+        <div class="testi-role">${(t.role||'').replace(/</g,'&lt;')}</div></div></div>
+      </div>`;}).join('');
+    grid.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+  }catch(e){console.warn('testimonials:',e);}
+}
+loadLiveTestimonials();
+
 async function loadPageSections(){
   if(!sbClient)return;
   try{

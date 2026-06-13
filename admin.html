@@ -333,6 +333,26 @@
       .pb-props{border-inline-end:none;}
       #panel-builder.active{margin:-24px -20px;height:auto;min-height:calc(100vh - 112px);}
     }
+    /* ── THEME PANEL ── */
+    .tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+    .tpl-card{border:1px solid var(--ink-border);border-radius:8px;overflow:hidden;cursor:pointer;transition:all 0.25s;position:relative;}
+    .tpl-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,0.4);}
+    .tpl-card.active-tpl{border-color:var(--gold);box-shadow:0 0 0 2px rgba(120,144,124,0.3);}
+    .tpl-card.active-tpl::after{content:'✓';position:absolute;top:8px;left:8px;width:22px;height:22px;background:var(--gold);color:var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;z-index:2;}
+    .tpl-preview{height:90px;display:flex;flex-direction:column;padding:12px;gap:6px;position:relative;overflow:hidden;}
+    .tpl-swatch-row{display:flex;gap:5px;}
+    .tpl-swatch{width:20px;height:20px;border-radius:4px;border:1px solid rgba(255,255,255,0.12);}
+    .tpl-mini-title{font-size:0.62rem;font-weight:700;margin-top:auto;}
+    .tpl-mini-sub{font-size:0.5rem;opacity:0.6;}
+    .tpl-name{padding:9px 12px;font-size:0.8rem;color:var(--cream);border-top:1px solid var(--ink-border);background:rgba(0,0,0,0.2);}
+    .color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+    .color-field{display:flex;flex-direction:column;gap:7px;}
+    .color-field label{font-family:var(--font-mono);font-size:0.56rem;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted);}
+    .color-pick{display:flex;align-items:center;gap:8px;}
+    .color-pick input[type=color]{width:40px;height:36px;border:1px solid var(--ink-border);border-radius:6px;background:transparent;cursor:pointer;padding:2px;flex-shrink:0;}
+    .color-hex{flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--ink-border);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:0.72rem;color:var(--cream);outline:none;direction:ltr;text-align:left;text-transform:uppercase;}
+    .color-hex:focus{border-color:var(--gold);}
+    .font-preview{margin-top:12px;padding:16px;background:rgba(255,255,255,0.02);border:1px solid var(--ink-border);border-radius:6px;font-size:1.15rem;color:var(--cream);text-align:center;transition:font-family 0.2s;}
   </style>
 </head>
 <body>
@@ -372,6 +392,7 @@
       <div class="side-link" data-panel="bookings"><span class="side-icon">📅</span>الحجوزات</div>
       <div class="side-label">الموقع</div>
       <div class="side-link" data-panel="builder"><span class="side-icon">🎨</span>مدير الصفحة</div>
+      <div class="side-link" data-panel="theme"><span class="side-icon">🎭</span>القالب والألوان</div>
       <div class="side-label">أخرى</div>
       <div class="side-link" data-panel="subscribers"><span class="side-icon">📧</span>المشتركون</div>
       <div class="side-link" onclick="window.open('index.html','_blank')"><span class="side-icon">🌐</span>الموقع</div>
@@ -532,6 +553,53 @@
         </div>
       </div>
 
+      <!-- THEME / TEMPLATE -->
+      <div class="panel" id="panel-theme">
+        <div class="panel-title">🎭 القالب والألوان والخطوط</div>
+        <div class="panel-sub">غيّري شكل الموقع بالكامل — اختاري قالباً جاهزاً أو خصّصي الألوان والخط</div>
+
+        <div class="section-card">
+          <div class="section-card-title">القوالب الجاهزة</div>
+          <div class="tpl-grid" id="tplGrid"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-title">الألوان (تخصيص يدوي)</div>
+          <div class="color-grid">
+            <div class="color-field"><label>الخلفية الأساسية</label><div class="color-pick"><input type="color" id="cBg"><input type="text" id="cBgT" class="color-hex"></div></div>
+            <div class="color-field"><label>خلفية ثانوية</label><div class="color-pick"><input type="color" id="cBgMid"><input type="text" id="cBgMidT" class="color-hex"></div></div>
+            <div class="color-field"><label>البطاقات</label><div class="color-pick"><input type="color" id="cCard"><input type="text" id="cCardT" class="color-hex"></div></div>
+            <div class="color-field"><label>اللون المميز</label><div class="color-pick"><input type="color" id="cAccent"><input type="text" id="cAccentT" class="color-hex"></div></div>
+            <div class="color-field"><label>المميز الفاتح</label><div class="color-pick"><input type="color" id="cAccentL"><input type="text" id="cAccentLT" class="color-hex"></div></div>
+            <div class="color-field"><label>لون النص</label><div class="color-pick"><input type="color" id="cText"><input type="text" id="cTextT" class="color-hex"></div></div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-title">الخط العربي</div>
+          <div class="form-group" style="max-width:420px;">
+            <select class="form-select" id="fontSelect">
+              <option value="Noto Naskh Arabic">Noto Naskh Arabic — كلاسيكي (الحالي)</option>
+              <option value="Cairo">Cairo — هندسي حديث (الأقرب لـ DIN Next)</option>
+              <option value="IBM Plex Sans Arabic">IBM Plex Sans Arabic — عصري نظيف</option>
+              <option value="Tajawal">Tajawal — بسيط أنيق</option>
+              <option value="Almarai">Almarai — واضح للقراءة</option>
+              <option value="Noto Kufi Arabic">Noto Kufi Arabic — كوفي عصري</option>
+              <option value="El Messiri">El Messiri — راقٍ</option>
+            </select>
+            <div class="font-preview" id="fontPreview">معاينة الخط: قراءة الأسواق من خلف الأحداث ١٢٣٤٥</div>
+          </div>
+          <div class="builder-help" style="margin-top:8px;">
+            💡 خط <strong>DIN Next LT Arabic</strong> مدفوع (Monotype) — البديل المجاني الأقرب له هو <strong>Cairo</strong>. لو اشتريتِ ترخيص الخط وملفاته أقدر أركّبه لكِ.
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="submit-btn" style="width:auto;padding:13px 28px;" id="saveThemeBtn">💾 حفظ ونشر على الموقع</button>
+          <button class="draft-btn" style="width:auto;padding:13px 28px;" onclick="resetThemeDefault()">↺ استعادة الافتراضي</button>
+        </div>
+      </div>
+
       <!-- SUBSCRIBERS -->
       <div class="panel" id="panel-subscribers">
         <div class="panel-title">المشتركون بالنشرة</div>
@@ -590,6 +658,7 @@ function loadPanel(name){
   if(name==='overview')    loadOverview();
   if(name==='new-article') resetEditor();
   if(name==='builder')     loadBuilder();
+  if(name==='theme')       loadTheme();
 }
 
 // TOAST
@@ -1123,6 +1192,102 @@ async function initDefaultSections(){
   showToast('✓ تم إنشاء الإعدادات الافتراضية بنجاح');
   loadBuilder();
 }
+
+// ══════════════════════════════════════════════
+// THEME / TEMPLATE / COLORS / FONTS
+// ══════════════════════════════════════════════
+const THEME_TEMPLATES={
+  emerald:{name:'🌿 الزمرّد الفاخر (الحالي)',font_ar:'Noto Naskh Arabic',colors:{bg:'#0C0B0F',bg_mid:'#111014',card:'#161818',accent:'#78907C',accent_light:'#9FBBA4',text:'#DDDEDD',text_dim:'#8a9a8c'}},
+  navy:{name:'⚓ الكحلي الملكي',font_ar:'Cairo',colors:{bg:'#0A0F1A',bg_mid:'#0E1525',card:'#141d30',accent:'#C9A227',accent_light:'#E8C95B',text:'#E3E8F0',text_dim:'#8896ad'}},
+  rose:{name:'🌹 الذهبي الوردي',font_ar:'Tajawal',colors:{bg:'#120D10',bg_mid:'#1A1014',card:'#21161b',accent:'#B76E79',accent_light:'#D89AA3',text:'#EAE0E3',text_dim:'#a88c92'}},
+  purple:{name:'🔮 البنفسجي الليلي',font_ar:'IBM Plex Sans Arabic',colors:{bg:'#0D0A14',bg_mid:'#140F1F',card:'#1c1530',accent:'#8B5CF6',accent_light:'#B79DF5',text:'#E5E0F0',text_dim:'#9488ad'}},
+  charcoal:{name:'🖤 الفحمي الذهبي',font_ar:'Cairo',colors:{bg:'#0E0E0E',bg_mid:'#161616',card:'#1d1d1d',accent:'#C5A572',accent_light:'#E0C896',text:'#E8E8E8',text_dim:'#9a9a9a'}},
+  light:{name:'☀️ الفاتح النقي',font_ar:'IBM Plex Sans Arabic',colors:{bg:'#FAFAF7',bg_mid:'#F0F0EB',card:'#FFFFFF',accent:'#5A7A60',accent_light:'#3d5642',text:'#1A1A18',text_dim:'#5a5a55'}},
+};
+let currentTheme=null;
+
+const CK=[['cBg','bg'],['cBgMid','bg_mid'],['cCard','card'],['cAccent','accent'],['cAccentL','accent_light'],['cText','text']];
+
+function renderTemplates(){
+  const grid=document.getElementById('tplGrid');
+  grid.innerHTML=Object.entries(THEME_TEMPLATES).map(([k,t])=>{
+    const c=t.colors;
+    return `<div class="tpl-card" data-tpl="${k}" onclick="applyTemplate('${k}')" style="background:${c.bg};">
+      <div class="tpl-preview" style="background:${c.bg};">
+        <div class="tpl-swatch-row">
+          <span class="tpl-swatch" style="background:${c.accent};"></span>
+          <span class="tpl-swatch" style="background:${c.accent_light};"></span>
+          <span class="tpl-swatch" style="background:${c.card};"></span>
+        </div>
+        <div class="tpl-mini-title" style="color:${c.accent_light};">قراءة الأسواق</div>
+        <div class="tpl-mini-sub" style="color:${c.text_dim};">Strategic Analysis</div>
+      </div>
+      <div class="tpl-name">${t.name}</div>
+    </div>`;
+  }).join('');
+}
+
+function applyTemplate(key){
+  const t=THEME_TEMPLATES[key];if(!t)return;
+  currentTheme={template:key,font_ar:t.font_ar,colors:{...t.colors}};
+  fillThemeInputs();
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===key));
+}
+
+function fillThemeInputs(){
+  if(!currentTheme)return;
+  CK.forEach(([id,key])=>{
+    const v=currentTheme.colors[key]||'#000000';
+    const cp=document.getElementById(id);const tx=document.getElementById(id+'T');
+    if(cp)cp.value=v;if(tx)tx.value=v;
+  });
+  const fs=document.getElementById('fontSelect');
+  if(fs)fs.value=currentTheme.font_ar||'Noto Naskh Arabic';
+  updateFontPreview();
+}
+
+function updateFontPreview(){
+  const font=document.getElementById('fontSelect').value;
+  const MAP={'Noto Naskh Arabic':'Noto+Naskh+Arabic:wght@400;600','Cairo':'Cairo:wght@400;700','IBM Plex Sans Arabic':'IBM+Plex+Sans+Arabic:wght@400;600','Tajawal':'Tajawal:wght@400;700','Almarai':'Almarai:wght@400;700','Noto Kufi Arabic':'Noto+Kufi+Arabic:wght@400;600','El Messiri':'El+Messiri:wght@400;600'};
+  if(MAP[font]){
+    const id='fontld_'+font.replace(/\s/g,'');
+    if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family='+MAP[font]+'&display=swap';document.head.appendChild(l);}
+  }
+  document.getElementById('fontPreview').style.fontFamily="'"+font+"',sans-serif";
+}
+
+async function loadTheme(){
+  renderTemplates();
+  const{data}=await sb.from('site_settings').select('*').eq('id',1).single();
+  if(data&&data.theme){currentTheme=data.theme;}
+  else{currentTheme={template:'emerald',...JSON.parse(JSON.stringify(THEME_TEMPLATES.emerald))};delete currentTheme.name;}
+  if(!currentTheme.colors)currentTheme.colors={...THEME_TEMPLATES.emerald.colors};
+  fillThemeInputs();
+  if(currentTheme.template)document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===currentTheme.template));
+}
+
+function resetThemeDefault(){applyTemplate('emerald');showToast('تم تحديد الافتراضي — اضغطي حفظ');}
+
+// Wire color inputs (sync color<->hex)
+CK.forEach(([id,key])=>{
+  document.addEventListener('input',e=>{
+    if(e.target.id===id){const tx=document.getElementById(id+'T');if(tx)tx.value=e.target.value;if(currentTheme)currentTheme.colors[key]=e.target.value;}
+    if(e.target.id===id+'T'){const cp=document.getElementById(id);let v=e.target.value.trim();if(/^#?[0-9a-fA-F]{6}$/.test(v)){if(v[0]!=='#')v='#'+v;cp.value=v;if(currentTheme)currentTheme.colors[key]=v;}}
+  });
+});
+document.getElementById('fontSelect').addEventListener('change',function(){updateFontPreview();if(currentTheme)currentTheme.font_ar=this.value;});
+
+document.getElementById('saveThemeBtn').addEventListener('click',async function(){
+  if(!currentTheme)return;
+  // pull latest from inputs
+  CK.forEach(([id,key])=>{const cp=document.getElementById(id);if(cp)currentTheme.colors[key]=cp.value;});
+  currentTheme.font_ar=document.getElementById('fontSelect').value;
+  this.disabled=true;this.innerHTML='<span class="spinner"></span>';
+  const{error}=await sb.from('site_settings').upsert({id:1,theme:currentTheme,updated_at:new Date().toISOString()},{onConflict:'id'});
+  this.disabled=false;this.innerHTML='💾 حفظ ونشر على الموقع';
+  if(error){showToast('خطأ: '+error.message,'error');return;}
+  showToast('✓ تم حفظ القالب — افتحي الموقع لتشوفيه');
+});
 
 // SUBSCRIBERS
 async function loadSubscribers(){
