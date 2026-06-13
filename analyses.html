@@ -9,12 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
 <style>
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2'),url('fonts/DINNextLTArabic-Regular.woff') format('woff');font-weight:400;font-display:swap;}
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Bold.woff2') format('woff2'),url('fonts/DINNextLTArabic-Bold.woff') format('woff');font-weight:700 900;font-display:swap;}
+@font-face{font-family:'DIN Nums';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2'),url('fonts/DINNextLTArabic-Regular.woff') format('woff');font-weight:100 900;font-display:swap;unicode-range:U+0030-0039,U+0660-0669,U+06F0-06F9,U+002E,U+002C,U+0025;}
 :root{
 --bg:#0C0B0F;--bg-mid:#111014;--card:#161818;
 --border:rgba(120,144,124,0.15);--accent:#78907C;--accent-light:#9FBBA4;
 --accent-dim:#506155;--text:#DDDEDD;--text-dim:#8a9a8c;--text-muted:#4a5a4c;
---line:rgba(120,144,124,0.14);--font-ar:'Noto Naskh Arabic',serif;
---font-en:'Cormorant Garamond',serif;--radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
+--line:rgba(120,144,124,0.14);--font-ar:'DIN Nums','DIN Next LT Arabic','Noto Naskh Arabic',sans-serif;
+--font-en:'DIN Nums','Cormorant Garamond',serif;--radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
