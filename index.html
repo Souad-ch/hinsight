@@ -478,7 +478,16 @@ html{font-size:15px;}
 .btn{padding:12px 24px;font-size:0.9rem;}
 }
 
-/* ── CAROUSEL ── */
+/* ── LOADING SCREEN ── */
+#page-loader{position:fixed;inset:0;z-index:9999;background:var(--bg,#0C0B0F);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;transition:opacity 0.6s ease,visibility 0.6s ease;}
+#page-loader.hide{opacity:0;visibility:hidden;}
+.loader-logo{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.loader-logo-mark{width:64px;height:64px;border-radius:16px;background:#0C0B0F;border:1.5px solid rgba(120,144,124,0.6);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:#9FBBA4;letter-spacing:0.05em;}
+.loader-logo-text{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;letter-spacing:0.22em;color:rgba(159,187,164,0.7);text-transform:uppercase;}
+.loader-bar-wrap{width:120px;height:1px;background:rgba(120,144,124,0.15);border-radius:1px;overflow:hidden;}
+.loader-bar{height:100%;width:0;background:linear-gradient(90deg,rgba(120,144,124,0.4),#9FBBA4);border-radius:1px;animation:loaderFill 1.7s cubic-bezier(0.4,0,0.2,1) forwards;}
+@keyframes loaderFill{0%{width:0}60%{width:75%}85%{width:92%}100%{width:100%}}
+
 .carousel-wrap{position:relative;overflow:hidden;}
 .carousel-track{display:flex;gap:24px;transition:transform 0.45s cubic-bezier(0.16,1,0.3,1);will-change:transform;}
 .carousel-track>*{flex:0 0 calc(33.333% - 16px);min-width:0;}
@@ -519,6 +528,25 @@ body *{font-variant-numeric:lining-nums;}
 </style>
 </head>
 <body>
+
+<!-- LOADING SCREEN -->
+<div id="page-loader">
+  <div class="loader-logo">
+    <div class="loader-logo-mark">H</div>
+    <div class="loader-logo-text">Hanadi Insights</div>
+  </div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<script>
+(function(){
+  const loader=document.getElementById('page-loader');
+  function hide(){loader.classList.add('hide');setTimeout(()=>{loader.style.display='none';},650);}
+  setTimeout(hide,2000);
+  window.addEventListener('load',function(){setTimeout(hide,400);});
+})();
+</script>
+
 <script>
 (function(){
   document.documentElement.classList.add('js');
