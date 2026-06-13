@@ -45,10 +45,10 @@ begin
       url     := 'https://api.emailjs.com/api/v1.0/email/send',
       headers := '{"Content-Type":"application/json"}'::jsonb,
       body    := jsonb_build_object(
-        'service_id',   'service_c8o89cr',                 -- <<<< Service ID
-        'template_id',  'template_reminder',               -- <<<< Template ID للتذكير
-        'user_id',      '6NHm0wz_2eclb5bbW',               -- <<<< Public Key
-        'accessToken',  'PUT_YOUR_PRIVATE_KEY_HERE',       -- <<<< Private Key (من Account > Security)
+        'service_id',   'service_c8o89cr',                 -- Service ID
+        'template_id',  'template_1e1hk15',                -- Template ID للتذكير
+        'user_id',      '6NHm0wz_2eclb5bbW',               -- Public Key
+        'accessToken',  'yrrhrdt64w2IbV_SXHhUL',           -- Private Key
         'template_params', jsonb_build_object(
           'to_name',     b.client_name,
           'to_email',    b.client_email,
