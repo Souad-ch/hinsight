@@ -372,10 +372,11 @@
     <div class="login-logo">Hanadi Insights</div>
     <div class="login-sub">Admin Dashboard</div>
     <h2 class="login-title">تسجيل الدخول</h2>
-    <p class="login-hint">أدخلي كلمة السر للوصول إلى لوحة التحكم</p>
-    <input type="password" class="login-input" id="pwInput" placeholder="••••••••"/>
+    <p class="login-hint">أدخلي بريدك وكلمة السر للوصول إلى لوحة التحكم</p>
+    <input type="email" class="login-input" id="emailInput" placeholder="البريد الإلكتروني" dir="ltr" autocomplete="username"/>
+    <input type="password" class="login-input" id="pwInput" placeholder="••••••••" autocomplete="current-password"/>
     <button class="login-btn" id="loginBtn">دخول</button>
-    <div class="login-error" id="loginError">⚠ كلمة السر غير صحيحة، حاولي مجدداً.</div>
+    <div class="login-error" id="loginError">⚠ البريد أو كلمة السر غير صحيحة.</div>
   </div>
 </div>
 
@@ -670,24 +671,38 @@
 <script>
 const SUPABASE_URL = 'https://ozxwyyeyxmpkhsygntoy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
-const ADMIN_PASSWORD = 'Hanadi@2025!';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// AUTH
-const isLoggedIn = () => sessionStorage.getItem('hi_admin') === '1';
+// AUTH — Supabase Auth (تسجيل دخول حقيقي، لا توجد كلمة سر في الكود)
 function showDashboard(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('dashboard').style.display='block';
   loadOverview();
 }
-if(isLoggedIn()) showDashboard();
-document.getElementById('loginBtn').addEventListener('click',()=>{
+function showLogin(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('dashboard').style.display='none';
+}
+// استعادة الجلسة عند الفتح
+sb.auth.getSession().then(({data})=>{ if(data.session) showDashboard(); else showLogin(); });
+
+async function doLogin(){
+  const email=document.getElementById('emailInput').value.trim();
   const pw=document.getElementById('pwInput').value;
-  if(pw===ADMIN_PASSWORD){sessionStorage.setItem('hi_admin','1');showDashboard();}
-  else{document.getElementById('loginError').style.display='block';document.getElementById('pwInput').value='';}
-});
-document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click();});
-document.getElementById('logoutBtn').addEventListener('click',()=>{sessionStorage.removeItem('hi_admin');location.reload();});
+  const errEl=document.getElementById('loginError');
+  errEl.style.display='none';
+  const {error}=await sb.auth.signInWithPassword({email,password:pw});
+  if(error){
+    errEl.style.display='block';
+    document.getElementById('pwInput').value='';
+  }else{
+    showDashboard();
+  }
+}
+document.getElementById('loginBtn').addEventListener('click',doLogin);
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('emailInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('pwInput').focus();});
+document.getElementById('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();location.reload();});
 
 // NAVIGATION
 document.querySelectorAll('.side-link[data-panel]').forEach(link=>{
