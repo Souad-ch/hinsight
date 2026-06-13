@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
 <style>
+/* DIN Next LT Arabic — ضعي ملفات الخط في مجلد fonts/ بهذه الأسماء */
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2'),url('fonts/DINNextLTArabic-Regular.woff') format('woff');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Medium.woff2') format('woff2'),url('fonts/DINNextLTArabic-Medium.woff') format('woff');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Bold.woff2') format('woff2'),url('fonts/DINNextLTArabic-Bold.woff') format('woff');font-weight:700;font-style:normal;font-display:swap;}
 :root{
 --bg:#0C0B0F;--bg-mid:#111014;--card:#161818;--card-hover:#1c1f1f;
 --border:rgba(120,144,124,0.15);--accent:#78907C;--accent-light:#9FBBA4;
@@ -1077,12 +1081,17 @@ async function loadSiteTheme(){
         r.style.setProperty('--line','color-mix(in srgb,'+c.accent+' 22%,transparent)');}
     }
     // Arabic font
-    if(t.font_ar&&GFONT_MAP[t.font_ar]){
-      const link=document.createElement('link');link.rel='stylesheet';
-      link.href='https://fonts.googleapis.com/css2?family='+GFONT_MAP[t.font_ar]+'&display=swap';
-      document.head.appendChild(link);
+    if(t.font_ar){
+      if(GFONT_MAP[t.font_ar]){
+        const link=document.createElement('link');link.rel='stylesheet';
+        link.href='https://fonts.googleapis.com/css2?family='+GFONT_MAP[t.font_ar]+'&display=swap';
+        document.head.appendChild(link);
+      }
+      // 'DIN Next LT Arabic' is a local @font-face (in fonts/ folder) — no google link needed
       r.style.setProperty('--font-ar',"'"+t.font_ar+"',sans-serif");
     }
+    // Google Sheets webhook (read once, used by booking)
+    if(data.sheets_webhook)window.__SHEETS_WEBHOOK=data.sheets_webhook;
   }catch(e){console.warn('theme:',e);}
 }
 loadSiteTheme();
@@ -1336,7 +1345,15 @@ date:toDateKey(pendingDate),time:pendingSlot,status:'pending'
 }]);
 }catch(e){console.warn('booking supabase:',e);}
 
-// 3) إيميل لهنادي
+// 3) Google Sheets (إن وُجد رابط webhook)
+try{
+if(window.__SHEETS_WEBHOOK){
+fetch(window.__SHEETS_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+body:JSON.stringify({name,phone,email:email||'',type:'حجز موعد عبر التقويم',date:dateStr,time:slotLabel,message:'حجز موعد: '+dateStr+' — '+slotLabel,created_at:new Date().toISOString()})});
+}
+}catch(e){console.warn('sheets:',e);}
+
+// 4) إيميل لهنادي
 try{
 if(window.emailjs&&EJS_PUBLIC_KEY){
 await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{

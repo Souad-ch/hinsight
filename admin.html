@@ -579,7 +579,8 @@
           <div class="section-card-title">الخط العربي</div>
           <div class="form-group" style="max-width:420px;">
             <select class="form-select" id="fontSelect">
-              <option value="Noto Naskh Arabic">Noto Naskh Arabic — كلاسيكي (الحالي)</option>
+              <option value="DIN Next LT Arabic">DIN Next LT Arabic — (يتطلب رفع ملفات الخط)</option>
+              <option value="Noto Naskh Arabic">Noto Naskh Arabic — كلاسيكي</option>
               <option value="Cairo">Cairo — هندسي حديث (الأقرب لـ DIN Next)</option>
               <option value="IBM Plex Sans Arabic">IBM Plex Sans Arabic — عصري نظيف</option>
               <option value="Tajawal">Tajawal — بسيط أنيق</option>
@@ -591,6 +592,17 @@
           </div>
           <div class="builder-help" style="margin-top:8px;">
             💡 خط <strong>DIN Next LT Arabic</strong> مدفوع (Monotype) — البديل المجاني الأقرب له هو <strong>Cairo</strong>. لو اشتريتِ ترخيص الخط وملفاته أقدر أركّبه لكِ.
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-title">ربط الحجوزات بـ Google Sheets</div>
+          <div class="form-group" style="max-width:560px;">
+            <label class="form-label">رابط Google Apps Script (Web App URL)</label>
+            <input type="text" class="form-input" id="sheetsWebhook" dir="ltr" placeholder="https://script.google.com/macros/s/..../exec" style="font-family:var(--font-mono);font-size:0.78rem;"/>
+          </div>
+          <div class="builder-help">
+            💡 الصقي هنا رابط الـ Web App بعد نشر سكربت Google Sheets. كل حجز جديد رح ينحفظ تلقائياً بالشيت. (راجعي تعليمات الإعداد في المحادثة)
           </div>
         </div>
 
@@ -1249,6 +1261,7 @@ function fillThemeInputs(){
 function updateFontPreview(){
   const font=document.getElementById('fontSelect').value;
   const MAP={'Noto Naskh Arabic':'Noto+Naskh+Arabic:wght@400;600','Cairo':'Cairo:wght@400;700','IBM Plex Sans Arabic':'IBM+Plex+Sans+Arabic:wght@400;600','Tajawal':'Tajawal:wght@400;700','Almarai':'Almarai:wght@400;700','Noto Kufi Arabic':'Noto+Kufi+Arabic:wght@400;600','El Messiri':'El+Messiri:wght@400;600'};
+  // DIN Next is a local font hosted on the live site — preview falls back to system here
   if(MAP[font]){
     const id='fontld_'+font.replace(/\s/g,'');
     if(!document.getElementById(id)){const l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family='+MAP[font]+'&display=swap';document.head.appendChild(l);}
@@ -1262,6 +1275,7 @@ async function loadTheme(){
   if(data&&data.theme){currentTheme=data.theme;}
   else{currentTheme={template:'emerald',...JSON.parse(JSON.stringify(THEME_TEMPLATES.emerald))};delete currentTheme.name;}
   if(!currentTheme.colors)currentTheme.colors={...THEME_TEMPLATES.emerald.colors};
+  document.getElementById('sheetsWebhook').value=(data&&data.sheets_webhook)||'';
   fillThemeInputs();
   if(currentTheme.template)document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===currentTheme.template));
 }
@@ -1282,8 +1296,9 @@ document.getElementById('saveThemeBtn').addEventListener('click',async function(
   // pull latest from inputs
   CK.forEach(([id,key])=>{const cp=document.getElementById(id);if(cp)currentTheme.colors[key]=cp.value;});
   currentTheme.font_ar=document.getElementById('fontSelect').value;
+  const webhook=document.getElementById('sheetsWebhook').value.trim();
   this.disabled=true;this.innerHTML='<span class="spinner"></span>';
-  const{error}=await sb.from('site_settings').upsert({id:1,theme:currentTheme,updated_at:new Date().toISOString()},{onConflict:'id'});
+  const{error}=await sb.from('site_settings').upsert({id:1,theme:currentTheme,sheets_webhook:webhook||null,updated_at:new Date().toISOString()},{onConflict:'id'});
   this.disabled=false;this.innerHTML='💾 حفظ ونشر على الموقع';
   if(error){showToast('خطأ: '+error.message,'error');return;}
   showToast('✓ تم حفظ القالب — افتحي الموقع لتشوفيه');

@@ -372,6 +372,16 @@ form.addEventListener('submit', async(e)=>{
     if(!error) savedOk=true; else console.warn('supabase:',error.message);
   }catch(err){ console.warn('supabase exception:',err); }
 
+  // 1b) Google Sheets webhook (if configured in site_settings)
+  try{
+    const {data:st}=await sbClient.from('site_settings').select('sheets_webhook').eq('id',1).single();
+    if(st&&st.sheets_webhook){
+      const now=new Date();
+      fetch(st.sheets_webhook,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify({name:payload.name,phone:payload.phone,email:payload.email||'',type:payload.session||'تواصل',date:now.toISOString().slice(0,10),time:now.toTimeString().slice(0,5),message:payload.message||'',created_at:now.toISOString()})});
+    }
+  }catch(err){ console.warn('sheets:',err); }
+
   // 2) Send email via EmailJS (if Public Key is set)
   if(EJS_PUBLIC_KEY){
     try{
