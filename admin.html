@@ -357,6 +357,8 @@
     .font-row{display:flex;flex-direction:column;gap:8px;}
     .font-row-label{font-size:0.9rem;color:var(--cream);display:flex;flex-direction:column;gap:2px;}
     .font-row-label small{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);letter-spacing:0.05em;}
+    .apply-all-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 16px;margin-bottom:18px;background:rgba(120,144,124,0.05);border:1px dashed rgba(120,144,124,0.25);border-radius:8px;}
+    .apply-all-label{font-size:0.85rem;color:var(--cream);}
   </style>
 </head>
 <body>
@@ -581,6 +583,11 @@
 
         <div class="section-card">
           <div class="section-card-title">الخطوط — لكل عنصر خط مستقل</div>
+          <div class="apply-all-bar">
+            <span class="apply-all-label">🔗 تطبيق خط واحد على كل العناصر العربية:</span>
+            <select class="form-select" id="applyAllFont" style="max-width:220px;"></select>
+            <button class="pb-tool-btn" onclick="applyFontToAll()" style="padding:9px 16px;">تطبيق على الجميع</button>
+          </div>
           <div class="font-grid">
             <div class="font-row">
               <div class="font-row-label">📰 العناوين<small>h1, h2, العناوين الرئيسية</small></div>
@@ -1303,6 +1310,16 @@ function buildFontSelects(){
   ['fontHeading','fontBody','fontButton'].forEach(id=>{const el=document.getElementById(id);if(el&&!el.innerHTML)el.innerHTML=arOpts;});
   const enEl=document.getElementById('fontEnglish');
   if(enEl&&!enEl.innerHTML)enEl.innerHTML=FONTS_EN.map(f=>`<option value="${f}">${f}</option>`).join('');
+  const allEl=document.getElementById('applyAllFont');
+  if(allEl&&!allEl.innerHTML)allEl.innerHTML=arOpts;
+}
+
+function applyFontToAll(){
+  const font=document.getElementById('applyAllFont').value;
+  ['fontHeading','fontBody','fontButton'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=font;});
+  if(currentTheme){if(!currentTheme.fonts)currentTheme.fonts={};currentTheme.fonts.heading=font;currentTheme.fonts.body=font;currentTheme.fonts.button=font;}
+  updateFontPreview();
+  showToast('✓ تم تطبيق "'+font+'" على كل العناصر العربية — اضغطي حفظ');
 }
 
 function applyTemplate(key){
