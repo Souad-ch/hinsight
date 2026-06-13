@@ -9,16 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
 <style>
-/* DIN Next LT Arabic — ضعي ملفات الخط في مجلد fonts/ بهذه الأسماء */
-@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2'),url('fonts/DINNextLTArabic-Regular.woff') format('woff');font-weight:400;font-style:normal;font-display:swap;}
-@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Medium.woff2') format('woff2'),url('fonts/DINNextLTArabic-Medium.woff') format('woff');font-weight:500;font-style:normal;font-display:swap;}
-@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Bold.woff2') format('woff2'),url('fonts/DINNextLTArabic-Bold.woff') format('woff');font-weight:700;font-style:normal;font-display:swap;}
+/* DIN Next LT Arabic — وزن واحد (Light) متاح؛ المتصفح يولّد الأوزان الأثقل تلقائياً للعناوين */
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2'),url('fonts/DINNextLTArabic-Regular.woff') format('woff');font-weight:300 400;font-style:normal;font-display:swap;}
 :root{
 --bg:#0C0B0F;--bg-mid:#111014;--card:#161818;--card-hover:#1c1f1f;
 --border:rgba(120,144,124,0.15);--accent:#78907C;--accent-light:#9FBBA4;
 --accent-dim:#506155;--glow:rgba(159,187,164,0.12);--text:#DDDEDD;
 --text-dim:#8a9a8c;--text-muted:#4a5a4c;--line:rgba(120,144,124,0.18);
---font-ar:'Noto Naskh Arabic',serif;--font-en:'Cormorant Garamond',serif;
+--font-ar:'DIN Next LT Arabic','Noto Naskh Arabic',sans-serif;--font-en:'Cormorant Garamond',serif;
 --radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
