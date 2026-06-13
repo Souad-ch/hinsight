@@ -1452,9 +1452,18 @@ async function loadPageSections(){
         body.insertBefore(el,refEl);
       }
     });
+    // Render custom sections (section_key starts with 'custom_') then insert them
+    data.filter(s=>(s.section_key||'').startsWith('custom_')).forEach(sec=>{
+      if(!sec.visible)return;
+      let existing=document.getElementById(sec.section_key);
+      if(!existing){existing=buildCustomSection(sec);if(existing)body.insertBefore(existing,refEl);}
+    });
+
     // Move any remaining body-level sections not yet reordered to end
-    // (sections absent from Supabase table would otherwise float above ordered ones)
-    const alreadyMoved=new Set(ordered.map(k=>_SEC_MAP[k]&&document.querySelector(_SEC_MAP[k].el)).filter(Boolean));
+    const alreadyMoved=new Set(ordered.map(k=>{
+      if((k||'').startsWith('custom_'))return document.getElementById(k);
+      return _SEC_MAP[k]&&document.querySelector(_SEC_MAP[k].el);
+    }).filter(Boolean));
     document.querySelectorAll('body>section,body>.ticker-wrap').forEach(el=>{
       if(!alreadyMoved.has(el)&&el.id!=='footer'){
         body.insertBefore(el,refEl);
@@ -1462,6 +1471,95 @@ async function loadPageSections(){
     });
 
   }catch(e){console.warn('page sections:',e);}
+}
+
+// ── Custom Section Builder ─────────────────────
+function escT(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function buildCustomSection(sec){
+  const c=sec.content||{};
+  const id=sec.section_key;
+  const anim=sec.animation&&sec.animation!=='none'?` data-anim="${sec.animation}"`:'';
+  let inner='';
+  switch(sec.section_type){
+    case 'box':
+      const bg=c.bg==='mid'?'background:var(--bg-mid);':c.bg==='accent'?'background:rgba(120,144,124,0.08);':'';
+      inner=`<div class="container" style="${bg}border-radius:var(--radius);padding:48px 40px;">
+        ${c.title?`<h2 class="section-title"${anim}>${escT(c.title)}</h2><div class="green-line"></div>`:''}
+        <p style="color:var(--text-dim);line-height:2;font-size:1rem;white-space:pre-line;"${anim}>${escT(c.text)}</p>
+      </div>`;
+      break;
+    case 'image':
+      const imgStyle=c.size==='full'?'width:100%;':'max-width:900px;margin:0 auto;display:block;';
+      inner=`<div class="${c.size==='full'?'':'container'}">
+        <img src="${escT(c.url)}" alt="${escT(c.caption)}" style="${imgStyle}border-radius:var(--radius);max-height:520px;object-fit:cover;" loading="lazy">
+        ${c.caption?`<p style="text-align:center;color:var(--text-dim);font-size:0.85rem;margin-top:14px;">${escT(c.caption)}</p>`:''}
+      </div>`;
+      break;
+    case 'carousel':
+      const cItems=(c.items||[]).map((it,i)=>`
+        <div class="insight-card reveal" style="flex:0 0 calc(33.333% - 16px);min-width:0;box-sizing:border-box;">
+          ${it.icon?`<div style="font-size:2rem;margin-bottom:12px;">${escT(it.icon)}</div>`:''}
+          <h3 class="card-title">${escT(it.title)}</h3>
+          <p class="card-desc">${escT(it.text)}</p>
+        </div>`).join('');
+      const cWrapId='cw_'+id;
+      inner=`<div class="container">
+        ${c.title?`<div class="section-head reveal"><h2 class="section-title">${escT(c.title)}</h2><div class="green-line"></div></div>`:''}
+        <div style="overflow:hidden;margin-top:32px;" id="${cWrapId}">
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">${cItems}</div>
+        </div>
+      </div>`;
+      break;
+    case 'slideshow':
+      const slides=(c.images||[]);
+      if(!slides.length)return null;
+      const ssId='ss_'+id;
+      inner=`<div class="container">
+        ${c.title?`<div class="section-head reveal"><h2 class="section-title">${escT(c.title)}</h2><div class="green-line"></div></div>`:''}
+        <div style="position:relative;overflow:hidden;border-radius:var(--radius);margin-top:32px;" id="${ssId}">
+          ${slides.map((s,i)=>`<div class="ss-slide" data-ssid="${ssId}" style="display:${i===0?'block':'none'};">
+            <img src="${escT(s.url)}" alt="${escT(s.caption)}" style="width:100%;max-height:480px;object-fit:cover;">
+            ${s.caption?`<p style="text-align:center;padding:12px;color:var(--text-dim);font-size:0.85rem;">${escT(s.caption)}</p>`:''}
+          </div>`).join('')}
+          ${slides.length>1?`<div style="display:flex;justify-content:center;gap:10px;margin-top:16px;">
+            ${slides.map((_,i)=>`<span class="ss-dot" data-ssid="${ssId}" data-idx="${i}" onclick="goSlide('${ssId}',${i})" style="width:8px;height:8px;border-radius:50%;background:${i===0?'var(--accent-light)':'var(--accent-dim)'};cursor:pointer;display:inline-block;transition:background 0.3s;"></span>`).join('')}
+          </div>`:''}
+        </div>
+      </div>`;
+      if(c.autoplay&&slides.length>1){
+        setTimeout(()=>{let si=0;setInterval(()=>{si=(si+1)%slides.length;goSlide(ssId,si);},4000);},800);
+      }
+      break;
+    case 'icons':
+      const iItems=(c.items||[]).map(it=>`
+        <div class="reveal" style="text-align:center;padding:24px 16px;">
+          <div style="font-size:2.4rem;margin-bottom:12px;">${escT(it.icon)}</div>
+          <h3 style="color:var(--text);font-size:1rem;font-weight:700;margin-bottom:8px;">${escT(it.label)}</h3>
+          <p style="color:var(--text-dim);font-size:0.88rem;line-height:1.8;">${escT(it.desc)}</p>
+        </div>`).join('');
+      inner=`<div class="container">
+        ${c.title?`<div class="section-head reveal"><h2 class="section-title">${escT(c.title)}</h2><div class="green-line"></div></div>`:''}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:32px;">${iItems}</div>
+      </div>`;
+      break;
+    case 'cta':
+      inner=`<div class="container" style="text-align:center;padding:64px 20px;">
+        ${c.title?`<h2 class="section-title reveal">${escT(c.title)}</h2><div class="green-line" style="margin:16px auto;"></div>`:''}
+        ${c.text?`<p class="reveal" style="color:var(--text-dim);font-size:1rem;line-height:1.9;max-width:560px;margin:0 auto 32px;">${escT(c.text)}</p>`:''}
+        ${c.btn_text?`<a href="${escT(c.btn_url||'#')}" class="btn btn-green reveal">${escT(c.btn_text)}</a>`:''}
+      </div>`;
+      break;
+    default: return null;
+  }
+  const el=document.createElement('section');
+  el.className='section';el.id=id;
+  el.innerHTML=inner;
+  return el;
+}
+
+function goSlide(ssId,idx){
+  document.querySelectorAll(`.ss-slide[data-ssid="${ssId}"]`).forEach((s,i)=>s.style.display=i===idx?'block':'none');
+  document.querySelectorAll(`.ss-dot[data-ssid="${ssId}"]`).forEach((d,i)=>d.style.background=i===idx?'var(--accent-light)':'var(--accent-dim)');
 }
 loadPageSections();
 

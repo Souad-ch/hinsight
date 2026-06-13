@@ -267,7 +267,24 @@
     /* Sections list */
     .pb-sections{overflow-y:auto;border-inline-start:1px solid var(--line);display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--gold-dim) transparent;}
     .pb-sections::-webkit-scrollbar{width:3px;}.pb-sections::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px;}
-    .pb-sections-hdr{padding:12px 16px;border-bottom:1px solid var(--line);font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);flex-shrink:0;}
+    .pb-sections-hdr{padding:10px 14px;border-bottom:1px solid var(--line);font-family:var(--font-mono);font-size:0.54rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
+    .pb-add-sec-btn{background:rgba(120,144,124,0.12);border:1px solid rgba(120,144,124,0.3);color:var(--accent-light);border-radius:5px;padding:3px 9px;font-size:0.65rem;cursor:pointer;letter-spacing:normal;text-transform:none;font-family:var(--font-ar);}
+    .pb-add-sec-btn:hover{background:rgba(120,144,124,0.22);}
+    /* ADD SECTION MODAL */
+    .add-sec-modal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+    .add-sec-modal.open{opacity:1;pointer-events:all;}
+    .add-sec-box{background:var(--ink-mid);border:1px solid var(--line);border-radius:12px;width:100%;max-width:600px;max-height:92vh;overflow-y:auto;padding:32px;scrollbar-width:thin;}
+    .nsec-types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 24px;}
+    .nsec-type-card{background:var(--ink-deep);border:2px solid var(--line);border-radius:8px;padding:16px 8px;text-align:center;cursor:pointer;transition:all 0.2s;font-size:0.8rem;color:var(--muted);font-family:var(--font-ar);}
+    .nsec-type-card:hover{border-color:rgba(120,144,124,0.4);color:var(--cream);}
+    .nsec-type-card.active{border-color:var(--gold);color:var(--cream);background:rgba(180,155,90,0.08);}
+    .nsec-type-icon{font-size:1.8rem;display:block;margin-bottom:8px;}
+    .nsec-item{background:var(--ink-deep);border:1px solid var(--line);border-radius:7px;padding:12px;display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}
+    .nsec-item-fields{flex:1;display:flex;flex-direction:column;gap:6px;}
+    .nsec-remove{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;}
+    .nsec-remove:hover{background:rgba(200,80,80,0.15);color:#f87171;}
+    .nsec-add-item{background:rgba(120,144,124,0.08);border:1px dashed rgba(120,144,124,0.3);border-radius:7px;width:100%;padding:10px;color:var(--accent-light);cursor:pointer;font-family:var(--font-ar);font-size:0.82rem;margin-top:4px;}
+    .nsec-add-item:hover{background:rgba(120,144,124,0.15);}
     .pb-sec-item{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid rgba(120,144,124,0.04);cursor:pointer;transition:background 0.2s;position:relative;border-inline-end:2px solid transparent;}
     .pb-sec-item:hover{background:rgba(120,144,124,0.05);}
     .pb-sec-item.pb-selected{background:rgba(120,144,124,0.09);border-inline-end-color:var(--gold);}
@@ -641,7 +658,7 @@
         <div class="pb-body">
           <!-- sections list -->
           <div class="pb-sections">
-            <div class="pb-sections-hdr">السيكشنات</div>
+            <div class="pb-sections-hdr">السيكشنات <button class="pb-add-sec-btn" onclick="openAddSectionModal()">➕ جديد</button></div>
             <div id="pbSectionsList"><div style="padding:32px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);">⏳ جارٍ التحميل...</div></div>
           </div>
           <!-- preview iframe -->
@@ -1247,14 +1264,16 @@ async function loadBuilder(){
 
 function renderSectionsList(){
   const el=document.getElementById('pbSectionsList');
+  const isCustom=s=>(s.section_key||'').startsWith('custom_');
   el.innerHTML=builderSections.map((s,i)=>`
     <div class="pb-sec-item ${s.id===selectedSectionId?'pb-selected':''} ${!s.visible?'pb-hidden-sec':''}"
          onclick="selectSection('${s.id}')">
-      <div class="pb-sec-name">${s.section_name}</div>
+      <div class="pb-sec-name">${s.section_name}${isCustom(s)?'<span style="font-size:0.6rem;color:var(--muted);margin-inline-start:5px;">مخصص</span>':''}</div>
       <div class="pb-sec-moves">
         <button class="pb-sec-mv" onclick="event.stopPropagation();moveSec(${i},-1)" ${i===0?'disabled':''}>▲</button>
         <button class="pb-sec-mv" onclick="event.stopPropagation();moveSec(${i},1)"  ${i===builderSections.length-1?'disabled':''}>▼</button>
       </div>
+      ${isCustom(s)?`<button class="pb-sec-mv" title="حذف" style="color:#f87171;" onclick="event.stopPropagation();deleteSection('${s.id}')">🗑</button>`:''}
       <label class="pb-sec-vis" title="${s.visible?'مرئي':'مخفي'}" onclick="event.stopPropagation()">
         <input type="checkbox" ${s.visible?'checked':''} onchange="toggleVis('${s.id}',this.checked)">
         <span class="pb-sec-vis-sl"></span>
@@ -1748,6 +1767,143 @@ async function loadSubscribers(){
         <td style="font-family:var(--font-mono);font-size:0.72rem;">${new Date(s.created_at).toLocaleDateString('ar-SA')}</td>
       </tr>`).join('');
   }catch(e){document.getElementById('subsBody').innerHTML='<tr><td colspan="2" class="empty-state">جدول المشتركين غير موجود بعد.</td></tr>';}
+}
+</script>
+
+<!-- ADD SECTION MODAL -->
+<div class="add-sec-modal" id="addSecModal" onclick="if(event.target===this)closeAddSecModal()">
+<div class="add-sec-box">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+    <span style="font-size:1rem;font-weight:700;color:var(--cream);">➕ إضافة سيكشن جديد</span>
+    <button onclick="closeAddSecModal()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;line-height:1;">✕</button>
+  </div>
+  <div class="pb-field">
+    <label>اسم السيكشن *</label>
+    <input type="text" id="newSecName" placeholder="مثال: قسم شركاؤنا">
+  </div>
+  <div class="pb-group-label" style="margin-bottom:10px;margin-top:20px;">نوع المحتوى</div>
+  <div class="nsec-types">
+    <div class="nsec-type-card active" data-type="box" onclick="setNewSecType('box')"><span class="nsec-type-icon">📝</span>صندوق نص</div>
+    <div class="nsec-type-card" data-type="image" onclick="setNewSecType('image')"><span class="nsec-type-icon">🖼</span>صورة</div>
+    <div class="nsec-type-card" data-type="carousel" onclick="setNewSecType('carousel')"><span class="nsec-type-icon">🎠</span>كاروسيل</div>
+    <div class="nsec-type-card" data-type="slideshow" onclick="setNewSecType('slideshow')"><span class="nsec-type-icon">📽</span>شرائح</div>
+    <div class="nsec-type-card" data-type="icons" onclick="setNewSecType('icons')"><span class="nsec-type-icon">🔷</span>أيقونات</div>
+    <div class="nsec-type-card" data-type="cta" onclick="setNewSecType('cta')"><span class="nsec-type-icon">🎯</span>زر CTA</div>
+  </div>
+  <div id="newSecFields"></div>
+  <div style="display:flex;gap:10px;margin-top:24px;">
+    <button class="submit-btn" style="flex:1;padding:13px;" onclick="saveNewSection()">✓ إضافة السيكشن</button>
+    <button class="draft-btn" style="padding:13px 20px;" onclick="closeAddSecModal()">إلغاء</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ── ADD CUSTOM SECTION ─────────────────────────
+let _newSecType='box';
+let _newSecItems=[];
+
+function openAddSectionModal(){
+  _newSecType='box';_newSecItems=[];
+  document.getElementById('newSecName').value='';
+  document.querySelectorAll('.nsec-type-card').forEach(c=>c.classList.toggle('active',c.dataset.type==='box'));
+  renderNewSecFields();
+  document.getElementById('addSecModal').classList.add('open');
+}
+function closeAddSecModal(){document.getElementById('addSecModal').classList.remove('open');}
+
+function setNewSecType(t){
+  _newSecType=t;_newSecItems=[];
+  document.querySelectorAll('.nsec-type-card').forEach(c=>c.classList.toggle('active',c.dataset.type===t));
+  renderNewSecFields();
+}
+
+function renderNewSecFields(){
+  const el=document.getElementById('newSecFields');
+  const F=(id,lbl,ph,type='text')=>`<div class="pb-field"><label>${lbl}</label><input type="${type}" id="${id}" placeholder="${ph}"></div>`;
+  const TA=(id,lbl,ph)=>`<div class="pb-field"><label>${lbl}</label><textarea id="${id}" rows="3" placeholder="${ph}" style="width:100%;background:var(--ink-deep);border:1px solid var(--line);border-radius:6px;padding:10px;color:var(--cream);font-family:var(--font-ar);font-size:0.85rem;resize:vertical;"></textarea></div>`;
+
+  const itemsHtml=(items,fields)=>`
+    <div class="pb-group-label" style="margin-top:16px;">العناصر</div>
+    <div id="nsecItemsList">${items.map((item,i)=>`
+      <div class="nsec-item" id="nsitem_${i}">
+        <div class="nsec-item-fields">${fields.map(f=>`<input type="text" placeholder="${f.ph}" value="${escSAttr(item[f.key]||'')}" oninput="_newSecItems[${i}]['${f.key}']=this.value" style="background:var(--ink-mid);border:1px solid var(--line);border-radius:5px;padding:7px 10px;color:var(--cream);font-family:var(--font-ar);font-size:0.82rem;width:100%;">`).join('')}</div>
+        <button class="nsec-remove" onclick="_newSecItems.splice(${i},1);renderNewSecFields()">✕</button>
+      </div>`).join('')}</div>
+    <button class="nsec-add-item" onclick="_newSecItems.push({});renderNewSecFields()">+ إضافة عنصر</button>`;
+
+  switch(_newSecType){
+    case 'box':
+      el.innerHTML=F('nsTitle','العنوان (اختياري)','أدخلي العنوان...')+TA('nsText','المحتوى *','اكتبي النص هنا...')+`
+        <div class="pb-field"><label>لون الخلفية (اختياري)</label>
+          <select id="nsBg"><option value="">افتراضي (داكن)</option><option value="mid">رمادي فاتح</option><option value="accent">لون التمييز</option></select>
+        </div>`;
+      break;
+    case 'image':
+      el.innerHTML=F('nsImgUrl','رابط الصورة *','https://...')+F('nsCaption','تعليق الصورة (اختياري)','وصف قصير')+`
+        <div class="pb-field"><label>حجم الصورة</label>
+          <select id="nsImgSize"><option value="contained">داخل الإطار (Contained)</option><option value="full">عرض كامل (Full Width)</option></select>
+        </div>`;
+      break;
+    case 'carousel':
+      if(!_newSecItems.length)_newSecItems=[{icon:'⭐',title:'',text:''}];
+      el.innerHTML=F('nsTitle','عنوان السيكشن','مثال: خدماتنا')+itemsHtml(_newSecItems,[{key:'icon',ph:'أيقونة (إيموجي)'},{key:'title',ph:'عنوان البطاقة'},{key:'text',ph:'نص البطاقة'}]);
+      break;
+    case 'slideshow':
+      if(!_newSecItems.length)_newSecItems=[{url:'',caption:''}];
+      el.innerHTML=F('nsTitle','عنوان السيكشن','مثال: معرض الصور')+itemsHtml(_newSecItems,[{key:'url',ph:'رابط الصورة https://...'},{key:'caption',ph:'تعليق الصورة (اختياري)'}])+`
+        <div class="pb-field" style="margin-top:12px;"><label>تشغيل تلقائي</label>
+          <select id="nsAutoplay"><option value="yes">نعم (كل 4 ثواني)</option><option value="no">لا</option></select>
+        </div>`;
+      break;
+    case 'icons':
+      if(!_newSecItems.length)_newSecItems=[{icon:'🎯',label:'',desc:''}];
+      el.innerHTML=F('nsTitle','عنوان السيكشن','مثال: لماذا هنادي؟')+itemsHtml(_newSecItems,[{key:'icon',ph:'أيقونة (إيموجي)'},{key:'label',ph:'العنوان'},{key:'desc',ph:'الوصف'}]);
+      break;
+    case 'cta':
+      el.innerHTML=F('nsTitle','عنوان السيكشن','مثال: هل أنت مستعد؟')+TA('nsText','نص توضيحي (اختياري)','اكتبي جملة تشجيعية...')+F('nsCtaLabel','نص الزر *','مثال: احجز استشارة الآن')+F('nsCtaUrl','رابط الزر','مثال: #booking');
+      break;
+  }
+}
+
+function buildNewSecContent(){
+  const g=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+  switch(_newSecType){
+    case 'box':    return {title:g('nsTitle'),text:g('nsText'),bg:g('nsBg')};
+    case 'image':  return {url:g('nsImgUrl'),caption:g('nsCaption'),size:g('nsImgSize')};
+    case 'carousel':return {title:g('nsTitle'),items:[..._newSecItems]};
+    case 'slideshow':return{title:g('nsTitle'),autoplay:g('nsAutoplay')==='yes',images:[..._newSecItems]};
+    case 'icons':  return {title:g('nsTitle'),items:[..._newSecItems]};
+    case 'cta':    return {title:g('nsTitle'),text:g('nsText'),btn_text:g('nsCtaLabel'),btn_url:g('nsCtaUrl')};
+  }
+}
+
+async function saveNewSection(){
+  const name=document.getElementById('newSecName').value.trim();
+  if(!name){showToast('أدخلي اسم السيكشن','error');return;}
+  const content=buildNewSecContent();
+  const maxOrder=builderSections.length?Math.max(...builderSections.map(s=>s.order_index||0))+1:20;
+  const section_key='custom_'+Date.now();
+  const{error}=await sb.from('page_sections').insert({
+    section_key,section_name:name,section_type:_newSecType,
+    order_index:maxOrder,visible:true,animation:'fadeUp',content
+  });
+  if(error){showToast('خطأ: '+error.message,'error');return;}
+  showToast('✓ تم إضافة السيكشن بنجاح');
+  closeAddSecModal();
+  loadBuilder();
+}
+
+// Also allow deleting a custom section
+async function deleteSection(id){
+  const sec=builderSections.find(s=>s.id===id);
+  if(!sec)return;
+  if(!confirm(`حذف "${sec.section_name}"؟ لا يمكن التراجع.`))return;
+  const{error}=await sb.from('page_sections').delete().eq('id',id);
+  if(error){showToast('خطأ: '+error.message,'error');return;}
+  showToast('✓ تم حذف السيكشن');
+  selectedSectionId=null;
+  loadBuilder();
 }
 </script>
 </body>
