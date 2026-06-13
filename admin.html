@@ -860,6 +860,7 @@ const SECTION_FIELDS={
   method:[
     {key:'title',   label:'العنوان',type:'text'},
     {key:'subtitle',label:'الوصف', type:'textarea',rows:2},
+    {key:'layout',  label:'شكل العرض',type:'layout_select'},
   ],
   notes:[
     {key:'title',   label:'العنوان',type:'text'},
@@ -868,6 +869,7 @@ const SECTION_FIELDS={
   consultations:[
     {key:'title',   label:'العنوان',type:'text'},
     {key:'subtitle',label:'الوصف', type:'textarea',rows:2},
+    {key:'layout',  label:'شكل العرض',type:'layout_select'},
   ],
   booking:[
     {key:'title',   label:'العنوان',type:'text'},
@@ -883,15 +885,18 @@ const SECTION_FIELDS={
   library:[
     {key:'title',   label:'العنوان',type:'text'},
     {key:'subtitle',label:'الوصف', type:'textarea',rows:2},
+    {key:'layout',  label:'شكل العرض',type:'layout_select'},
   ],
   reports:[
     {key:'title',   label:'العنوان',type:'text'},
     {key:'subtitle',label:'الوصف', type:'textarea',rows:2},
+    {key:'layout',  label:'شكل العرض',type:'layout_select'},
   ],
   testimonials:[
     {key:'title',   label:'عنوان السيكشن',type:'text'},
     {key:'subtitle',label:'الوصف',        type:'textarea',rows:2},
   ],
+  // layout handled separately in renderTestimonialsProps
   articles_cta:[
     {key:'title',   label:'العنوان', type:'text'},
     {key:'subtitle',label:'الوصف',   type:'textarea',rows:2},
@@ -1001,13 +1006,27 @@ function renderProps(){
     const fields=SECTION_FIELDS[sec.section_type]||[];
     if(fields.length){
       html+=`<div class="pb-group-label">المحتوى</div>`;
-      html+=fields.map(f=>`
+      html+=fields.filter(f=>f.type!=='layout_select').map(f=>`
         <div class="pb-field">
           <label>${f.label}</label>
           ${f.type==='textarea'
             ?`<textarea rows="${f.rows||3}" id="pbf_${f.key}">${escS(sec.content?.[f.key]||'')}</textarea>`
             :`<input type="text" id="pbf_${f.key}" value="${escSAttr(sec.content?.[f.key]||'')}"/>`}
         </div>`).join('');
+      // Layout selector (for sections with grids)
+      const hasLayout=fields.some(f=>f.type==='layout_select');
+      if(hasLayout){
+        const curLayout=sec.content?.layout||'grid';
+        html+=`<div class="pb-divider"></div>
+          <div class="pb-group-label">شكل العرض</div>
+          <div class="pb-field">
+            <label>كيف تعرض البطاقات؟</label>
+            <select id="pbf_layout">
+              <option value="grid"${curLayout==='grid'?' selected':''}>📦 شبكة Grid (الافتراضي)</option>
+              <option value="carousel"${curLayout==='carousel'?' selected':''}>🎠 كاروسيل (مع أسهم وتمرير)</option>
+            </select>
+          </div>`;
+      }
     }else{
       html+=`<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);text-align:center;padding:20px;">لا توجد محتويات قابلة للتعديل.</div>`;
     }
@@ -1048,6 +1067,7 @@ function renderInsightsProps(sec){
 
 function renderTestimonialsProps(sec){
   const c=sec.content||{};
+  const curLayout=c.layout||'grid';
   return `
     <div class="pb-group-label">المحتوى</div>
     ${SECTION_FIELDS.testimonials.map(f=>`
@@ -1057,6 +1077,15 @@ function renderTestimonialsProps(sec){
           ?`<textarea rows="${f.rows||2}" id="pbf_${f.key}">${escS(c[f.key]||'')}</textarea>`
           :`<input type="text" id="pbf_${f.key}" value="${escSAttr(c[f.key]||'')}"/>`}
       </div>`).join('')}
+    <div class="pb-divider"></div>
+    <div class="pb-group-label">شكل العرض</div>
+    <div class="pb-field">
+      <label>كيف تعرض الآراء؟</label>
+      <select id="pbf_layout">
+        <option value="grid"${curLayout==='grid'?' selected':''}>📦 شبكة Grid (الافتراضي)</option>
+        <option value="carousel"${curLayout==='carousel'?' selected':''}>🎠 كاروسيل (مع أسهم وتمرير)</option>
+      </select>
+    </div>
     <div class="pb-divider"></div>
     <div class="pb-group-label">آراء العملاء الفردية</div>
     <div id="pbTestimonialsList"><div style="padding:16px;text-align:center;font-family:var(--font-mono);font-size:0.68rem;color:var(--muted);">⏳</div></div>
@@ -1137,7 +1166,10 @@ async function saveProps(){
   btn.disabled=true;btn.textContent='⏳ جارٍ الحفظ...';
   const content={...(sec.content||{})};
   const fields=SECTION_FIELDS[sec.section_type]||[];
-  fields.forEach(f=>{const el=document.getElementById('pbf_'+f.key);if(el)content[f.key]=el.value;});
+  fields.filter(f=>f.type!=='layout_select').forEach(f=>{const el=document.getElementById('pbf_'+f.key);if(el)content[f.key]=el.value;});
+  // layout selector (shared across sections)
+  const layoutEl=document.getElementById('pbf_layout');
+  if(layoutEl)content.layout=layoutEl.value;
   if(sec.section_type==='insights'){
     const ce=document.getElementById('pbf_count');const le=document.getElementById('pbf_layout');
     if(ce)content.count=parseInt(ce.value);
