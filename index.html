@@ -1419,11 +1419,20 @@ async function loadPageSections(){
     // Reorder sections in DOM based on order_index
     const body=document.body;
     const refEl=document.getElementById('footer');
+    // Move known ordered sections before footer (in correct order)
     ordered.forEach(key=>{
       const map=_SEC_MAP[key];
       if(!map)return;
       const el=document.querySelector(map.el);
       if(el&&el.style.display!=='none'){
+        body.insertBefore(el,refEl);
+      }
+    });
+    // Move any remaining body-level sections/divs not in the ordered list to end
+    // (prevents unknown sections floating above the ordered ones)
+    const movedEls=new Set(Object.values(_SEC_MAP).map(m=>document.querySelector(m.el)).filter(Boolean));
+    document.querySelectorAll('body>section,body>div.ticker-wrap').forEach(el=>{
+      if(!movedEls.has(el)&&el.id!=='footer'&&el.style.display!=='none'){
         body.insertBefore(el,refEl);
       }
     });
