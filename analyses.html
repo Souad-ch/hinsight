@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>المقالات — Hanadi Insights</title>
+<title>التحليلات — Hanadi Insights</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230C0B0F'/%3E%3Crect x='3' y='3' width='94' height='94' rx='20' fill='none' stroke='%2378907C' stroke-width='3'/%3E%3Ctext x='50' y='70' font-family='Georgia,serif' font-size='62' font-weight='600' fill='%239FBBA4' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -149,7 +149,7 @@ a{text-decoration:none;color:inherit;}
 <span class="logo-sub">Strategic Market Analysis</span>
 </a>
 <div style="display:flex;align-items:center;gap:14px;">
-<a href="analyses.html" class="nav-back">التحليلات</a>
+<a href="articles.html" class="nav-back">المقالات</a>
 <a href="index.html" class="nav-back">← الرئيسية</a>
 <a href="contact.html" class="btn-cta">احجز استشارة</a>
 </div>
@@ -160,11 +160,11 @@ a{text-decoration:none;color:inherit;}
 <div class="art-hero">
 <div class="orb orb-1"></div><div class="orb orb-2"></div>
 <div class="hero-grid-lines"></div>
-<div class="hero-bg-text">ARTICLES</div>
+<div class="hero-bg-text">ANALYSES</div>
 <div class="container" style="position:relative;z-index:1;padding-top:16px;">
-<div class="hero-label en">Blog & Articles</div>
-<h1 class="hero-title">أرشيف <span>المقالات</span></h1>
-<p class="hero-sub">مقالات تحليلية تربط الاقتصاد بالواقع — مكتوبة بأسلوب يقرأه المتداول والمهتم على حد سواء.</p>
+<div class="hero-label en">Analysis & Insights</div>
+<h1 class="hero-title">أرشيف <span>التحليلات</span></h1>
+<p class="hero-sub">تحليلات معمّقة في السياسة الاقتصادية والأسواق العالمية — مكتوبة لمن يريد أن يفهم لا أن يلاحق.</p>
 </div>
 </div>
 
@@ -173,11 +173,12 @@ a{text-decoration:none;color:inherit;}
 <div class="filters-inner">
 <div class="filter-tabs" id="filterTabs">
 <button class="filter-tab active" data-tag="all">الكل</button>
-<button class="filter-tab" data-tag="Economy">Economy</button>
-<button class="filter-tab" data-tag="Psychology">Psychology</button>
+<button class="filter-tab" data-tag="Geopolitics">Geopolitics</button>
+<button class="filter-tab" data-tag="Commodities">Commodities</button>
 <button class="filter-tab" data-tag="Macro">Macro</button>
-<button class="filter-tab" data-tag="Markets">Markets</button>
-<button class="filter-tab" data-tag="Culture">Culture</button>
+<button class="filter-tab" data-tag="Forex">Forex</button>
+<button class="filter-tab" data-tag="Crypto">Crypto</button>
+<button class="filter-tab" data-tag="تحليل">تحليل</button>
 </div>
 <div class="search-wrap">
 <input type="text" class="search-input" id="searchInput" placeholder="ابحث في المقالات..."/>
@@ -226,11 +227,14 @@ const SUPABASE_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
 const SUPABASE_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
 const sbClient=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 
-// المقالات الاحتياطية — تُستبدل بمقالات Supabase (content_type='article') إن وُجدت
+// المقالات الاحتياطية (تظهر فوراً وتُستبدل بمقالات Supabase إن وُجدت)
 let ARTICLES=[
-{id:1,tag:'Economy',title:'كيف تقرأ بيانات التضخم قبل أن تتحرك الأسواق',excerpt:'دليل عملي لفهم مؤشري CPI وPCE وكيف يترجمها المتداول الحقيقي إلى فرص وليس مجرد أخبار.',date:'2 Jun 2025',readTime:'8 دقائق قراءة',body:`<p>بيانات التضخم ليست مجرد أرقام تُذاع على شاشات الأخبار — إنها خريطة للتوقعات المستقبلية. من يعرف كيف يقرأها يسبق السوق، ومن يقرأ العنوان فقط يلاحقه.</p><h4>CPI مقابل PCE: أيهما يهم الفيدرالي؟</h4><p>مؤشر أسعار المستهلك (CPI) هو ما تسمعه في الأخبار، لكن الفيدرالي الأمريكي يعتمد أساساً على PCE — وهو أوسع وأكثر دقة. الفرق الجوهري: PCE يأخذ في الحسبان تحولات سلوك المستهلك عند ارتفاع الأسعار، بينما CPI يقيس سلة ثابتة لا تتغير.</p><h4>ما الذي يُحرّك السوق فعلاً؟</h4><p>السوق لا يتحرك بالرقم المُعلَن — بل بالفجوة بين الرقم والتوقع. إذا كان التوقع 3.2% وجاء CPI عند 3.0%، سترى تراجعاً في الدولار وارتفاعاً في الأسهم. إذا جاء عند 3.4% فالعكس تماماً.</p><blockquote>الخبر لا يُحرّك السوق — الفجوة بين الخبر والتوقع هي ما يُحرّكه.</blockquote><h4>خطوات عملية قبل صدور بيانات التضخم</h4><p>أولاً: راجع التوقع الإجماعي من Bloomberg أو Reuters. ثانياً: لاحظ تحرك السوق في الـ 48 ساعة السابقة — هل يسعّر توقعاً محدداً؟ ثالثاً: استعدّ للسيناريوهين لا لسيناريو واحد. رابعاً: لا تفتح صفقة مباشرة عند الإعلان — انتظر دقيقتين حتى تُهضم البيانات. التضخم مؤشر متأخر، لكن قراءته المبكرة تمنحك ميزة استباقية نادرة.</p>`},
-{id:2,tag:'Psychology',title:'لماذا يخسر المتداول الذكي في سوق صاعد؟',excerpt:'ليست المشكلة في التحليل — بل في علم النفس. كيف تتخلى عن الانحياز والتحقق الذاتي؟',date:'25 May 2025',readTime:'7 دقائق قراءة',body:`<p>يمتلك تحليلاً دقيقاً، ويفهم الاقتصاد الكلي، ويتابع البيانات... ومع ذلك يُغلق يوم التداول بخسارة. هذا ليس خللاً في أدوات التحليل — بل في الطريقة التي يعمل بها العقل تحت الضغط.</p><h4>الانحياز التأكيدي: العدو الأول</h4><p>الانحياز التأكيدي هو ميل العقل لإيجاد الأدلة التي تُثبت ما يؤمن به مسبقاً. المتداول الذي يعتقد أن السوق سيرتفع سيلاحظ كل إشارة صعودية ويتجاهل الإشارات العكسية. النتيجة: يبقى في صفقة خاسرة لأن "التحليل لا يزال صحيحاً".</p><blockquote>السوق لا يهتم بتحليلك. يتحرك بناءً على تدفق الأموال الحقيقية، لا على صحة حججك.</blockquote><h4>التحقق الذاتي: فخ الذكاء</h4><p>كلما كان المتداول أذكى، كان أكثر قدرة على بناء قصة مقنعة تبرر موقفه. هذا هو فخ الذكاء: القدرة على إقناع النفس بأي موقف. الحل؟ اكتب فرضيتك وشروط إلغائها قبل أن تفتح الصفقة، لا بعدها. ضع "نقطة إلغاء" واضحة: إذا تجاوز السعر X فالفرضية خاطئة وأخرج. احتفظ بيومية تداول تُسجّل فيها سبب كل صفقة وما حدث فعلاً.</p>`},
-{id:3,tag:'Macro',title:'الدولار ليس فقط عملة — إنه سلاح جيوسياسي',excerpt:'قراءة في كيف يُستخدم الدولار أداةً للضغط والعقوبات وتحريك التحالفات المالية الدولية.',date:'18 May 2025',readTime:'9 دقائق قراءة',body:`<p>حين تُفرض عقوبات على دولة أو شركة ما، تجد في صلب القرار شيئاً واحداً: قطع الوصول إلى الدولار. هذه ليست مصادفة — إنها استراتيجية مُحكمة مبنية على بنية النظام المالي العالمي.</p><h4>لماذا الدولار؟</h4><p>نحو 88% من تعاملات الفوركس تمر عبر الدولار. أكثر من 60% من الاحتياطيات المركزية العالمية بالدولار. وتقريباً كل تجارة النفط تُسعَّر به. هذا يعني أن كل دولة تحتاج دولارات — وأمريكا تعرف ذلك جيداً.</p><blockquote>القوة العسكرية تُغلق حدوداً. القوة المالية تُغلق بنوكاً — وهذا أشد وطأة.</blockquote><h4>ماذا يعني ذلك للمتداول؟</h4><p>راقب التحولات في الاحتياطيات المركزية. تصاعد شراء الذهب من بنوك مركزية غير غربية هو إشارة لإعادة رسم خارطة الثقة المالية. هذه تحولات بطيئة لكن أثرها هائل على المدى البعيد — والأسواق تبدأ بتسعيرها قبل أن يُعلنها أحد.</p>`}
+{id:1,tag:'Geopolitics',title:'الحرب الإيرانية الأميركية وأثرها على عالم التداول',excerpt:'كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.',date:'15 May 2025',readTime:'8 دقائق قراءة',body:`<p>في كل مرة تشتعل فيها التوترات بين واشنطن وطهران، يتسارع قلب المتداول قبل أن يتحرك السوق. لكن الخطأ الذي يقع فيه كثيرون هو الاستجابة للضوضاء الإعلامية قبل قراءة ما تقوله الأموال الكبيرة.</p><h4>ما الذي يحدث فعلاً في السيولة؟</h4><p>عندما تتصاعد التوترات الجيوسياسية في الشرق الأوسط، تتحرك ثلاثة أصول بشكل متزامن: الذهب يرتفع، والدولار يتقوى كملاذ آمن، والنفط يقفز. الحركة الأكثر أهمية هي خروج السيولة من الأسواق الناشئة نحو السندات الأمريكية قصيرة الأجل.</p><blockquote>من يشتري على الخوف ويبيع على الخبر، يتصرف كالسوق — لا معه.</blockquote><p>راقب مستويات الذهب ومنحنى العائد الأمريكي — فهما يخبرانك بما يفكر فيه الكبار قبل أن يُعلنوه.</p>`},
+{id:2,tag:'Commodities',title:'الذهب ليس غاليًا... العالم هو القَلِق',excerpt:'لماذا يرتفع الذهب ليس بسبب قيمته، بل بسبب ما يعكسه عن حالة الثقة في النظام المالي العالمي.',date:'8 May 2025',readTime:'7 دقائق قراءة',body:`<p>السؤال الصحيح ليس "هل الذهب غالٍ؟" بل "ما حالة الثقة في النظام المالي العالمي؟"</p><h4>الذهب مرآة، ليس سلعة</h4><p>الذهب لا ينتج دخلاً. ما يحرّكه هو مستوى القلق الجماعي من استقرار العملات والسياسات النقدية. في 2024-2025 شهدنا شراءً قياسياً من البنوك المركزية — وهذه إشارة نادرة الأهمية.</p><blockquote>الذهب لا يكذب. عندما يرتفع، اسأل نفسك: من يشتريه وماذا يخاف؟</blockquote>`},
+{id:3,tag:'Macro',title:'الصين: من يراقبها يفهم اتجاه السيولة',excerpt:'الصين ليست مجرد سوق ناشئة — إنها مقياس لاتجاه التدفقات الدولية.',date:'1 May 2025',readTime:'9 دقائق قراءة',body:`<p>إذا أردت أن تفهم اتجاه السيولة العالمية في الأشهر القادمة، فانظر إلى الصين. قراراتها تحرّك المواد الخام والعملات والتدفقات الاستثمارية بشكل مؤثر وسابق للأحداث.</p><h4>الصين كمؤشر استباقي</h4><p>ثلاثة مؤشرات يجب أن تكون على شاشتك: مؤشر PMI الصناعي، صادرات النحاس، وسعر صرف اليوان أمام الدولار.</p><blockquote>الصين تتحرك ببطء، لكن أثرها عميق ودائم.</blockquote>`},
+{id:4,tag:'Forex',title:'الدولار في 2025: قوة مؤقتة أم بنيوية؟',excerpt:'تحليل لأسباب صمود الدولار رغم ارتفاع الدين الأمريكي وزيادة الشكوك حول سياسة الفيدرالي.',date:'24 Apr 2025',readTime:'7 دقائق قراءة',body:`<p>يواجه الدولار معادلة غريبة: دين متصاعد وعجز متراكم، لكنه يحافظ على قوته أمام معظم العملات الرئيسية.</p><h4>غياب البديل هو القوة</h4><p>قوة الدولار مبنية على غياب بديل حقيقي. لا اليورو ولا اليوان يملكان السيولة والعمق السوقي الكافي لاستبداله كعملة احتياط دولية.</p><blockquote>الدولار ليس قوياً — بقية العملات هي الأضعف.</blockquote>`},
+{id:5,tag:'Macro',title:'تضخم 2025: هل انتهت المعركة؟',excerpt:'مراجعة لمسار التضخم العالمي وما إذا كانت البنوك المركزية قاب قوسين من تحقيق أهدافها.',date:'18 Apr 2025',readTime:'8 دقائق قراءة',body:`<p>بعد سنتين من رفع الفائدة الأكثر حدة في تاريخ الفيدرالي الحديث، تراجع التضخم ليقترب من هدف 2%. لكن هل انتهت المعركة؟</p><h4>التضخم الخدمي لا يزال عنيداً</h4><p>التضخم في الخدمات — خاصة الإيجارات والرعاية الصحية — يتحرك ببطء شديد. هذه هي المعركة الحقيقية التي لم تُحسم بعد.</p>`},
+{id:6,tag:'Geopolitics',title:'البحر الأحمر وتأثيره على سلاسل الإمداد العالمية',excerpt:'كيف أعادت التوترات في البحر الأحمر رسم خرائط الشحن والتأمين وأسعار البضائع؟',date:'10 Apr 2025',readTime:'6 دقائق قراءة',body:`<p>نحو 12% من التجارة العالمية تمر عبر مضيق باب المندب — وحين يتعرض هذا الممر للتهديد، ترتفع تكاليف الشحن وتتأخر سلاسل الإمداد.</p><h4>الأثر على السوق</h4><p>الشركات الكبرى اضطرت لتحويل شحناتها عبر رأس الرجاء الصالح، مما أضاف أسابيع وتكاليف إضافية تنعكس على أسعار المستهلك.</p>`}
 ];
 
 let currentTag='all',currentSearch='',currentFiltered=[];
@@ -258,7 +262,7 @@ function renderArticles(){
       <p class="art-card-excerpt">${a.excerpt}</p>
       <div class="art-card-footer">
         <span class="art-card-date en">${a.date}</span>
-        <button class="art-read-btn">اقرأ المقال <span>←</span></button>
+        <button class="art-read-btn">اقرأ التحليل <span>←</span></button>
       </div>
     </div>`).join('');
   setTimeout(()=>document.querySelectorAll('.art-card').forEach((c,i)=>{setTimeout(()=>c.classList.add('visible'),i*55);}),30);
@@ -308,7 +312,7 @@ function mapRow(row){
 async function loadFromSupabase(){
   if(!sbClient)return;
   try{
-    const {data,error}=await sbClient.from('articles').select('*').eq('published',true).eq('content_type','article').order('created_at',{ascending:false});
+    const {data,error}=await sbClient.from('articles').select('*').eq('published',true).not('content_type','eq','article').order('created_at',{ascending:false});
     if(error){console.warn('articles supabase:',error.message);return;}
     if(data&&data.length){
       ARTICLES=data.map(mapRow);
