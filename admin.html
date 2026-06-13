@@ -248,6 +248,76 @@
       .stat-box-num{font-size:1.5rem;}
       .data-table{font-size:0.78rem;display:block;overflow-x:auto;white-space:nowrap;}
     }
+
+    /* ── PAGE BUILDER ── */
+    .builder-list{display:flex;flex-direction:column;gap:10px;}
+    .builder-row{
+      background:linear-gradient(145deg,rgba(18,22,20,0.95),rgba(12,15,13,0.95));
+      border:1px solid var(--ink-border);border-radius:var(--radius);
+      padding:14px 18px;display:flex;align-items:center;gap:14px;
+      transition:border-color 0.3s,box-shadow 0.25s,opacity 0.3s;
+    }
+    .builder-row:hover{border-color:rgba(120,144,124,0.3);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
+    .builder-row.hidden-section{opacity:0.42;}
+    .builder-drag{color:var(--muted);cursor:grab;font-size:1.05rem;flex-shrink:0;user-select:none;padding:0 2px;line-height:1;}
+    .builder-name{flex:1;font-size:0.9rem;color:var(--cream);font-weight:500;}
+    .builder-type{font-family:var(--font-mono);font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;
+      color:var(--gold-dim);background:rgba(120,144,124,0.06);border:1px solid var(--ink-border);
+      padding:3px 10px;border-radius:20px;white-space:nowrap;}
+    .builder-anim{background:rgba(255,255,255,0.03);border:1px solid var(--ink-border);border-radius:var(--radius);
+      padding:5px 10px;font-family:var(--font-mono);font-size:0.6rem;color:var(--cream-dim);cursor:pointer;
+      direction:ltr;outline:none;transition:border-color 0.2s;}
+    .builder-anim:focus{border-color:var(--gold);}
+    .builder-anim option{background:var(--ink-mid);}
+    .builder-move{display:flex;flex-direction:column;gap:3px;}
+    .builder-move-btn{width:22px;height:20px;background:transparent;border:1px solid var(--ink-border);
+      border-radius:4px;cursor:pointer;color:var(--muted);display:flex;align-items:center;
+      justify-content:center;font-size:0.6rem;transition:all 0.2s;padding:0;line-height:1;}
+    .builder-move-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+    .builder-move-btn:disabled{opacity:0.2;cursor:not-allowed;}
+    .builder-edit-btn{padding:6px 14px;font-family:var(--font-mono);font-size:0.6rem;border-radius:var(--radius);
+      cursor:pointer;transition:all 0.25s;background:transparent;border:1px solid var(--ink-border);color:var(--muted);white-space:nowrap;}
+    .builder-edit-btn:hover{border-color:var(--gold);color:var(--gold);}
+    /* Visibility toggle */
+    .vis-toggle{position:relative;width:40px;height:22px;flex-shrink:0;}
+    .vis-toggle input{opacity:0;width:0;height:0;position:absolute;}
+    .vis-slider{position:absolute;inset:0;background:rgba(255,255,255,0.04);border:1px solid var(--ink-border);border-radius:22px;cursor:pointer;transition:0.3s;}
+    .vis-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:0.3s;}
+    .vis-toggle input:checked+.vis-slider{background:rgba(74,222,128,0.12);border-color:rgba(74,222,128,0.22);}
+    .vis-toggle input:checked+.vis-slider::before{transform:translateX(18px);background:var(--green);}
+    /* Builder modal */
+    #builderModal{position:fixed;inset:0;background:rgba(8,8,12,0.92);backdrop-filter:blur(14px);z-index:8000;
+      display:none;align-items:center;justify-content:center;padding:24px;}
+    #builderModal.open{display:flex;}
+    .bm-box{background:linear-gradient(145deg,rgba(18,22,20,0.99),rgba(10,14,12,0.99));
+      border:1px solid rgba(120,144,124,0.2);border-radius:12px;width:100%;max-width:580px;
+      max-height:88vh;overflow-y:auto;padding:36px;animation:fadeUp 0.35s var(--ease) both;
+      scrollbar-width:thin;scrollbar-color:var(--gold-dim) transparent;}
+    .bm-box::-webkit-scrollbar{width:3px;}.bm-box::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px;}
+    .bm-title{font-size:1.1rem;color:var(--white);margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .bm-close{width:32px;height:32px;background:transparent;border:1px solid var(--ink-border);border-radius:50%;
+      cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;
+      transition:all 0.2s;font-size:0.85rem;flex-shrink:0;}
+    .bm-close:hover{border-color:rgba(248,113,113,0.5);color:var(--red);}
+    .bm-fields{display:flex;flex-direction:column;gap:16px;}
+    .bm-field label{display:block;font-family:var(--font-mono);font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .bm-field input,.bm-field textarea{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--ink-border);
+      border-radius:var(--radius);padding:11px 14px;font-family:var(--font-ar);font-size:0.9rem;
+      color:var(--cream);outline:none;transition:border-color 0.3s;direction:rtl;}
+    .bm-field input:focus,.bm-field textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(120,144,124,0.07);}
+    .bm-field textarea{min-height:100px;resize:vertical;line-height:1.7;}
+    .bm-actions{display:flex;gap:10px;margin-top:24px;}
+    .bm-save{flex:1;padding:13px;background:linear-gradient(135deg,var(--gold-bright),var(--gold));
+      color:var(--ink);font-family:var(--font-ar);font-size:0.95rem;font-weight:700;
+      border:none;border-radius:var(--radius);cursor:pointer;transition:all 0.3s;}
+    .bm-save:hover{box-shadow:0 8px 24px rgba(120,144,124,0.3);}
+    .bm-cancel{padding:13px 20px;background:transparent;border:1px solid var(--ink-border);
+      color:var(--muted);font-family:var(--font-ar);font-size:0.9rem;border-radius:var(--radius);cursor:pointer;transition:all 0.3s;}
+    .bm-cancel:hover{border-color:var(--gold);color:var(--gold);}
+    .bm-note{font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);text-align:center;
+      padding:24px;border:1px dashed var(--ink-border);border-radius:var(--radius);line-height:1.8;}
+    .builder-help{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);margin-top:14px;
+      padding:12px 16px;background:rgba(120,144,124,0.04);border-radius:var(--radius);border:1px solid var(--ink-border);line-height:1.7;}
   </style>
 </head>
 <body>
@@ -285,6 +355,8 @@
       <div class="side-link" data-panel="articles"><span class="side-icon">📰</span>إدارة المقالات</div>
       <div class="side-label">الحجوزات</div>
       <div class="side-link" data-panel="bookings"><span class="side-icon">📅</span>الحجوزات</div>
+      <div class="side-label">الموقع</div>
+      <div class="side-link" data-panel="builder"><span class="side-icon">🎨</span>مدير الصفحة</div>
       <div class="side-label">أخرى</div>
       <div class="side-link" data-panel="subscribers"><span class="side-icon">📧</span>المشتركون</div>
       <div class="side-link" onclick="window.open('index.html','_blank')"><span class="side-icon">🌐</span>الموقع</div>
@@ -403,6 +475,27 @@
         </div>
       </div>
 
+      <!-- PAGE BUILDER -->
+      <div class="panel" id="panel-builder">
+        <div class="panel-title">🎨 مدير الصفحة</div>
+        <div class="panel-sub">أخفِ سيكشنات، رتّبها، وعدّل محتواها — التغييرات تنعكس فوراً على الموقع</div>
+        <div class="section-card">
+          <div class="section-card-title">سيكشنات الصفحة الرئيسية</div>
+          <div id="builderList" class="builder-list">
+            <div style="text-align:center;padding:40px;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;">
+              <span class="skeleton" style="width:80%;display:block;margin:0 auto 10px;"></span>
+              <span class="skeleton" style="width:65%;display:block;margin:0 auto;"></span>
+            </div>
+          </div>
+          <div class="builder-help">
+            💡 <strong>كيفية الاستخدام:</strong> أخفِ/أظهِر سيكشن بالزر الأخضر، اضغط ▲▼ لإعادة الترتيب، اختر الأنيميشن من القائمة، واضغط "تعديل" لتغيير النصوص والصور.
+          </div>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="submit-btn" style="width:auto;padding:11px 22px;font-size:0.85rem;" onclick="initDefaultSections()">⟳ تهيئة الإعدادات الافتراضية</button>
+          </div>
+        </div>
+      </div>
+
       <!-- SUBSCRIBERS -->
       <div class="panel" id="panel-subscribers">
         <div class="panel-title">المشتركون بالنشرة</div>
@@ -420,6 +513,21 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- BUILDER CONTENT EDIT MODAL -->
+<div id="builderModal">
+  <div class="bm-box">
+    <div class="bm-title">
+      <span id="bmTitle">تعديل المحتوى</span>
+      <button class="bm-close" onclick="closeBuilderModal()">✕</button>
+    </div>
+    <div class="bm-fields" id="bmFields"></div>
+    <div class="bm-actions" id="bmActions">
+      <button class="bm-save" id="bmSaveBtn">💾 حفظ ونشر على الموقع</button>
+      <button class="bm-cancel" onclick="closeBuilderModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -460,6 +568,7 @@ function loadPanel(name){
   if(name==='subscribers') loadSubscribers();
   if(name==='overview')    loadOverview();
   if(name==='new-article') resetEditor();
+  if(name==='builder')     loadBuilder();
 }
 
 // TOAST
@@ -624,6 +733,206 @@ async function loadBookings(){
       <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.time}</td>
       <td><span class="badge badge-confirmed">${b.status||'confirmed'}</span></td>
     </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════
+// PAGE BUILDER
+// ══════════════════════════════════════════════
+let builderSections=[];
+
+const SECTION_FIELDS={
+  hero:[
+    {key:'title',       label:'العنوان الرئيسي (ضع كل سطر بسطر جديد)',type:'textarea',rows:3},
+    {key:'subtitle',    label:'النص المائل الإنجليزي (hero-label)',    type:'text'},
+    {key:'text',        label:'النص التعريفي (الفقرة)',                 type:'textarea',rows:3},
+    {key:'cta_primary', label:'نص زر الحجز الرئيسي',                   type:'text'},
+    {key:'cta_secondary',label:'نص زر التحليلات',                      type:'text'},
+    {key:'badge_num',   label:'رقم الشارة (مثل: +25)',                 type:'text'},
+    {key:'badge_label', label:'نص الشارة (مثل: سنة خبرة)',              type:'text'},
+  ],
+  insights:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  method:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  notes:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  consultations:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  booking:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  about:[
+    {key:'title',     label:'الاسم / العنوان',     type:'text'},
+    {key:'subtitle',  label:'المسمى الوظيفي',      type:'text'},
+    {key:'text1',     label:'الفقرة الأولى',        type:'textarea',rows:4},
+    {key:'text2',     label:'الفقرة الثانية',       type:'textarea',rows:4},
+    {key:'image_url', label:'رابط الصورة (اختياري)',type:'text'},
+  ],
+  library:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  reports:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  testimonials:[
+    {key:'title',    label:'عنوان السيكشن',type:'text'},
+    {key:'subtitle', label:'الوصف',        type:'textarea',rows:2},
+  ],
+  articles_cta:[
+    {key:'title',    label:'العنوان',       type:'text'},
+    {key:'subtitle', label:'الوصف',         type:'textarea',rows:2},
+    {key:'btn_text', label:'نص الزر',       type:'text'},
+  ],
+  newsletter:[
+    {key:'title',    label:'العنوان',       type:'text'},
+    {key:'subtitle', label:'الوصف',         type:'textarea',rows:2},
+  ],
+  ticker:[], // no editable content
+};
+
+const DEFAULT_SECTIONS=[
+  {section_key:'hero',         section_name:'🏠 الهيرو',               section_type:'hero',         order_index:1,  animation:'heroReveal', visible:true,  content:{title:'أقرأ الأسواق\nمن خلف الأحداث',subtitle:'Strategic Market Analysis',text:'منصة تحليل اقتصادي وأسواق عالمية تربط السياسة، الاقتصاد، السيولة، وسلوك المستثمرين بلغة يفهمها المتداول.',cta_primary:'اقرأ آخر التحليلات',cta_secondary:'احجز استشارة',badge_num:'+25',badge_label:'سنة خبرة'}},
+  {section_key:'ticker',       section_name:'📈 شريط الأسعار',          section_type:'ticker',       order_index:2,  animation:'none',       visible:true,  content:{}},
+  {section_key:'insights',     section_name:'📰 آخر التحليلات',         section_type:'insights',     order_index:3,  animation:'fadeUp',     visible:true,  content:{title:'أحدث التحليلات',subtitle:'قراءة معمّقة في أبرز الأحداث التي تحرّك الأسواق العالمية.'}},
+  {section_key:'method',       section_name:'🔬 المنهجية التحليلية',    section_type:'method',       order_index:4,  animation:'fadeUp',     visible:true,  content:{title:'كيف تقرأ هنادي السوق؟',subtitle:'منهجية متسلسلة تبدأ بالحدث وتنتهي بقرار المتداول.'}},
+  {section_key:'notes',        section_name:'❓ الأسئلة الشائعة',       section_type:'notes',        order_index:5,  animation:'fadeUp',     visible:true,  content:{title:'رؤى سريعة',subtitle:'أسئلة يطرحها المتداولون — إجابات هنادي.'}},
+  {section_key:'consultations',section_name:'🛡️ الاستشارات',           section_type:'consultations',order_index:6,  animation:'fadeUp',     visible:true,  content:{title:'الاستشارات',subtitle:'جلسات مصممة للمتداول الجاد والمستثمر الباحث عن وضوح.'}},
+  {section_key:'booking',      section_name:'📅 حجز موعد',             section_type:'booking',      order_index:7,  animation:'fadeUp',     visible:true,  content:{title:'احجز موعدك',subtitle:'اختر اليوم والوقت المناسب لك — ثلاثة مواعيد يومياً.'}},
+  {section_key:'about',        section_name:'👤 عن هنادي',             section_type:'about',        order_index:8,  animation:'fadeUp',     visible:true,  content:{title:'عن هنادي',subtitle:'محللة مالية',text1:'بدأت هنادي رحلتها في عالم الأسواق عام 1998، من عمّان، قبل أن تؤسس عام 2002 أول مكتب فوركس في دمشق.',text2:'ليست منصة توصيات — بل منصة تعليم، تحليل، وبناء وعي.',image_url:''}},
+  {section_key:'library',      section_name:'📚 المكتبة التعليمية',    section_type:'library',      order_index:9,  animation:'fadeUp',     visible:true,  content:{title:'المكتبة التعليمية',subtitle:'محتوى دائم يبني أساساً متيناً للمتداول.'}},
+  {section_key:'reports',      section_name:'📄 تقارير الأسواق',       section_type:'reports',      order_index:10, animation:'fadeUp',     visible:true,  content:{title:'تقارير الأسواق',subtitle:'تقارير دورية لأبرز ما يتحرك في الأسواق العالمية.'}},
+  {section_key:'testimonials', section_name:'⭐ آراء العملاء',         section_type:'testimonials', order_index:11, animation:'fadeUp',     visible:true,  content:{title:'ماذا يقول المتدربون',subtitle:'آراء بعض من رافقوا هنادي في رحلة فهم الأسواق.'}},
+  {section_key:'articles_cta', section_name:'🔗 CTA المقالات',         section_type:'articles_cta', order_index:12, animation:'fadeUp',     visible:true,  content:{title:'أرشيف المقالات الكامل',subtitle:'أكثر من 50 مقالاً في التحليل الاقتصادي',btn_text:'تصفح جميع المقالات ←'}},
+  {section_key:'newsletter',   section_name:'📧 النشرة البريدية',      section_type:'newsletter',   order_index:13, animation:'fadeUp',     visible:true,  content:{title:'رسالة أسبوعية من هنادي',subtitle:'تحليل هادئ لأهم ما يتحرك خلف الأسواق... يصلك مباشرة إلى بريدك.'}},
+];
+
+async function loadBuilder(){
+  const list=document.getElementById('builderList');
+  list.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-family:var(--font-mono);font-size:0.72rem;">⏳ جارٍ التحميل...</div>';
+  const {data,error}=await sb.from('page_sections').select('*').order('order_index',{ascending:true});
+  if(error||!data||!data.length){
+    list.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-family:var(--font-mono);font-size:0.75rem;line-height:1.9;">لا توجد بيانات بعد.<br>اضغط زر <strong style="color:var(--gold);">تهيئة الإعدادات الافتراضية</strong> أدناه لإنشاء السيكشنات.</div>';
+    return;
+  }
+  builderSections=data;
+  renderBuilderList();
+}
+
+function renderBuilderList(){
+  const list=document.getElementById('builderList');
+  const ANIMS=['none','fadeUp','fadeIn','slideRight','heroReveal','zoom'];
+  list.innerHTML=builderSections.map((s,i)=>`
+    <div class="builder-row ${!s.visible?'hidden-section':''}" data-id="${s.id}">
+      <span class="builder-drag" title="السيكشن">⣿</span>
+      <div class="builder-name">${s.section_name}</div>
+      <span class="builder-type">${s.section_type}</span>
+      <select class="builder-anim" title="الأنيميشن" onchange="saveSectionField('${s.id}','animation',this.value)">
+        ${ANIMS.map(a=>`<option value="${a}"${s.animation===a?' selected':''}>${a}</option>`).join('')}
+      </select>
+      <div class="builder-move">
+        <button class="builder-move-btn" title="تحريك لأعلى" onclick="moveSection(${i},-1)" ${i===0?'disabled':''}>▲</button>
+        <button class="builder-move-btn" title="تحريك لأسفل" onclick="moveSection(${i},1)"  ${i===builderSections.length-1?'disabled':''}>▼</button>
+      </div>
+      <label class="vis-toggle" title="${s.visible?'مرئي — اضغط للإخفاء':'مخفي — اضغط للإظهار'}">
+        <input type="checkbox" ${s.visible?'checked':''} onchange="saveSectionField('${s.id}','visible',this.checked)">
+        <span class="vis-slider"></span>
+      </label>
+      <button class="builder-edit-btn" onclick="openBuilderModal('${s.id}')">✏️ تعديل</button>
+    </div>`).join('');
+}
+
+async function saveSectionField(id,field,value){
+  const {error}=await sb.from('page_sections').update({[field]:value,updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){showToast('خطأ: '+error.message,'error');return;}
+  const sec=builderSections.find(s=>s.id===id);
+  if(sec){sec[field]=value;}
+  if(field==='visible')renderBuilderList();
+  showToast('✓ تم الحفظ — سيظهر على الموقع فوراً');
+}
+
+async function moveSection(index,dir){
+  const ni=index+dir;
+  if(ni<0||ni>=builderSections.length)return;
+  const a=builderSections[index],b=builderSections[ni];
+  const ao=a.order_index,bo=b.order_index;
+  a.order_index=bo;b.order_index=ao;
+  builderSections[index]=b;builderSections[ni]=a;
+  await Promise.all([
+    sb.from('page_sections').update({order_index:a.order_index,updated_at:new Date().toISOString()}).eq('id',a.id),
+    sb.from('page_sections').update({order_index:b.order_index,updated_at:new Date().toISOString()}).eq('id',b.id),
+  ]);
+  renderBuilderList();
+  showToast('✓ تم تغيير الترتيب');
+}
+
+// CONTENT EDIT MODAL
+let _editingSection=null;
+function openBuilderModal(id){
+  const sec=builderSections.find(s=>s.id===id);
+  if(!sec)return;
+  _editingSection=sec;
+  document.getElementById('bmTitle').textContent='✏️ تعديل: '+sec.section_name;
+  const fields=SECTION_FIELDS[sec.section_type]||[];
+  const content=sec.content||{};
+  const fieldsEl=document.getElementById('bmFields');
+  const actionsEl=document.getElementById('bmActions');
+  if(!fields.length){
+    fieldsEl.innerHTML='<div class="bm-note">هذا السيكشن (<strong>'+sec.section_type+'</strong>) لا يحتوي على نصوص قابلة للتعديل من هنا.<br>يتم إدارته تلقائياً أو عبر الأدوات المخصصة له.</div>';
+    actionsEl.style.display='none';
+  }else{
+    actionsEl.style.display='';
+    fieldsEl.innerHTML=fields.map(f=>`
+      <div class="bm-field">
+        <label>${f.label}</label>
+        ${f.type==='textarea'
+          ?`<textarea rows="${f.rows||3}" id="bmf_${f.key}" placeholder="${f.label}...">${escS(content[f.key]||'')}</textarea>`
+          :`<input type="text" id="bmf_${f.key}" placeholder="${f.label}..." value="${escSAttr(content[f.key]||'')}"/>`
+        }
+      </div>`).join('');
+  }
+  document.getElementById('builderModal').classList.add('open');
+}
+function closeBuilderModal(){
+  document.getElementById('builderModal').classList.remove('open');
+  _editingSection=null;
+}
+function escS(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escSAttr(s){return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+
+document.getElementById('bmSaveBtn').addEventListener('click',async()=>{
+  if(!_editingSection)return;
+  const sec=_editingSection;
+  const fields=SECTION_FIELDS[sec.section_type]||[];
+  const content={...(sec.content||{})};
+  fields.forEach(f=>{const el=document.getElementById('bmf_'+f.key);if(el)content[f.key]=el.value;});
+  const btn=document.getElementById('bmSaveBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner" style="border-top-color:var(--ink);border-width:2px;"></span> جارٍ الحفظ...';
+  const {error}=await sb.from('page_sections').update({content,updated_at:new Date().toISOString()}).eq('id',sec.id);
+  if(error){showToast('خطأ: '+error.message,'error');}
+  else{sec.content=content;showToast('✓ تم الحفظ — الموقع يعكس التغييرات فوراً');closeBuilderModal();}
+  btn.disabled=false;btn.innerHTML='💾 حفظ ونشر على الموقع';
+});
+document.getElementById('builderModal').addEventListener('click',function(e){if(e.target===this)closeBuilderModal();});
+
+async function initDefaultSections(){
+  if(!confirm('سيتم إنشاء/تحديث جميع السيكشنات بالقيم الافتراضية. هل أنت متأكدة؟'))return;
+  const btn=event.currentTarget;btn.disabled=true;btn.textContent='⏳ جارٍ التهيئة...';
+  const {error}=await sb.from('page_sections').upsert(DEFAULT_SECTIONS,{onConflict:'section_key'});
+  btn.disabled=false;btn.textContent='⟳ تهيئة الإعدادات الافتراضية';
+  if(error){showToast('خطأ: '+error.message,'error');return;}
+  showToast('✓ تم إنشاء الإعدادات الافتراضية بنجاح');
+  loadBuilder();
 }
 
 // SUBSCRIBERS

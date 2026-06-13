@@ -1001,6 +1001,106 @@ grid.innerHTML=ARTICLES.map((a,i)=>`
 }catch(err){console.warn('insights load:',err);}
 }
 loadLatestArticles();
+
+// ── PAGE SECTIONS LOADER ──
+// Maps section_key → {el: DOM selector, updates: [{field, selector, fn}]}
+const _SEC_MAP={
+  hero:{
+    el:'#hero',
+    updates:[
+      {field:'title',   sel:'.hero-title',  fn:(el,v)=>{ el.innerHTML=v.replace(/\n/g,'<br/>'); }},
+      {field:'subtitle',sel:'.hero-label',  fn:(el,v)=>{ el.childNodes[el.childNodes.length-1].textContent=' '+v; }},
+      {field:'text',    sel:'.hero-text',   fn:(el,v)=>{ el.textContent=v; }},
+      {field:'badge_num',  sel:'.badge-num',fn:(el,v)=>{ el.textContent=v; }},
+      {field:'badge_label',sel:'.badge-lbl',fn:(el,v)=>{ el.textContent=v; }},
+      {field:'cta_primary',  sel:'.hero-buttons .btn-green',fn:(el,v)=>{ el.textContent=v; }},
+      {field:'cta_secondary',sel:'.hero-buttons .btn-outline',fn:(el,v)=>{ el.textContent=v; }},
+    ]
+  },
+  ticker:        {el:'.ticker-wrap'},
+  insights:      {el:'#insights',      updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  method:        {el:'#method',        updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  notes:         {el:'#notes',         updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  consultations: {el:'#consultations', updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  booking:       {el:'#booking',       updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  about:{
+    el:'#about',
+    updates:[
+      {field:'title',   sel:'.section-title',      fn:(el,v)=>el.textContent=v},
+      {field:'text1',   sel:'.about-text:first-of-type', fn:(el,v)=>el.textContent=v},
+      {field:'text2',   sel:'.about-text:nth-of-type(2)',fn:(el,v)=>el.textContent=v},
+      {field:'image_url',sel:'.about-photo',fn:(el,v)=>{
+        if(!v)return;
+        const img=el.querySelector('img')||document.createElement('img');
+        img.src=v;img.alt='هنادي';img.style.cssText='width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:6px;';
+        el.style.position='relative';el.innerHTML='';el.appendChild(img);
+      }}
+    ]
+  },
+  library:      {el:'#library',      updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  reports:      {el:'#reports',      updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  testimonials: {el:'#testimonials', updates:[{field:'title',sel:'.section-title',fn:(el,v)=>el.textContent=v},{field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v}]},
+  articles_cta: {el:'#articles-cta', updates:[
+    {field:'title',   sel:'.section-title',fn:(el,v)=>el.textContent=v},
+    {field:'subtitle',sel:'p[style]',       fn:(el,v)=>el.textContent=v},
+    {field:'btn_text',sel:'.btn-green',     fn:(el,v)=>el.textContent=v},
+  ]},
+  newsletter:{el:'#newsletter', updates:[
+    {field:'title',   sel:'.section-title',  fn:(el,v)=>el.textContent=v},
+    {field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v},
+  ]},
+};
+
+async function loadPageSections(){
+  if(!sbClient)return;
+  try{
+    const {data,error}=await sbClient.from('page_sections').select('*').order('order_index',{ascending:true});
+    if(error||!data||!data.length)return;
+
+    // Build ordered list of section keys
+    const ordered=data.map(s=>s.section_key);
+
+    data.forEach(sec=>{
+      const map=_SEC_MAP[sec.section_key];
+      if(!map)return;
+      const domEl=document.querySelector(map.el);
+      if(!domEl)return;
+
+      // Visibility
+      if(!sec.visible){
+        domEl.style.display='none';
+        return;
+      }else{
+        domEl.style.display='';
+      }
+
+      // Content updates
+      if(map.updates&&sec.content){
+        map.updates.forEach(u=>{
+          const val=sec.content[u.field];
+          if(!val&&val!==false)return;
+          const target=domEl.querySelector(u.sel);
+          if(target)try{u.fn(target,val);}catch(e){}
+        });
+      }
+    });
+
+    // Reorder sections in DOM based on order_index
+    const body=document.body;
+    const refEl=document.getElementById('footer');
+    ordered.forEach(key=>{
+      const map=_SEC_MAP[key];
+      if(!map)return;
+      const el=document.querySelector(map.el);
+      if(el&&el.style.display!=='none'){
+        body.insertBefore(el,refEl);
+      }
+    });
+
+  }catch(e){console.warn('page sections:',e);}
+}
+loadPageSections();
+
 document.getElementById('artModalClose').addEventListener('click',closeArticle);
 document.getElementById('articleModal').addEventListener('click',function(e){if(e.target===this)closeArticle();});
 
