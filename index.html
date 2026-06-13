@@ -921,6 +921,8 @@ body *{font-variant-numeric:lining-nums;}
 <li><a href="#insights">التحليلات</a></li>
 <li><a href="articles.html">المقالات</a></li>
 <li><a href="#notes">الرؤى السريعة</a></li>
+<li id="footerConsultations" style="display:none;"><a href="#consultations">الاستشارات</a></li>
+<li id="footerBooking" style="display:none;"><a href="#booking">حجز موعد</a></li>
 <li><a href="#about">عن هنادي</a></li>
 </ul>
 </div>
@@ -928,6 +930,8 @@ body *{font-variant-numeric:lining-nums;}
 <h4>تواصل</h4>
 <ul>
 <li><a href="#newsletter">النشرة البريدية</a></li>
+<li id="footerBookingCta" style="display:none;"><a href="#booking">احجز استشارة</a></li>
+<li id="footerLibrary" style="display:none;"><a href="#library">المكتبة التعليمية</a></li>
 </ul>
 </div>
 </div>
@@ -1337,6 +1341,9 @@ async function loadSiteTheme(){
     if(t.nav_cta_visible){
       const el=document.getElementById('navCtaItem');if(el)el.style.display='';
       const mel=document.getElementById('mobileNavCta');if(mel)mel.style.display='';
+      // Sync footer booking links
+      const fb=document.getElementById('footerBooking');if(fb)fb.style.display='';
+      const fbc=document.getElementById('footerBookingCta');if(fbc)fbc.style.display='';
     }
     // Per-element fonts (granular typography)
     const fonts=t.fonts||{};
@@ -1445,6 +1452,9 @@ async function loadPageSections(){
       const key=h.slice(1);
       if(key in visMap)a.style.display=visMap[key]?'':'none';
     });
+    // Sync footer links with section visibility
+    const fc=document.getElementById('footerConsultations');if(fc)fc.style.display=visMap['consultations']?'':'none';
+    const fl=document.getElementById('footerLibrary');if(fl)fl.style.display=visMap['library']?'':'none';
 
     // Reorder sections in DOM based on order_index
     const body=document.body;

@@ -753,6 +753,10 @@
             <span class="toggle-label">إظهار زر "احجز موعداً" في شريط التنقل</span>
             <label class="toggle-switch"><input type="checkbox" id="navCtaToggle"/><span class="toggle-slider"></span></label>
           </div>
+          <div class="publish-toggle" style="margin-top:12px;">
+            <span class="toggle-label">إظهار سيكشن "تواصل معنا" في صفحتَي المقالات والتحليلات</span>
+            <label class="toggle-switch"><input type="checkbox" id="contactCtaToggle"/><span class="toggle-slider"></span></label>
+          </div>
         </div>
 
         <div class="section-card">
@@ -1709,6 +1713,7 @@ async function loadTheme(){
   document.getElementById('sheetsWebhook').value=(data&&data.sheets_webhook)||'';
   document.getElementById('heroBookingToggle').checked = !currentTheme.hero_booking_hidden;
   document.getElementById('navCtaToggle').checked = !!currentTheme.nav_cta_visible;
+  document.getElementById('contactCtaToggle').checked = !!currentTheme.show_contact_cta;
   fillThemeInputs();
   if(currentTheme.template)document.querySelectorAll('.tpl-card').forEach(c=>c.classList.toggle('active-tpl',c.dataset.tpl===currentTheme.template));
   document.querySelectorAll('.style-card').forEach(c=>c.classList.toggle('active-style',c.dataset.style===currentTheme.style));
@@ -1747,6 +1752,7 @@ document.getElementById('saveThemeBtn').addEventListener('click',async function(
   delete currentTheme.font_ar; // remove legacy key
   currentTheme.hero_booking_hidden = !document.getElementById('heroBookingToggle').checked;
   currentTheme.nav_cta_visible = document.getElementById('navCtaToggle').checked;
+  currentTheme.show_contact_cta = document.getElementById('contactCtaToggle').checked;
   const webhook=document.getElementById('sheetsWebhook').value.trim();
   this.disabled=true;this.innerHTML='<span class="spinner"></span>';
   const{error}=await sb.from('site_settings').upsert({id:1,theme:currentTheme,sheets_webhook:webhook||null,updated_at:new Date().toISOString()},{onConflict:'id'});

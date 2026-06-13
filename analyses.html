@@ -215,7 +215,7 @@ a{text-decoration:none;color:inherit;}
 </div>
 
 <!-- CONTACT CTA -->
-<section style="padding:80px 0;border-top:1px solid var(--line);text-align:center;">
+<section id="contact-cta-section" style="display:none;padding:80px 0;border-top:1px solid var(--line);text-align:center;">
 <div class="container">
   <div class="hero-label en" style="justify-content:center;margin-bottom:20px;">Contact</div>
   <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);color:var(--text);margin-bottom:16px;">هل لديك سؤال أو تريد استشارة؟</h2>
@@ -226,7 +226,7 @@ a{text-decoration:none;color:inherit;}
 
 <footer class="mini-footer">
 <div class="container">
-<p>© 2025 Hanadi Insights — <a href="index.html" style="color:var(--accent-light);">العودة للرئيسية</a> · <a href="contact.html" style="color:var(--accent-light);">تواصل معنا</a></p>
+<p>© 2025 Hanadi Insights — <a href="index.html" style="color:var(--accent-light);">العودة للرئيسية</a></p>
 </div>
 </footer>
 
@@ -335,6 +335,17 @@ async function loadFromSupabase(){
 
 renderArticles();
 loadFromSupabase();
+
+async function loadContactCta(){
+  if(!sbClient)return;
+  try{
+    const {data}=await sbClient.from('site_settings').select('theme').eq('id',1).single();
+    if(data&&data.theme&&data.theme.show_contact_cta){
+      const s=document.getElementById('contact-cta-section');if(s)s.style.display='';
+    }
+  }catch(e){}
+}
+loadContactCta();
 </script>
 </body>
 </html>
