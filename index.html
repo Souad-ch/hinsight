@@ -719,25 +719,8 @@ html{font-size:15px;}
 <div class="green-line"></div>
 <p class="section-subtitle">مقالات تحليلية تربط الاقتصاد بالواقع.</p>
 </div>
-<div class="articles-preview-grid reveal">
-  <div class="art-prev-card">
-    <span class="card-tag en">Economy</span>
-    <h3 class="art-prev-title">كيف تقرأ بيانات التضخم قبل أن تتحرك الأسواق</h3>
-    <p class="art-prev-desc">دليل عملي لفهم مؤشر CPI وPCE وكيف يترجمها المتداول الحقيقي إلى فرص وليس مجرد أخبار.</p>
-    <div class="art-prev-footer"><span class="card-date en">2 Jun 2025</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
-  </div>
-  <div class="art-prev-card">
-    <span class="card-tag en">Psychology</span>
-    <h3 class="art-prev-title">لماذا يخسر المتداول الذكي في سوق صاعد؟</h3>
-    <p class="art-prev-desc">ليست المشكلة في التحليل — بل في علم النفس. كيف تتخلى عن الانحياز والتحقق الذاتي؟</p>
-    <div class="art-prev-footer"><span class="card-date en">25 May 2025</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
-  </div>
-  <div class="art-prev-card">
-    <span class="card-tag en">Macro</span>
-    <h3 class="art-prev-title">الدولار ليس فقط عملة — إنه سلاح جيوسياسي</h3>
-    <p class="art-prev-desc">قراءة في كيف يُستخدم الدولار أداةً للضغط والعقوبات وتحريك التحالفات المالية الدولية.</p>
-    <div class="art-prev-footer"><span class="card-date en">18 May 2025</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
-  </div>
+<div class="articles-preview-grid reveal" id="articlesPreviewGrid">
+  <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;">⏳ جارٍ تحميل المقالات...</div>
 </div>
 <div style="text-align:center;margin-top:44px;" class="reveal">
 <a href="articles.html" class="btn btn-outline">عرض جميع المقالات →</a>
@@ -1092,6 +1075,47 @@ grid.innerHTML=ARTICLES.map((a,i)=>`
 }catch(err){console.warn('insights load:',err);}
 }
 loadLatestArticles();
+
+// جلب أحدث 3 مقالات (content_type='article') من Supabase
+let BLOG_ARTICLES=[];
+async function loadLatestBlogPosts(){
+if(!sbClient)return;
+try{
+const {data,error}=await sbClient.from('articles').select('*').eq('published',true).eq('content_type','article').order('created_at',{ascending:false}).limit(3);
+const grid=document.getElementById('articlesPreviewGrid');
+if(!grid)return;
+if(error||!data||!data.length){
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;">لا توجد مقالات منشورة بعد.</div>';
+  return;
+}
+BLOG_ARTICLES=data;
+grid.innerHTML=data.map((r,i)=>{
+  let d='';try{d=new Date(r.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{}
+  return `<div class="art-prev-card reveal visible delay-${i+1}" onclick="openBlogArticle(${i})" style="cursor:pointer;">
+  <span class="card-tag en">${escHtml(r.tag||'مقال')}</span>
+  <h3 class="art-prev-title">${escHtml(r.title)}</h3>
+  <p class="art-prev-desc">${escHtml(r.excerpt||'')}</p>
+  <div class="art-prev-footer"><span class="card-date en">${escHtml(d)}</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
+  </div>`;
+}).join('');
+}catch(err){console.warn('blog load:',err);}
+}
+function openBlogArticle(i){
+const a=BLOG_ARTICLES[i];
+if(!a)return;
+document.getElementById('artTag').textContent=a.tag||'مقال';
+document.getElementById('artTitle').textContent=a.title;
+const txt=(a.content||'').replace(/<[^>]+>/g,'');
+const mins=Math.max(1,Math.round(txt.length/700));
+let d='';try{d=new Date(a.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{}
+document.getElementById('artDate').textContent='📅 '+d;
+document.getElementById('artReadTime').textContent='⏱ '+mins+' دقائق قراءة';
+document.getElementById('artBody').innerHTML=a.content||'';
+const m=document.getElementById('articleModal');
+m.classList.add('open');m.querySelector('.modal').scrollTop=0;
+document.body.style.overflow='hidden';
+}
+loadLatestBlogPosts();
 
 // ── PAGE SECTIONS LOADER ──
 // Maps section_key → {el: DOM selector, updates: [{field, selector, fn}]}
