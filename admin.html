@@ -151,6 +151,8 @@
     .data-table tbody tr:hover td{background:rgba(120,144,124,0.03);color:var(--cream);}
     .data-table .badge{display:inline-block;font-family:var(--font-mono);font-size:0.58rem;padding:3px 10px;border-radius:20px;letter-spacing:0.08em;}
     .badge-confirmed,.badge-published{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);}
+    .badge-pending{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);color:#fbbf24;}
+    .badge-cancelled{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--red);}
     .badge-draft{background:rgba(120,144,124,0.08);border:1px solid rgba(120,144,124,0.2);color:var(--gold);}
 
     /* Skeleton loader */
@@ -509,10 +511,22 @@
       <div class="panel" id="panel-bookings">
         <div class="panel-title">الحجوزات</div>
         <div class="panel-sub">جميع طلبات الاستشارة الواردة</div>
+        <div class="section-card" style="margin-bottom:16px;">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <input type="text" id="bookingSearch" class="form-input" placeholder="🔍 بحث باسم أو إيميل..." style="flex:1;min-width:180px;padding:10px 14px;font-size:0.85rem;" oninput="filterBookings()"/>
+            <select id="bookingStatus" class="form-select" style="width:140px;" onchange="filterBookings()">
+              <option value="">كل الحالات</option>
+              <option value="confirmed">مؤكد</option>
+              <option value="pending">قيد الانتظار</option>
+              <option value="cancelled">ملغي</option>
+            </select>
+            <button class="submit-btn" style="padding:10px 18px;font-size:0.82rem;background:rgba(120,144,124,0.15);color:var(--gold-bright);border:1px solid var(--ink-border);" onclick="exportBookingsCSV()">⬇ تصدير Excel</button>
+          </div>
+        </div>
         <div class="section-card">
           <table class="data-table">
-            <thead><tr><th>العميل</th><th>الهاتف</th><th>الإيميل</th><th>نوع الجلسة</th><th>التاريخ</th><th>الوقت</th><th>الحالة</th></tr></thead>
-            <tbody id="bookingsBody"><tr><td colspan="7" class="empty-state">جارٍ التحميل...</td></tr></tbody>
+            <thead><tr><th>العميل</th><th>الهاتف</th><th>الإيميل</th><th>نوع الجلسة</th><th>التاريخ</th><th>الوقت</th><th>الرسالة</th><th>الحالة</th><th></th></tr></thead>
+            <tbody id="bookingsBody"><tr><td colspan="9" class="empty-state">جارٍ التحميل...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -843,20 +857,70 @@ function resetEditor(){
 }
 
 // BOOKINGS
+let _allBookings=[];
 async function loadBookings(){
   const {data}=await sb.from('bookings').select('*').order('created_at',{ascending:false});
+  _allBookings=data||[];
+  renderBookings(_allBookings);
+}
+function renderBookings(list){
   const tbody=document.getElementById('bookingsBody');
-  if(!data||!data.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📅</div>لا توجد حجوزات بعد.</div></td></tr>';return;}
-  tbody.innerHTML=data.map(b=>`
-    <tr>
-      <td>${b.client_name}</td>
+  if(!list.length){tbody.innerHTML='<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📅</div>لا توجد حجوزات بعد.</div></td></tr>';return;}
+  tbody.innerHTML=list.map(b=>{
+    const st=b.status||'confirmed';
+    const badgeCls=st==='confirmed'?'badge-confirmed':st==='cancelled'?'badge-cancelled':'badge-pending';
+    const stLabel=st==='confirmed'?'مؤكد':st==='cancelled'?'ملغي':'قيد الانتظار';
+    return `<tr>
+      <td>${b.client_name||'—'}</td>
       <td style="font-family:var(--font-mono);font-size:0.72rem;direction:ltr;">${b.client_phone||'—'}</td>
       <td style="font-family:var(--font-mono);font-size:0.72rem;direction:ltr;">${b.client_email||'—'}</td>
       <td>${b.consultation_type||'—'}</td>
-      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.date}</td>
-      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.time}</td>
-      <td><span class="badge badge-confirmed">${b.status||'confirmed'}</span></td>
-    </tr>`).join('');
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.date||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.72rem;">${b.time||'—'}</td>
+      <td style="max-width:160px;font-size:0.78rem;color:var(--cream-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${(b.message||'').replace(/"/g,'&quot;')}">${b.message||'—'}</td>
+      <td><span class="badge ${badgeCls}">${stLabel}</span></td>
+      <td>
+        <select style="background:rgba(255,255,255,0.04);border:1px solid var(--ink-border);color:var(--cream);border-radius:4px;padding:4px 6px;font-family:var(--font-ar);font-size:0.72rem;cursor:pointer;" onchange="updateBookingStatus('${b.id}',this.value)">
+          <option value="">تغيير</option>
+          <option value="confirmed">مؤكد</option>
+          <option value="pending">انتظار</option>
+          <option value="cancelled">ملغي</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function filterBookings(){
+  const q=(document.getElementById('bookingSearch').value||'').toLowerCase();
+  const st=document.getElementById('bookingStatus').value;
+  const filtered=_allBookings.filter(b=>{
+    const matchQ=!q||(b.client_name||'').toLowerCase().includes(q)||(b.client_email||'').toLowerCase().includes(q);
+    const matchSt=!st||(b.status||'confirmed')===st;
+    return matchQ&&matchSt;
+  });
+  renderBookings(filtered);
+}
+async function updateBookingStatus(id,status){
+  if(!status)return;
+  await sb.from('bookings').update({status}).eq('id',id);
+  showToast('تم تحديث الحالة');
+  loadBookings();
+}
+function exportBookingsCSV(){
+  if(!_allBookings.length){showToast('لا توجد بيانات للتصدير','error');return;}
+  const headers=['الاسم','الهاتف','الإيميل','نوع الجلسة','التاريخ','الوقت','الرسالة','الحالة','تاريخ الحجز'];
+  const rows=_allBookings.map(b=>[
+    b.client_name||'',b.client_phone||'',b.client_email||'',
+    b.consultation_type||'',b.date||'',b.time||'',
+    (b.message||'').replace(/,/g,' '),b.status||'confirmed',
+    b.created_at?new Date(b.created_at).toLocaleDateString('ar'):''
+  ]);
+  const csv='﻿'+[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`bookings_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('تم التصدير بنجاح ✓');
 }
 
 // ══════════════════════════════════════════════
