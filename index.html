@@ -1017,7 +1017,7 @@ body *{font-variant-numeric:lining-nums;}
 <div class="form-group"><label class="form-label">الاسم الكامل *</label><input type="text" class="form-input" id="consName" placeholder="أدخل اسمك الكامل"/></div>
 <div class="form-group"><label class="form-label">رقم واتساب / الهاتف *</label><input type="text" class="form-input" id="consPhone" placeholder="+966 5x xxx xxxx" dir="ltr"/></div>
 <div class="form-group"><label class="form-label">البريد الإلكتروني * <span style="color:var(--text-muted);font-size:0.78rem;">(لإرسال تأكيد الحجز)</span></label><input type="email" class="form-input" id="consEmail" placeholder="your@email.com" dir="ltr"/></div>
-<div class="form-group"><label class="form-label">نوع الاستشارة</label><select class="form-input" id="consType"><option value="تقييم المتداول">تقييم المتداول (60 دقيقة)</option><option value="جلسة إدارة مخاطر">جلسة إدارة مخاطر (90 دقيقة)</option><option value="قراءة المشهد الاقتصادي">قراءة المشهد الاقتصادي (90 دقيقة)</option></select></div>
+<div class="form-group"><label class="form-label">نوع الاستشارة</label><select class="form-input" id="consType"></select></div>
 <div class="form-group"><label class="form-label">رسالة مختصرة (اختياري)</label><textarea class="form-input" id="consMsg" rows="3" placeholder="اكتب باختصار ما تريد مناقشته..."></textarea></div>
 <div class="modal-actions" style="padding-bottom:8px;">
 <button class="btn btn-ghost" onclick="document.getElementById('consModal').classList.remove('open')">إلغاء</button>
@@ -1989,10 +1989,17 @@ setInterval(fetchLivePrices,3000);
 
 // ── CONSULTATION MODAL ──
 function openConsModal(btn){
-  const card=btn?.closest('.cons-card');
-  const type=card?.querySelector('.cons-name')?.textContent||'';
   const sel=document.getElementById('consType');
-  if(sel&&type){for(let o of sel.options){if(o.value===type){sel.value=type;break;}}}
+  // ابنِ القائمة ديناميكياً من كروت الاستشارات الموجودة (أي استشارة تُضاف تظهر تلقائياً)
+  if(sel){
+    const names=[...document.querySelectorAll('#consultations .cons-card .cons-name')]
+      .map(n=>n.textContent.trim()).filter(Boolean);
+    const list=names.length?names:['استشارة عامة'];
+    sel.innerHTML=list.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+    const card=btn?.closest('.cons-card');
+    const type=card?.querySelector('.cons-name')?.textContent.trim();
+    if(type)sel.value=type;
+  }
   document.getElementById('consFormWrap').style.display='';
   document.getElementById('consSuccessWrap').style.display='none';
   document.getElementById('consModal').classList.add('open');
