@@ -1593,10 +1593,23 @@ async function loadPageSections(){
       if(key in visMap)a.style.display=visMap[key]?'':'none';
     });
     // Sync ALL footer links with section visibility (مثل المينو بار تماماً)
+    // يعتمد على حالة السيكشن الفعلية في الصفحة + بيانات الإظهار معاً (مضمون)
+    const isHidden=key=>{
+      if(key in visMap && !visMap[key])return true;
+      const el=document.getElementById(key);
+      if(el && el.style.display==='none')return true;
+      return false;
+    };
     document.querySelectorAll('#footer .footer-col li a[href^="#"]').forEach(a=>{
       const h=a.getAttribute('href');if(!h||!h.startsWith('#'))return;
       const key=h.slice(1);
-      if(key in visMap){const li=a.closest('li');if(li)li.style.display=visMap[key]?'':'none';}
+      const li=a.closest('li');if(li)li.style.display=isHidden(key)?'none':'';
+    });
+    // ونفس المبدأ للمينو بار (احتياطاً)
+    document.querySelectorAll('.nav-links li a[href^="#"],#mobileNav a[href^="#"]').forEach(a=>{
+      const key=a.getAttribute('href').slice(1);
+      const t=a.closest('li')||a;
+      if(isHidden(key))t.style.display='none';
     });
 
     // Reorder sections in DOM based on order_index
