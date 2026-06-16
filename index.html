@@ -856,9 +856,9 @@ body *{font-variant-numeric:lining-nums;}
 <p class="section-subtitle" data-edit="consultations_subtitle">جلسات مخصصة للمتداول الجاد والمستثمر الذي يريد وضوحاً لا ضجيجاً.</p>
 </div>
 <div class="cons-grid">
-<div class="cons-card reveal delay-1"><div class="cons-icon" data-edit="consultations_c1_icon">◉</div><h3 class="cons-name" data-edit="consultations_c1_name">تقييم المتداول</h3><p class="cons-desc" data-edit="consultations_c1_desc">مراجعة طريقة التفكير، الأخطاء المتكررة، حجم الدخول، وطريقة التعامل مع الخسارة والربح.</p><div class="cons-duration" data-edit="consultations_c1_duration">60 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px" data-edit="consultations_c1_btn">طلب استشارة</a></div>
-<div class="cons-card featured reveal delay-2"><div class="cons-icon" data-edit="consultations_c2_icon">◈</div><h3 class="cons-name" data-edit="consultations_c2_name">جلسة إدارة مخاطر</h3><p class="cons-desc" data-edit="consultations_c2_desc">بناء إطار واضح لإدارة رأس المال، ضبط حجم الصفقات، وتحديد حدود الخطر المناسبة للحساب.</p><div class="cons-duration" data-edit="consultations_c2_duration">90 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px" data-edit="consultations_c2_btn">طلب استشارة</a></div>
-<div class="cons-card reveal delay-3"><div class="cons-icon" data-edit="consultations_c3_icon">◎</div><h3 class="cons-name" data-edit="consultations_c3_name">قراءة المشهد الاقتصادي</h3><p class="cons-desc" data-edit="consultations_c3_desc">فهم السياق العالمي الحالي: ذهب، دولار، فائدة، نفط، وسيولة، وتحويله إلى سيناريوهات متابعة.</p><div class="cons-duration" data-edit="consultations_c3_duration">90 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px" data-edit="consultations_c3_btn">طلب استشارة</a></div>
+<div class="cons-card reveal delay-1"><div class="cons-icon" data-edit="consultations_c1_icon">◉</div><h3 class="cons-name" data-edit="consultations_c1_name">تقييم المتداول</h3><p class="cons-desc" data-edit="consultations_c1_desc">مراجعة طريقة التفكير، الأخطاء المتكررة، حجم الدخول، وطريقة التعامل مع الخسارة والربح.</p><div class="cons-duration" data-edit="consultations_c1_duration">60 min</div><button class="btn btn-outline" style="margin-top:8px" data-edit="consultations_c1_btn" onclick="openConsModal(this)">طلب استشارة</button></div>
+<div class="cons-card featured reveal delay-2"><div class="cons-icon" data-edit="consultations_c2_icon">◈</div><h3 class="cons-name" data-edit="consultations_c2_name">جلسة إدارة مخاطر</h3><p class="cons-desc" data-edit="consultations_c2_desc">بناء إطار واضح لإدارة رأس المال، ضبط حجم الصفقات، وتحديد حدود الخطر المناسبة للحساب.</p><div class="cons-duration" data-edit="consultations_c2_duration">90 min</div><button class="btn btn-outline" style="margin-top:8px" data-edit="consultations_c2_btn" onclick="openConsModal(this)">طلب استشارة</button></div>
+<div class="cons-card reveal delay-3"><div class="cons-icon" data-edit="consultations_c3_icon">◎</div><h3 class="cons-name" data-edit="consultations_c3_name">قراءة المشهد الاقتصادي</h3><p class="cons-desc" data-edit="consultations_c3_desc">فهم السياق العالمي الحالي: ذهب، دولار، فائدة، نفط، وسيولة، وتحويله إلى سيناريوهات متابعة.</p><div class="cons-duration" data-edit="consultations_c3_duration">90 min</div><button class="btn btn-outline" style="margin-top:8px" data-edit="consultations_c3_btn" onclick="openConsModal(this)">طلب استشارة</button></div>
 </div>
 <div class="cons-note reveal" data-edit="consultations_note">لا توجد في هذه الجلسات توصيات شراء وبيع مباشرة؛ الهدف هو رفع جودة القرار، فهم المخاطر، وبناء طريقة قراءة أكثر نضجاً للسوق.</div>
 </div>
@@ -972,13 +972,9 @@ body *{font-variant-numeric:lining-nums;}
 <h4>روابط سريعة</h4>
 <ul>
 <li><a href="#about">عن هنادي</a></li>
-<li><a href="#difference">لماذا هنادي؟</a></li>
-<li><a href="#method">المنهجية</a></li>
 <li><a href="#insights">التحليلات</a></li>
 <li><a href="articles.html">المقالات</a></li>
-<li id="footerLibrary" style="display:none;"><a href="#library">المكتبة المعرفية</a></li>
-<li><a href="#reports">التقارير</a></li>
-<li id="footerConsultations" style="display:none;"><a href="#consultations">الاستشارات</a></li>
+<li><a href="#newsletter">النشرة البريدية</a></li>
 </ul>
 </div>
 <div class="footer-col">
@@ -999,6 +995,45 @@ body *{font-variant-numeric:lining-nums;}
 <div id="scrollTop">↑</div>
 
 <!-- BOOKING MODAL -->
+<!-- CONSULTATION REQUEST MODAL -->
+<div class="modal-overlay" id="consModal">
+<div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto;padding:0;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;">
+<button class="modal-close" onclick="document.getElementById('consModal').classList.remove('open')" style="position:sticky;top:16px;float:left;margin:16px 16px 0 0;z-index:10;">✕</button>
+<div style="padding:36px 44px 0;">
+<div class="hero-label en" style="margin-bottom:14px;">Consultation</div>
+<h3 style="font-size:1.45rem;color:var(--text);margin-bottom:8px;" id="consModalTitle">طلب استشارة</h3>
+<p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:28px;">قبل الحجز، اطّلعي على أسئلة يطرحها الزبائن عادةً</p>
+<div style="border-bottom:1px solid var(--line);margin-bottom:24px;"></div>
+<!-- Q&A section -->
+<div class="qa-list" style="max-width:100%;margin-bottom:32px;">
+<div class="qa-item open"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>هل تقدم هنادي توصيات بيع وشراء مباشرة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">لا. المنصة تعليمية وتحليلية، وهدفها بناء فهم أعمق للسوق وإدارة المخاطر، لا بيع إشارات دخول وخروج.</div></div></div>
+<div class="qa-item"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>ما الفرق بين التحليل والاستشارة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">التحليل يشرح المشهد العام، أما الاستشارة فتساعد المتداول على فهم أخطائه ومنهجيته وحدود مخاطره ضمن سياق شخصي.</div></div></div>
+<div class="qa-item"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>كم مدة الجلسة وكيف تتم؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">الجلسات بين 60 و90 دقيقة عبر مكالمة مرئية، وتُحدَّد المواعيد بحسب التوفر بعد التواصل.</div></div></div>
+<div class="qa-item"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>ما المعلومات التي أحتاج لتحضيرها؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">يُفضَّل أن تكون لديك فكرة عن تجربتك في السوق، حجم حسابك التقريبي، وأبرز التحديات التي تواجهها في اتخاذ القرار.</div></div></div>
+</div>
+<div style="border-bottom:1px solid var(--line);margin-bottom:28px;"><span style="font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-light);text-transform:uppercase;font-family:var(--font-en);position:relative;top:10px;background:var(--card);padding:0 12px;">نموذج التواصل</span></div>
+<!-- Contact form -->
+<div id="consFormWrap">
+<div class="form-group"><label class="form-label">الاسم الكامل *</label><input type="text" class="form-input" id="consName" placeholder="أدخل اسمك الكامل"/></div>
+<div class="form-group"><label class="form-label">رقم واتساب / الهاتف *</label><input type="text" class="form-input" id="consPhone" placeholder="+966 5x xxx xxxx" dir="ltr"/></div>
+<div class="form-group"><label class="form-label">البريد الإلكتروني</label><input type="email" class="form-input" id="consEmail" placeholder="your@email.com" dir="ltr"/></div>
+<div class="form-group"><label class="form-label">نوع الاستشارة</label><select class="form-input" id="consType"><option value="تقييم المتداول">تقييم المتداول (60 دقيقة)</option><option value="جلسة إدارة مخاطر">جلسة إدارة مخاطر (90 دقيقة)</option><option value="قراءة المشهد الاقتصادي">قراءة المشهد الاقتصادي (90 دقيقة)</option></select></div>
+<div class="form-group"><label class="form-label">رسالة مختصرة (اختياري)</label><textarea class="form-input" id="consMsg" rows="3" placeholder="اكتب باختصار ما تريد مناقشته..."></textarea></div>
+<div class="modal-actions" style="padding-bottom:8px;">
+<button class="btn btn-ghost" onclick="document.getElementById('consModal').classList.remove('open')">إلغاء</button>
+<button class="btn btn-green" id="consSendBtn" onclick="sendConsRequest()">إرسال الطلب ←</button>
+</div>
+</div>
+<div id="consSuccessWrap" style="display:none;text-align:center;padding:32px 0 20px;">
+<div style="font-size:3rem;margin-bottom:18px;">✅</div>
+<h4 style="font-size:1.2rem;color:var(--text);margin-bottom:10px;">تم استلام طلبك!</h4>
+<p style="font-size:0.88rem;color:var(--text-dim);">سيتم التواصل معك خلال 24 ساعة لتأكيد الموعد.</p>
+</div>
+</div>
+<div style="height:36px;"></div>
+</div>
+</div>
+
 <div class="modal-overlay" id="bookingModal">
 <div class="modal">
 <button class="modal-close" id="modalClose">✕</button>
@@ -1860,7 +1895,7 @@ const TICKER_DATA=[
 {sym:'USD/JPY',base:153.20,dec:2,price:153.20},
 {sym:'BTC/USD',base:62410,dec:0,price:62410},
 {sym:'GBP/USD',base:1.2710,dec:4,price:1.2710},
-{sym:'NAS 100',base:18340,dec:0,price:18340},
+{sym:'ETH/USD',base:3200,dec:1,price:3200},
 ];
 function fmt(n,dec){return n.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
 function buildTickerOnce(){
@@ -1893,6 +1928,88 @@ setTimeout(()=>el.classList.remove('flash-up','flash-down'),700);
 });
 }
 buildTickerOnce();
-setInterval(tickTicker,2500);
+
+// ── LIVE TICKER via Coinbase + Frankfurter (free, no-key APIs) ──
+async function fetchLivePrices(){
+  try{
+    // BTC & ETH from Coinbase (free, no key)
+    const [btcR,ethR]=await Promise.all([
+      fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot').then(r=>r.json()).catch(()=>null),
+      fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot').then(r=>r.json()).catch(()=>null)
+    ]);
+    if(btcR?.data?.amount){
+      const p=parseFloat(btcR.data.amount);
+      const d=TICKER_DATA.find(x=>x.sym==='BTC/USD');
+      if(d){const old=d.price;d.price=p;if(!d._baseSet){d.base=p;d._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(d),old);}
+    }
+    if(ethR?.data?.amount){
+      const p=parseFloat(ethR.data.amount);
+      const d=TICKER_DATA.find(x=>x.sym==='ETH/USD');
+      if(d){const old=d.price;d.price=p;if(!d._baseSet){d.base=p;d._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(d),old);}
+    }
+    // EUR/USD & GBP/USD from Frankfurter (free ECB rates)
+    const fxR=await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,GBP').then(r=>r.json()).catch(()=>null);
+    if(fxR?.rates){
+      const eur=TICKER_DATA.find(x=>x.sym==='EUR/USD');
+      const gbp=TICKER_DATA.find(x=>x.sym==='GBP/USD');
+      if(eur&&fxR.rates.EUR){const old=eur.price;const p=1/fxR.rates.EUR;eur.price=p;if(!eur._baseSet){eur.base=p;eur._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(eur),old);}
+      if(gbp&&fxR.rates.GBP){const old=gbp.price;const p=1/fxR.rates.GBP;gbp.price=p;if(!gbp._baseSet){gbp.base=p;gbp._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(gbp),old);}
+    }
+  }catch(e){}
+  // Smooth drift for items not yet updated (XAU, WTI, S&P, NAS, JPY)
+  tickTicker();
+}
+function updateTickerCell(i,oldPrice){
+  const d=TICKER_DATA[i];
+  if(!d)return;
+  const pct=((d.price-d.base)/d.base*100).toFixed(2);
+  const up=d.price>=d.base;
+  const dir=d.price>oldPrice;
+  document.querySelectorAll(`.ti-val[data-k$="-${i}"]`).forEach(el=>{
+    el.textContent=`${up?'▲':'▼'} ${fmt(d.price,d.dec)} ${up?'+':''}${pct}%`;
+    el.className=`ti-val ${up?'ti-up':'ti-down'} ${dir?'flash-up':'flash-down'}`;
+    setTimeout(()=>el.classList.remove('flash-up','flash-down'),700);
+  });
+}
+fetchLivePrices();
+setInterval(fetchLivePrices,3000);
+
+// ── CONSULTATION MODAL ──
+function openConsModal(btn){
+  const card=btn?.closest('.cons-card');
+  const type=card?.querySelector('.cons-name')?.textContent||'';
+  const sel=document.getElementById('consType');
+  if(sel&&type){for(let o of sel.options){if(o.value===type){sel.value=type;break;}}}
+  document.getElementById('consFormWrap').style.display='';
+  document.getElementById('consSuccessWrap').style.display='none';
+  document.getElementById('consModal').classList.add('open');
+}
+async function sendConsRequest(){
+  const name=document.getElementById('consName').value.trim();
+  const phone=document.getElementById('consPhone').value.trim();
+  if(!name||!phone){alert('الرجاء إدخال الاسم ورقم الهاتف');return;}
+  const btn=document.getElementById('consSendBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  const type=document.getElementById('consType').value;
+  const email=document.getElementById('consEmail').value.trim();
+  const msg=document.getElementById('consMsg').value.trim();
+  try{
+    if(sbClient){
+      await sbClient.from('bookings').insert({
+        client_name:name,client_phone:phone,client_email:email||null,
+        consultation_type:type,message:msg||type,
+        date:null,time:null,status:'pending'
+      });
+    }
+    if(window.__SHEETS_WEBHOOK){
+      fetch(window.__SHEETS_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify({name,phone,email:email||'',type,message:msg,created_at:new Date().toISOString()})});
+    }
+  }catch(e){}
+  document.getElementById('consFormWrap').style.display='none';
+  document.getElementById('consSuccessWrap').style.display='';
+  btn.disabled=false;btn.innerHTML='إرسال الطلب ←';
+}
+document.getElementById('consModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 </script>
 </body>
