@@ -1592,9 +1592,12 @@ async function loadPageSections(){
       const key=h.slice(1);
       if(key in visMap)a.style.display=visMap[key]?'':'none';
     });
-    // Sync footer links with section visibility
-    const fc=document.getElementById('footerConsultations');if(fc)fc.style.display=visMap['consultations']?'':'none';
-    const fl=document.getElementById('footerLibrary');if(fl)fl.style.display=visMap['library']?'':'none';
+    // Sync ALL footer links with section visibility (مثل المينو بار تماماً)
+    document.querySelectorAll('#footer .footer-col li a[href^="#"]').forEach(a=>{
+      const h=a.getAttribute('href');if(!h||!h.startsWith('#'))return;
+      const key=h.slice(1);
+      if(key in visMap){const li=a.closest('li');if(li)li.style.display=visMap[key]?'':'none';}
+    });
 
     // Reorder sections in DOM based on order_index
     const body=document.body;
