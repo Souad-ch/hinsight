@@ -2170,17 +2170,20 @@ async function sendConsRequest(){
         body:JSON.stringify({name,phone,email,type,message:msg,created_at:new Date().toISOString()})});
     }
   }catch(e){}
-  // 3) إيميل لهنادي (المدير) + 4) إيميل تأكيد للزبون
+  // 3) إيميل لهنادي (المدير)
   try{
     if(window.emailjs&&EJS_PUBLIC_KEY){
-      // إشعار للمدير
       await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
         from_name:name,phone:phone,from_email:email,
         session:type,consultation_type:type,
         message:'طلب استشارة جديد ('+type+')'+(msg?' — '+msg:''),
         date:dateStr,to_email:ADMIN_EMAIL,reply_to:email
       });
-      // تأكيد للزبون
+    }
+  }catch(e){console.warn('emailjs admin:',e);}
+  // 4) إيميل تأكيد للزبون — مستقل عن إيميل المدير
+  try{
+    if(window.emailjs&&EJS_PUBLIC_KEY){
       await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
         to_name:name,name:name,client_name:name,
         to_email:email,email:email,
@@ -2188,8 +2191,9 @@ async function sendConsRequest(){
         phone:phone,message:msg||type,date:dateStr,
         reply_to:ADMIN_EMAIL
       });
+      console.log('✅ confirmation email sent to',email);
     }
-  }catch(e){console.warn('emailjs:',e);}
+  }catch(e){console.warn('emailjs customer confirm:',e);}
   document.getElementById('consFormWrap').style.display='none';
   document.getElementById('consSuccessWrap').style.display='';
   btn.disabled=false;btn.innerHTML='إرسال الطلب ←';
