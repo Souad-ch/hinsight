@@ -658,7 +658,7 @@ body *{font-variant-numeric:lining-nums;}
 <p class="hero-text" data-edit="hero_text">منصة تحليل اقتصادي وأسواق عالمية تُحوّل السياسة، الاقتصاد، السيولة، وسلوك المستثمرين إلى رؤية يفهمها المتداول الجاد قبل أن يتخذ قراره.</p>
 <div class="hero-buttons">
 <a href="#insights" class="btn btn-green" data-edit="hero_cta_primary">اقرأ آخر التحليلات</a>
-<span id="heroBookingBtn"><a href="#booking" class="btn btn-outline" data-edit="hero_cta_secondary">احجز استشارة</a></span>
+<span id="heroBookingBtn"><button class="btn btn-outline" data-edit="hero_cta_secondary" onclick="openConsModal(this)">احجز استشارة</button></span>
 </div>
 <div class="trust-badges">
 <div class="trust-badge"><span class="num en" data-edit="hero_badge1_num">منذ 1998</span><span class="lbl" data-edit="hero_badge1_lbl">خبرة عملية في الأسواق</span></div>
@@ -1016,7 +1016,7 @@ body *{font-variant-numeric:lining-nums;}
 <div id="consFormWrap">
 <div class="form-group"><label class="form-label">الاسم الكامل *</label><input type="text" class="form-input" id="consName" placeholder="أدخل اسمك الكامل"/></div>
 <div class="form-group"><label class="form-label">رقم واتساب / الهاتف *</label><input type="text" class="form-input" id="consPhone" placeholder="+966 5x xxx xxxx" dir="ltr"/></div>
-<div class="form-group"><label class="form-label">البريد الإلكتروني</label><input type="email" class="form-input" id="consEmail" placeholder="your@email.com" dir="ltr"/></div>
+<div class="form-group"><label class="form-label">البريد الإلكتروني * <span style="color:var(--text-muted);font-size:0.78rem;">(لإرسال تأكيد الحجز)</span></label><input type="email" class="form-input" id="consEmail" placeholder="your@email.com" dir="ltr"/></div>
 <div class="form-group"><label class="form-label">نوع الاستشارة</label><select class="form-input" id="consType"><option value="تقييم المتداول">تقييم المتداول (60 دقيقة)</option><option value="جلسة إدارة مخاطر">جلسة إدارة مخاطر (90 دقيقة)</option><option value="قراءة المشهد الاقتصادي">قراءة المشهد الاقتصادي (90 دقيقة)</option></select></div>
 <div class="form-group"><label class="form-label">رسالة مختصرة (اختياري)</label><textarea class="form-input" id="consMsg" rows="3" placeholder="اكتب باختصار ما تريد مناقشته..."></textarea></div>
 <div class="modal-actions" style="padding-bottom:8px;">
@@ -1079,6 +1079,8 @@ const sbClient=(window.supabase&&window.supabase.createClient)?window.supabase.c
 const EJS_PUBLIC_KEY='6NHm0wz_2eclb5bbW';
 const EJS_SERVICE_ID='service_c8o89cr';
 const EJS_TEMPLATE_ID='template_llcycmu';
+const EJS_CONFIRM_TEMPLATE_ID='template_1e1hk15'; // تأكيد للزبون
+const ADMIN_EMAIL='souchamaa35@gmail.com';
 if(window.emailjs&&EJS_PUBLIC_KEY){try{emailjs.init(EJS_PUBLIC_KEY);}catch(e){}}
 
 let ARTICLES = [
@@ -1854,8 +1856,19 @@ await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
 from_name:name,phone:phone,from_email:email||'لم يُدخل',
 session:'حجز موعد عبر التقويم',
 message:'حجز موعد جديد: '+dateStr+' — '+slotLabel,
-to_email:'souchamaa35@gmail.com'
+date:dateStr,consultation_type:'حجز موعد عبر التقويم',
+to_email:ADMIN_EMAIL,reply_to:email||ADMIN_EMAIL
 });
+// تأكيد للزبون (إن أدخل بريداً)
+if(email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
+to_name:name,name:name,client_name:name,
+to_email:email,email:email,
+consultation_type:'حجز موعد',session:'حجز موعد',type:'حجز موعد',
+phone:phone,message:'حجز موعد: '+dateStr+' — '+slotLabel,
+date:dateStr+' — '+slotLabel,reply_to:ADMIN_EMAIL
+});
+}
 }
 }catch(e){console.warn('booking email:',e);}
 
@@ -1987,25 +2000,53 @@ function openConsModal(btn){
 async function sendConsRequest(){
   const name=document.getElementById('consName').value.trim();
   const phone=document.getElementById('consPhone').value.trim();
+  const email=document.getElementById('consEmail').value.trim();
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   if(!name||!phone){alert('الرجاء إدخال الاسم ورقم الهاتف');return;}
+  if(!emailOk){document.getElementById('consEmail').style.borderColor='#c0392b';alert('الرجاء إدخال بريد إلكتروني صحيح لإرسال تأكيد الحجز');return;}
+  document.getElementById('consEmail').style.borderColor='';
   const btn=document.getElementById('consSendBtn');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
   const type=document.getElementById('consType').value;
-  const email=document.getElementById('consEmail').value.trim();
   const msg=document.getElementById('consMsg').value.trim();
+  const dateStr=new Date().toLocaleDateString('ar-EG');
+  // 1) Supabase (يظهر بلوحة التحكم)
   try{
     if(sbClient){
       await sbClient.from('bookings').insert({
-        client_name:name,client_phone:phone,client_email:email||null,
+        client_name:name,client_phone:phone,client_email:email,
         consultation_type:type,message:msg||type,
         date:null,time:null,status:'pending'
       });
     }
+  }catch(e){console.warn('cons supabase:',e);}
+  // 2) Google Sheets
+  try{
     if(window.__SHEETS_WEBHOOK){
       fetch(window.__SHEETS_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:JSON.stringify({name,phone,email:email||'',type,message:msg,created_at:new Date().toISOString()})});
+        body:JSON.stringify({name,phone,email,type,message:msg,created_at:new Date().toISOString()})});
     }
   }catch(e){}
+  // 3) إيميل لهنادي (المدير) + 4) إيميل تأكيد للزبون
+  try{
+    if(window.emailjs&&EJS_PUBLIC_KEY){
+      // إشعار للمدير
+      await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
+        from_name:name,phone:phone,from_email:email,
+        session:type,consultation_type:type,
+        message:'طلب استشارة جديد ('+type+')'+(msg?' — '+msg:''),
+        date:dateStr,to_email:ADMIN_EMAIL,reply_to:email
+      });
+      // تأكيد للزبون
+      await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
+        to_name:name,name:name,client_name:name,
+        to_email:email,email:email,
+        consultation_type:type,session:type,type:type,
+        phone:phone,message:msg||type,date:dateStr,
+        reply_to:ADMIN_EMAIL
+      });
+    }
+  }catch(e){console.warn('emailjs:',e);}
   document.getElementById('consFormWrap').style.display='none';
   document.getElementById('consSuccessWrap').style.display='';
   btn.disabled=false;btn.innerHTML='إرسال الطلب ←';
