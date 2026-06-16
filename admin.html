@@ -1483,7 +1483,7 @@ const SECTION_ITEMS={
       {num:'05',icon:'◎',name:'قرار التداول',desc:'ترجمة القراءة إلى سيناريوهات واحتمالات وخطة مخاطر، لا إلى توصية عشوائية.'},
     ]},
   library:{itemLabel:'موضوع / فيديو',addLabel:'➕ إضافة موضوع أو فيديو',
-    fields:[{key:'index',label:'الرقم',type:'text'},{key:'title',label:'العنوان',type:'text'},{key:'desc',label:'الوصف',type:'textarea'},{key:'url',label:'رابط الفيديو (YouTube أو أي رابط — اختياري)',type:'text'}],
+    fields:[{key:'index',label:'الرقم',type:'text'},{key:'title',label:'العنوان',type:'text'},{key:'desc',label:'الوصف',type:'textarea'},{key:'url',label:'الفيديو: الصق رابط YouTube أو ارفع ملفاً (اختياري)',type:'video'}],
     defaults:[
       {index:'01',title:'ما هو التداول؟',desc:'فهم التداول كقرار واحتمال ومخاطر، لا كضغط زر.'},
       {index:'02',title:'إدارة رأس المال',desc:'كيف يحمي المتداول حسابه قبل أن يبحث عن الربح.'},
@@ -1551,6 +1551,14 @@ function renderItemsEditor(){
         h+=`<label style="display:flex;gap:6px;align-items:center;font-size:0.7rem;"><input type="checkbox" oninput="updateItem(${i},'${f.key}',this.checked)"${it[f.key]?' checked':''}/> ${f.label}</label>`;
       }else if(f.type==='textarea'){
         h+=`<label style="font-size:0.7rem;">${f.label}</label><textarea rows="2" oninput="updateItem(${i},'${f.key}',this.value)">${escS(it[f.key]||'')}</textarea>`;
+      }else if(f.type==='video'){
+        h+=`<label style="font-size:0.7rem;">${f.label}</label>
+          <input type="text" id="vidurl_${i}" value="${escSAttr(it[f.key]||'')}" placeholder="https://youtu.be/... أو رابط ملف" oninput="updateItem(${i},'${f.key}',this.value)"/>
+          <div style="display:flex;gap:6px;align-items:center;margin-top:5px;">
+            <input type="file" accept="video/*" id="vidfile_${i}" style="display:none;" onchange="uploadItemVideo(${i},'${f.key}',this)"/>
+            <button type="button" onclick="document.getElementById('vidfile_${i}').click()" style="font-size:0.68rem;padding:5px 10px;">⬆ تحميل فيديو</button>
+            <span id="vidstat_${i}" style="font-size:0.62rem;color:var(--muted);"></span>
+          </div>`;
       }else{
         h+=`<label style="font-size:0.7rem;">${f.label}</label><input type="text" value="${escSAttr(it[f.key]||'')}" oninput="updateItem(${i},'${f.key}',this.value)"/>`;
       }
@@ -1561,6 +1569,25 @@ function renderItemsEditor(){
   box.innerHTML=h;
 }
 function updateItem(i,key,val){if(pbItems[i])pbItems[i][key]=val;}
+async function uploadItemVideo(i,key,input){
+  const file=input.files&&input.files[0];if(!file)return;
+  const stat=document.getElementById('vidstat_'+i);
+  if(file.size>104857600){if(stat)stat.textContent='⚠ الحجم أكبر من 100MB';return;}
+  if(stat)stat.textContent='⏳ جارٍ الرفع...';
+  try{
+    const ext=(file.name.split('.').pop()||'mp4').toLowerCase();
+    const path='library/'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+    const{error}=await sb.storage.from('media').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+    if(error)throw error;
+    const{data}=sb.storage.from('media').getPublicUrl(path);
+    const url=data.publicUrl;
+    if(pbItems[i])pbItems[i][key]=url;
+    const inp=document.getElementById('vidurl_'+i);if(inp)inp.value=url;
+    if(stat)stat.textContent='✓ تم الرفع';
+  }catch(e){
+    if(stat)stat.textContent='✗ خطأ: '+(e.message||'فشل الرفع — تأكدي من إنشاء bucket باسم media');
+  }
+}
 function removeItem(i){pbItems.splice(i,1);renderItemsEditor();}
 function moveItem(i,dir){const ni=i+dir;if(ni<0||ni>=pbItems.length)return;const t=pbItems[i];pbItems[i]=pbItems[ni];pbItems[ni]=t;renderItemsEditor();}
 function addItem(){

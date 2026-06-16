@@ -1044,6 +1044,14 @@ a:hover>.hub-clickable{border-color:rgba(120,144,124,0.5);}
 </div>
 </div>
 
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="videoModal">
+<div class="modal" style="max-width:880px;width:100%;padding:14px;background:#000;border-color:rgba(120,144,124,0.3);">
+<button class="modal-close" onclick="closeVideo()" style="top:-14px;left:-14px;">✕</button>
+<div id="videoBody" style="position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;"></div>
+</div>
+</div>
+
 <div class="modal-overlay" id="bookingModal">
 <div class="modal">
 <button class="modal-close" id="modalClose">✕</button>
@@ -1271,7 +1279,7 @@ const ITEM_TEMPLATES={
   difference:it=>`<div class="brand-card reveal visible"><span class="brand-num en">${esc(it.num)}</span><h3 class="brand-title">${esc(it.title)}</h3><p class="brand-desc">${esc(it.desc)}</p></div>`,
   trust:it=>`<div class="proof-card reveal visible"><span class="proof-value en">${esc(it.value)}</span><p class="proof-label">${esc(it.label)}</p></div>`,
   method:it=>`<div class="method-card reveal visible"><span class="method-num en">${esc(it.num)}</span><div class="method-icon">${esc(it.icon)}</div><h3 class="method-name">${esc(it.name)}</h3><p class="method-desc">${esc(it.desc)}</p></div>`,
-  library:it=>{const u=(it.url||'').trim();const play=u?'<span class="hub-play">▶</span>':'';const inner=`<div class="hub-card reveal visible${u?' hub-clickable':''}"><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}${play}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`;return u?`<a href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">${inner}</a>`:inner;},
+  library:it=>{const u=(it.url||'').trim();const play=u?'<span class="hub-play">▶</span>':'';return `<div class="hub-card reveal visible${u?' hub-clickable':''}"${u?` data-video="${esc(u)}"`:''}><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}${play}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`;},
   reports:it=>`<div class="report-card reveal visible"><div class="report-icon">${esc(it.icon||'📄')}</div><h3 class="report-name">${esc(it.name)}</h3><p class="report-date en">${esc(it.date)}</p><a href="#" class="btn btn-ghost">${esc(it.btn||'تحميل التقرير')}</a></div>`,
   consultations:it=>`<div class="cons-card reveal visible${it.featured?' featured':''}"><div class="cons-icon">${esc(it.icon)}</div><h3 class="cons-name">${esc(it.name)}</h3><p class="cons-desc">${esc(it.desc)}</p><div class="cons-duration">${esc(it.duration||'')}</div><button class="btn btn-outline" style="margin-top:8px" onclick="openConsModal(this)">${esc(it.btn||'طلب استشارة')}</button></div>`,
   notes:it=>`<div class="qa-item reveal visible"><button class="qa-question" onclick="toggleQA(this)"><span class="qa-q-icon">س</span><span>${esc(it.question)}</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">${esc(it.answer)}</div></div></div>`,
@@ -2026,6 +2034,34 @@ function updateTickerCell(i,oldPrice){
 }
 fetchLivePrices();
 setInterval(fetchLivePrices,3000);
+
+// ── VIDEO PLAYER (YouTube embed or uploaded video file) ──
+function ytId(u){
+  const m=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+  return m?m[1]:null;
+}
+function openVideo(url){
+  if(!url)return;
+  const body=document.getElementById('videoBody');
+  const yt=ytId(url);
+  if(yt){
+    body.innerHTML=`<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+  }else if(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url)||url.includes('/storage/')){
+    body.innerHTML=`<video src="${url}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;background:#000;"></video>`;
+  }else{
+    window.open(url,'_blank','noopener');return;
+  }
+  document.getElementById('videoModal').classList.add('open');
+}
+function closeVideo(){
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('videoBody').innerHTML=''; // stop playback
+}
+document.addEventListener('click',function(e){
+  const card=e.target.closest('.hub-card[data-video]');
+  if(card){openVideo(card.getAttribute('data-video'));return;}
+  if(e.target===document.getElementById('videoModal'))closeVideo();
+});
 
 // ── CONSULTATION MODAL ──
 const COUNTRY_CODES=[
