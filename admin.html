@@ -1440,12 +1440,23 @@ function escSAttr(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 async function loadBuilder(){
   const el=document.getElementById('pbSectionsList');
   el.innerHTML='<div style="padding:32px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);">⏳ جارٍ التحميل...</div>';
-  const{data,error}=await sb.from('page_sections').select('*').order('order_index',{ascending:true});
+  let{data,error}=await sb.from('page_sections').select('*').order('order_index',{ascending:true});
   if(error||!data||!data.length){
     el.innerHTML=`<div style="padding:24px 16px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);line-height:1.9;">
       لا توجد سيكشنات بعد.<br>اضغط <strong style="color:var(--gold);">⟳ افتراضي</strong> في الأعلى لإنشائها.
     </div>`;
     return;
+  }
+  // Auto-add any NEW default sections missing from the table (without overwriting existing edits)
+  const existingKeys=new Set(data.map(s=>s.section_key));
+  const missing=DEFAULT_SECTIONS.filter(d=>!existingKeys.has(d.section_key));
+  if(missing.length){
+    const{error:insErr}=await sb.from('page_sections').insert(missing);
+    if(!insErr){
+      const r=await sb.from('page_sections').select('*').order('order_index',{ascending:true});
+      if(r.data)data=r.data;
+      showToast('✓ تمت إضافة '+missing.length+' سيكشن جديد');
+    }
   }
   builderSections=data;
   renderSectionsList();
