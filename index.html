@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Hanadi Insights — تحليل الأسواق العالمية</title>
+<title>Hanadi Insights — منصة هنادي لتحليل الأسواق</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230C0B0F'/%3E%3Crect x='3' y='3' width='94' height='94' rx='20' fill='none' stroke='%2378907C' stroke-width='3'/%3E%3Ctext x='50' y='70' font-family='Georgia,serif' font-size='62' font-weight='600' fill='%239FBBA4' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -525,6 +525,53 @@ html{font-size:15px;}
 .num,.badge-num,.card-date,.trust-badge .num,time,[dir="ltr"],.timeline-year,.method-num,.ticker-item,.art-card-num,.art-card-date,.card-num{font-family:var(--font-num);}
 /* Ensure all digits everywhere use DIN Next LT Arabic via unicode-range */
 body *{font-variant-numeric:lining-nums;}
+
+/* ── STRATEGIC BRANDING ADDITIONS — Hanadi Personal Brand ── */
+.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+.brand-card,.proof-card,.hub-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:30px 28px;transition:var(--tr);position:relative;overflow:hidden;
+}
+.brand-card::before,.proof-card::before,.hub-card::before{
+  content:'';position:absolute;top:0;right:0;left:0;height:2px;
+  background:linear-gradient(270deg,var(--accent),transparent);
+  transform:scaleX(0);transform-origin:right;transition:var(--tr);
+}
+.brand-card:hover,.proof-card:hover,.hub-card:hover{
+  border-color:rgba(120,144,124,0.38);transform:translateY(-5px);
+  box-shadow:0 24px 56px rgba(0,0,0,0.42),0 0 44px rgba(120,144,124,0.06);
+}
+.brand-card:hover::before,.proof-card:hover::before,.hub-card:hover::before{transform:scaleX(1);}
+.brand-num{font-family:var(--font-en);font-size:0.72rem;letter-spacing:0.18em;color:var(--accent-light);display:block;margin-bottom:14px;}
+.brand-title{font-size:1.05rem;color:var(--text);margin-bottom:12px;}
+.brand-desc{font-size:0.88rem;color:var(--text-dim);line-height:1.85;}
+.proof-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+.proof-card{text-align:center;padding:28px 20px;}
+.proof-value{font-family:var(--font-en);font-size:1.35rem;color:var(--accent-light);display:block;margin-bottom:8px;}
+.proof-label{font-size:0.82rem;color:var(--text-dim);line-height:1.7;}
+.method-grid.method-grid-five{grid-template-columns:repeat(5,1fr);}
+.method-grid.method-grid-five::before{right:10%;left:10%;}
+.hub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.hub-card{display:flex;gap:18px;align-items:flex-start;}
+.hub-index{font-family:var(--font-en);font-size:1.35rem;font-weight:300;color:rgba(159,187,164,0.35);line-height:1;flex-shrink:0;}
+.hub-title{font-size:0.98rem;color:var(--text);margin-bottom:6px;}
+.hub-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.75;}
+.cons-note{margin-top:34px;padding:22px 28px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(120,144,124,0.045);color:var(--text-dim);font-size:0.9rem;line-height:1.85;}
+.about-quote{margin-top:34px;padding:22px 28px;border-right:3px solid var(--accent);background:rgba(120,144,124,0.05);border-radius:0 var(--radius) var(--radius) 0;color:var(--text-dim);line-height:1.9;}
+.about-photo .portrait-word{position:relative;z-index:1;text-align:center;}
+.about-photo .portrait-word .en{font-size:1.8rem;color:var(--accent-light);display:block;margin-bottom:8px;}
+.about-photo .portrait-word small{color:var(--text-muted);font-size:0.78rem;}
+@media(max-width:1024px){
+  .brand-grid{grid-template-columns:repeat(2,1fr);}
+  .proof-grid{grid-template-columns:repeat(3,1fr);}
+  .method-grid.method-grid-five{grid-template-columns:repeat(2,1fr);}
+  .hub-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+  .brand-grid,.proof-grid,.hub-grid{grid-template-columns:1fr;}
+  .method-grid.method-grid-five{grid-template-columns:1fr;}
+  .proof-card{text-align:right;}
+}
 </style>
 </head>
 <body>
@@ -569,13 +616,13 @@ body *{font-variant-numeric:lining-nums;}
 <nav>
 <ul class="nav-links">
 <li><a href="#hero">الرئيسية</a></li>
-<li><a href="#insights">التحليلات</a></li>
-<li><a href="articles.html">المقالات</a></li>
-<li><a href="#notes">الرؤى السريعة</a></li>
-<li><a href="#consultations">الاستشارات</a></li>
 <li><a href="#about">عن هنادي</a></li>
+<li><a href="#difference">لماذا هنادي؟</a></li>
+<li><a href="#method">المنهجية</a></li>
+<li><a href="#insights">التحليلات</a></li>
 <li><a href="#library">المكتبة</a></li>
 <li><a href="#reports">التقارير</a></li>
+<li><a href="#consultations">الاستشارات</a></li>
 <li id="navCtaItem" style="display:none;"><a href="#booking" class="nav-cta">احجز موعداً</a></li>
 </ul>
 </nav>
@@ -587,34 +634,17 @@ body *{font-variant-numeric:lining-nums;}
 <!-- MOBILE NAV -->
 <nav class="mobile-nav" id="mobileNav">
 <a href="#hero">الرئيسية</a>
+<a href="#about">عن هنادي</a>
+<a href="#difference">لماذا هنادي؟</a>
+<a href="#method">المنهجية</a>
 <a href="#insights">التحليلات</a>
 <a href="articles.html">المقالات</a>
-<a href="#notes">الرؤى السريعة</a>
-<a href="#consultations">الاستشارات</a>
-<a href="#about">عن هنادي</a>
-<a href="#library">المكتبة</a>
+<a href="#library">المكتبة التعليمية</a>
 <a href="#reports">التقارير</a>
+<a href="#consultations">الاستشارات</a>
 <a href="#newsletter">النشرة البريدية</a>
 <span id="mobileNavCta" style="display:none;"><a href="#booking" class="btn btn-green">احجز موعداً</a></span>
 </nav>
-
-<!-- TICKER -->
-<div class="ticker-wrap" style="margin-top:72px;">
-<div class="ticker-inner" id="ticker">
-<span class="ticker-item"><b>XAU/USD</b> <span class="ti-up">▲ 2,341.50 +0.42%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>EUR/USD</b> <span class="ti-down">▼ 1.0832 -0.18%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>WTI Crude</b> <span class="ti-up">▲ 78.94 +0.65%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>S&amp;P 500</b> <span class="ti-up">▲ 5,248.3 +0.31%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>USD/JPY</b> <span class="ti-down">▼ 153.20 -0.22%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>BTC/USD</b> <span class="ti-up">▲ 62,410 +1.2%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>XAU/USD</b> <span class="ti-up">▲ 2,341.50 +0.42%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>EUR/USD</b> <span class="ti-down">▼ 1.0832 -0.18%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>WTI Crude</b> <span class="ti-up">▲ 78.94 +0.65%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>S&amp;P 500</b> <span class="ti-up">▲ 5,248.3 +0.31%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>USD/JPY</b> <span class="ti-down">▼ 153.20 -0.22%</span></span><span class="ticker-sep">·</span>
-<span class="ticker-item"><b>BTC/USD</b> <span class="ti-up">▲ 62,410 +1.2%</span></span><span class="ticker-sep">·</span>
-</div>
-</div>
 
 <!-- HERO -->
 <section id="hero">
@@ -624,22 +654,105 @@ body *{font-variant-numeric:lining-nums;}
 <div class="hero-inner">
 <div class="hero-content">
 <div class="hero-label en">Strategic Market Analysis</div>
-<h1 class="hero-title">أقرأ الأسواق<br/>من <span>خلف الأحداث</span></h1>
-<p class="hero-text">منصة تحليل اقتصادي وأسواق عالمية تربط السياسة، الاقتصاد، السيولة، وسلوك المستثمرين بلغة يفهمها المتداول.</p>
+<h1 class="hero-title">هنادي تقرأ الأسواق<br><span>من خلف الأحداث</span></h1>
+<p class="hero-text">منصة تحليل اقتصادي وأسواق عالمية تُحوّل السياسة، الاقتصاد، السيولة، وسلوك المستثمرين إلى رؤية يفهمها المتداول الجاد قبل أن يتخذ قراره.</p>
 <div class="hero-buttons">
 <a href="#insights" class="btn btn-green">اقرأ آخر التحليلات</a>
 <span id="heroBookingBtn"><a href="#booking" class="btn btn-outline">احجز استشارة</a></span>
 </div>
 <div class="trust-badges">
-<div class="trust-badge"><span class="num en">منذ 1998</span><span class="lbl">خبرة في الأسواق</span></div>
+<div class="trust-badge"><span class="num en">منذ 1998</span><span class="lbl">خبرة عملية في الأسواق</span></div>
 <div class="trust-badge"><span class="num en">2002</span><span class="lbl">أول مكتب فوركس في دمشق</span></div>
-<div class="trust-badge"><span class="num en">منذ 2003</span><span class="lbl">تدريب وتحليل الأسواق</span></div>
+<div class="trust-badge"><span class="num en">منذ 2003</span><span class="lbl">تدريب وتحليل أسواق</span></div>
 </div>
 </div>
 <div class="hero-image-wrap">
 <div class="hero-image-frame"><div class="hero-ph">◈</div></div>
 <div class="hero-badge"><span class="badge-num en">+25</span><span class="badge-lbl">سنة خبرة</span></div>
 </div>
+</div>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">About Hanadi</span>
+<h2 class="section-title">من هي هنادي؟</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">قبل أن تكون منصة محتوى، هنادي هي خبرة سوق بدأت مبكراً وتحولت إلى منهجية في قراءة المال والسياسة والمخاطر.</p>
+</div>
+<div class="about-inner">
+<div>
+<p class="about-text reveal">بدأت هنادي رحلتها في عالم الأسواق عام 1998 من عمّان، في مرحلة كان فيها عالم الفوركس خارج الثقافة المالية السائدة، وكانت الأسئلة الأساسية عن السوق وحركته ما تزال غامضة على أغلب الجمهور.</p>
+<p class="about-text reveal">عام 2002 أسست أول مكتب فوركس في دمشق، ثم بدأت منذ 2003 بتقديم التدريب والتحليل، لتصبح تجربتها مزيجاً من العمل العملي، فهم نفسية المتداول، وقراءة العلاقة بين الاقتصاد والسياسة وحركة السيولة.</p>
+<div class="about-quote reveal">هذه المنصة لا تُبنى حول فكرة التوصيات السريعة، بل حول بناء وعي المتداول: كيف يقرأ الخبر؟ كيف يفهم السيولة؟ وكيف يحمي حسابه قبل أن يبحث عن الربح؟</div>
+<div class="timeline reveal">
+<div class="timeline-item"><span class="timeline-year en">1998</span><p class="timeline-title">البداية العملية في عالم الأسواق — عمّان</p></div>
+<div class="timeline-item"><span class="timeline-year en">2002</span><p class="timeline-title">تأسيس أول مكتب فوركس في دمشق</p></div>
+<div class="timeline-item"><span class="timeline-year en">2003</span><p class="timeline-title">أولى الدورات والتدريبات المتخصصة في الفوركس</p></div>
+<div class="timeline-item"><span class="timeline-year en">Today</span><p class="timeline-title">منصة تحليل اقتصادي وأسواق عالمية</p></div>
+</div>
+</div>
+<div class="about-photo reveal delay-2"><div class="portrait-word"><span class="en">Hanadi</span><small>Market Analyst · Trading Expert</small></div></div>
+</div>
+</div>
+</section>
+
+<!-- DIFFERENCE -->
+<section class="section" id="difference">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Positioning</span>
+<h2 class="section-title">لماذا تختلف هنادي؟</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">لأنها لا تتعامل مع التداول كزر بيع وشراء، بل كقراءة للعالم قبل قراءة الشارت.</p>
+</div>
+<div class="brand-grid">
+<div class="brand-card reveal delay-1"><span class="brand-num en">01</span><h3 class="brand-title">خبرة عملية لا تنظير</h3><p class="brand-desc">تجربة بدأت من داخل السوق، بين العملاء، الحسابات، الخسائر، إدارة العواطف، وفهم القرار قبل تنفيذه.</p></div>
+<div class="brand-card reveal delay-2"><span class="brand-num en">02</span><h3 class="brand-title">ضد ثقافة التوصيات</h3><p class="brand-desc">المنصة لا تبيع وهم الدخول والخروج، بل تشرح لماذا يتحرك السوق وكيف يتعامل المتداول مع الاحتمالات.</p></div>
+<div class="brand-card reveal delay-3"><span class="brand-num en">03</span><h3 class="brand-title">السياسة قبل السعر</h3><p class="brand-desc">الحرب، الفائدة، البنوك المركزية، الصين، النفط والذهب؛ كلها تُقرأ كعوامل تحرك السيولة لا كعناوين أخبار فقط.</p></div>
+<div class="brand-card reveal delay-4"><span class="brand-num en">04</span><h3 class="brand-title">إدارة المخاطر أولاً</h3><p class="brand-desc">النجاح في السوق لا يبدأ من توقع الاتجاه، بل من حماية الحساب وضبط حجم الدخول والقرار النفسي.</p></div>
+</div>
+</div>
+</section>
+
+<!-- TRUST -->
+<section class="section" id="trust">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Credibility System</span>
+<h2 class="section-title">لماذا يثق الناس بتحليلات هنادي؟</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">لأن الصورة المهنية هنا لا تُبنى على الادعاء، بل على مسار واضح وخبرة طويلة ومنهجية متماسكة.</p>
+</div>
+<div class="proof-grid">
+<div class="proof-card reveal delay-1"><span class="proof-value en">+25</span><p class="proof-label">سنة خبرة في الأسواق</p></div>
+<div class="proof-card reveal delay-2"><span class="proof-value en">1998</span><p class="proof-label">بداية عملية مبكرة</p></div>
+<div class="proof-card reveal delay-3"><span class="proof-value en">2002</span><p class="proof-label">أول مكتب فوركس في دمشق</p></div>
+<div class="proof-card reveal delay-4"><span class="proof-value en">2003</span><p class="proof-label">تدريب وتحليل منذ بدايات السوق</p></div>
+<div class="proof-card reveal"><span class="proof-value en">5%</span><p class="proof-label">فلسفة صارمة لإدارة المخاطر</p></div>
+</div>
+</div>
+</section>
+
+<!-- METHOD -->
+<section class="section" id="method">
+<div class="method-bg"></div>
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">The Framework</span>
+<h2 class="section-title">منهجية هنادي في قراءة الأسواق</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">منهجية متسلسلة لا تبدأ من الشارت وحده، بل من السياق الذي يصنع حركة السعر.</p>
+</div>
+<div class="method-grid method-grid-five">
+<div class="method-card reveal delay-1"><span class="method-num en">01</span><div class="method-icon">◈</div><h3 class="method-name">الحدث السياسي</h3><p class="method-desc">تمييز الحدث الحقيقي من الضجيج الإعلامي، وفهم وزنه على الأسواق.</p></div>
+<div class="method-card reveal delay-2"><span class="method-num en">02</span><div class="method-icon">◇</div><h3 class="method-name">الأثر الاقتصادي</h3><p class="method-desc">تحويل الحدث إلى أسئلة: تضخم؟ فائدة؟ نمو؟ ركود؟ طاقة؟ تجارة؟</p></div>
+<div class="method-card reveal delay-3"><span class="method-num en">03</span><div class="method-icon">◆</div><h3 class="method-name">حركة السيولة</h3><p class="method-desc">قراءة أين تتحرك الأموال: ذهب، دولار، سندات، نفط، أسهم أم أصول عالية المخاطر.</p></div>
+<div class="method-card reveal delay-4"><span class="method-num en">04</span><div class="method-icon">◌</div><h3 class="method-name">نفسية المتداول</h3><p class="method-desc">فصل الخوف والطمع والاندفاع عن القرار، حتى لا يتحول الخبر إلى فخ.</p></div>
+<div class="method-card reveal"><span class="method-num en">05</span><div class="method-icon">◎</div><h3 class="method-name">قرار التداول</h3><p class="method-desc">ترجمة القراءة إلى سيناريوهات واحتمالات وخطة مخاطر، لا إلى توصية عشوائية.</p></div>
 </div>
 </div>
 </section>
@@ -651,99 +764,27 @@ body *{font-variant-numeric:lining-nums;}
 <span class="section-label en">Latest Analysis</span>
 <h2 class="section-title">أحدث التحليلات</h2>
 <div class="green-line"></div>
-<p class="section-subtitle">قراءة معمّقة في أبرز الأحداث التي تحرّك الأسواق العالمية.</p>
+<p class="section-subtitle">قراءات معمّقة في أبرز الأحداث التي تحرّك الاقتصاد والأسواق والسيولة العالمية.</p>
 </div>
 <div class="insights-grid" id="insightsGrid">
 <div class="insight-card reveal delay-1" onclick="openArticle(0)">
 <span class="card-tag en">Geopolitics</span>
 <h3 class="card-title">الحرب الإيرانية الأميركية وأثرها على عالم التداول</h3>
-<p class="card-desc">كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.</p>
-<div class="card-footer">
-<span class="card-date en">15 May 2025</span>
-<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
-</div>
+<p class="card-desc">كيف تتحول التوترات السياسية إلى حركة في الذهب والنفط والدولار؟ قراءة بعين السوق لا بعين الخبر فقط.</p>
+<div class="card-footer"><span class="card-date en">15 May 2025</span><button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button></div>
 </div>
 <div class="insight-card reveal delay-2" onclick="openArticle(1)">
 <span class="card-tag en">Commodities</span>
-<h3 class="card-title">الذهب ليس غاليًا... العالم هو القَلِق</h3>
-<p class="card-desc">لماذا يرتفع الذهب ليس بسبب قيمته، بل بسبب ما يعكسه عن حالة الثقة في النظام المالي العالمي.</p>
-<div class="card-footer">
-<span class="card-date en">8 May 2025</span>
-<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
-</div>
+<h3 class="card-title">الذهب ليس غالياً... العالم هو القَلِق</h3>
+<p class="card-desc">ارتفاع الذهب ليس مجرد حركة سعرية؛ إنه انعكاس لحالة الثقة والخوف والسيولة في النظام المالي.</p>
+<div class="card-footer"><span class="card-date en">20 May 2025</span><button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button></div>
 </div>
 <div class="insight-card reveal delay-3" onclick="openArticle(2)">
 <span class="card-tag en">Macro</span>
 <h3 class="card-title">الصين: من يراقبها يفهم اتجاه السيولة</h3>
-<p class="card-desc">الصين ليست مجرد سوق ناشئة — إنها مقياس لاتجاه التدفقات الدولية. كيف تقرأ ما تفعله بكين قبل أن يفعله السوق؟</p>
-<div class="card-footer">
-<span class="card-date en">1 May 2025</span>
-<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
+<p class="card-desc">الصين ليست مجرد اقتصاد كبير؛ إنها بوصلة مهمة لفهم الطلب العالمي، السلع، وحركة المخاطر.</p>
+<div class="card-footer"><span class="card-date en">25 May 2025</span><button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button></div>
 </div>
-</div>
-</div>
-<div style="text-align:center;margin-top:44px;" class="reveal">
-<a href="analyses.html" class="btn btn-outline">عرض جميع التحليلات →</a>
-</div>
-</div>
-</section>
-
-<!-- METHOD -->
-<section class="section" id="method">
-<div class="method-bg"></div>
-<div class="container">
-<div class="section-head reveal" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
-<span class="section-label en">The Framework</span>
-<h2 class="section-title">كيف تقرأ هنادي السوق؟</h2>
-<div class="green-line" style="margin-right:auto;margin-left:auto;"></div>
-<p class="section-subtitle" style="text-align:center;">منهجية متسلسلة تبدأ بالحدث وتنتهي بقرار المتداول.</p>
-</div>
-<div class="method-grid">
-<div class="method-card reveal delay-1"><span class="method-num en">01</span><div class="method-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><h3 class="method-name">الحدث السياسي</h3><p class="method-desc">تحديد الأحداث الجيوسياسية ذات الوزن الحقيقي على الأسواق.</p></div>
-<div class="method-card reveal delay-2"><span class="method-num en">02</span><div class="method-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><polyline points="22 20 2 20"/></svg></div><h3 class="method-name">الأثر الاقتصادي</h3><p class="method-desc">ربط الحدث بالتداعيات الاقتصادية: تضخم، فائدة، نمو.</p></div>
-<div class="method-card reveal delay-3"><span class="method-num en">03</span><div class="method-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><h3 class="method-name">حركة السيولة</h3><p class="method-desc">قراءة أين تتجه الأموال الكبيرة — الملاذات الآمنة أم المخاطرة.</p></div>
-<div class="method-card reveal delay-4"><span class="method-num en">04</span><div class="method-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><h3 class="method-name">قرار المتداول</h3><p class="method-desc">ترجمة كل ما سبق إلى رؤية قابلة للتطبيق بعيداً عن العواطف.</p></div>
-</div>
-</div>
-</section>
-
-<!-- QUICK INSIGHTS -->
-<section class="section" id="notes">
-<div class="container">
-<div class="section-head reveal">
-<span class="section-label en">Quick Insights</span>
-<h2 class="section-title">رؤى سريعة</h2>
-<div class="green-line"></div>
-<p class="section-subtitle">أسئلة يطرحها المتداولون — إجابات هنادي.</p>
-</div>
-<div class="qa-carousel-wrap reveal">
-  <div class="qa-carousel-track" id="qaTrack">
-    <div class="qa-card">
-      <div class="qa-card-icon">س</div>
-      <h3 class="qa-card-q">لماذا لا يتحرك الذهب دائمًا مع الخبر؟</h3>
-      <p class="qa-card-a">الأسواق لا تسعّر الأحداث — بل تسعّر التوقعات. حين يُعلَن الخبر، يكون السوق قد هضمه مسبقاً. الذهب يتحرك مع التوقعات المستقبلية للتضخم والسياسة النقدية، لا مع العناوين.</p>
-    </div>
-    <div class="qa-card">
-      <div class="qa-card-icon">س</div>
-      <h3 class="qa-card-q">ما الذي يراقبه المستثمرون هذا الأسبوع؟</h3>
-      <p class="qa-card-a">الأنظار تتجه نحو بيانات التضخم الأمريكي (CPI) وتصريحات الفيدرالي. أي مفاجأة في الأرقام ستُعيد رسم توقعات أسعار الفائدة — وهذا يؤثر مباشرة على الدولار والذهب والأسهم.</p>
-    </div>
-    <div class="qa-card">
-      <div class="qa-card-icon">س</div>
-      <h3 class="qa-card-q">متى يصبح الخبر مستهلكًا في السوق؟</h3>
-      <p class="qa-card-a">حين يعرفه الجميع، لم يعد له قيمة سعرية. السوق يعيش على المستقبل. الخبر المُسعَّر هو خبر قديم حتى لو نُشر اليوم — ابحث دائماً عما لم يُسعَّر بعد.</p>
-    </div>
-    <div class="qa-card">
-      <div class="qa-card-icon">س</div>
-      <h3 class="qa-card-q">ما الفرق بين الخوف والسيولة في الأزمات؟</h3>
-      <p class="qa-card-a">الخوف انفعال — يدفعك للبيع العشوائي. السيولة قرار — تُحرّك الأموال الكبيرة نحو ملاذات محددة كالدولار والسندات والذهب. تعلّم قراءة حركة السيولة لا مشاعر الجموع.</p>
-    </div>
-  </div>
-  <div class="qa-carousel-nav">
-    <button class="qa-prev carousel-btn" onclick="moveQA(-1)">‹</button>
-    <div class="qa-dots" id="qaDots"></div>
-    <button class="qa-next carousel-btn" onclick="moveQA(1)">›</button>
-  </div>
 </div>
 </div>
 </section>
@@ -753,9 +794,9 @@ body *{font-variant-numeric:lining-nums;}
 <div class="container">
 <div class="section-head reveal">
 <span class="section-label en">Articles</span>
-<h2 class="section-title">أحدث المقالات</h2>
+<h2 class="section-title">مقالات وتحليلات</h2>
 <div class="green-line"></div>
-<p class="section-subtitle">مقالات تحليلية تربط الاقتصاد بالواقع.</p>
+<p class="section-subtitle">محتوى أطول وأكثر عمقاً يحوّل أفكار الريلز إلى مرجع دائم على المنصة.</p>
 </div>
 <div class="articles-preview-grid reveal" id="articlesPreviewGrid">
   <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;">⏳ جارٍ تحميل المقالات...</div>
@@ -766,20 +807,60 @@ body *{font-variant-numeric:lining-nums;}
 </div>
 </section>
 
+<!-- LIBRARY -->
+<section class="section" id="library">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Knowledge Hub</span>
+<h2 class="section-title">المكتبة المعرفية</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">مركز معرفة دائم يحوّل خبرة هنادي إلى مراجع منظمة للمتداول الجاد.</p>
+</div>
+<div class="hub-grid">
+<div class="hub-card reveal delay-1"><span class="hub-index en">01</span><div><h3 class="hub-title">ما هو التداول؟</h3><p class="hub-desc">فهم التداول كقرار واحتمال ومخاطر، لا كضغط زر.</p></div></div>
+<div class="hub-card reveal delay-2"><span class="hub-index en">02</span><div><h3 class="hub-title">إدارة رأس المال</h3><p class="hub-desc">كيف يحمي المتداول حسابه قبل أن يبحث عن الربح.</p></div></div>
+<div class="hub-card reveal delay-3"><span class="hub-index en">03</span><div><h3 class="hub-title">الذهب</h3><p class="hub-desc">قراءة الذهب كمرآة للثقة والتضخم والخوف العالمي.</p></div></div>
+<div class="hub-card reveal delay-1"><span class="hub-index en">04</span><div><h3 class="hub-title">البنوك المركزية</h3><p class="hub-desc">الفائدة، التضخم، الدولار، وكيف تتحرك توقعات السوق.</p></div></div>
+<div class="hub-card reveal delay-2"><span class="hub-index en">05</span><div><h3 class="hub-title">الصين والسيولة</h3><p class="hub-desc">لماذا مراقبة الصين تساعد على فهم الطلب والمخاطر والسلع.</p></div></div>
+<div class="hub-card reveal delay-3"><span class="hub-index en">06</span><div><h3 class="hub-title">سيكولوجية التداول</h3><p class="hub-desc">الخوف، الطمع، الاندفاع، الانتقام، وفخ إثبات الذات أمام السوق.</p></div></div>
+<div class="hub-card reveal delay-1"><span class="hub-index en">07</span><div><h3 class="hub-title">الأخبار الاقتصادية</h3><p class="hub-desc">كيف تُقرأ البيانات الاقتصادية قبل أن تتحول إلى حركة سعرية.</p></div></div>
+<div class="hub-card reveal delay-2"><span class="hub-index en">08</span><div><h3 class="hub-title">الجيوسياسة والأسواق</h3><p class="hub-desc">الحروب والعقوبات والطاقة ومسارات المال الذكي.</p></div></div>
+<div class="hub-card reveal delay-3"><span class="hub-index en">09</span><div><h3 class="hub-title">المتداول المحترف</h3><p class="hub-desc">كيف يفكر المتداول الذي يراقب الاحتمالات لا الضجيج.</p></div></div>
+</div>
+</div>
+</section>
+
+<!-- REPORTS -->
+<section class="section" id="reports">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Market Reports</span>
+<h2 class="section-title">تقارير الأسواق</h2>
+<div class="green-line"></div>
+<p class="section-subtitle">تقارير دورية تصلح كأصول رقمية قابلة للتحميل وتغذية قاعدة بيانات المنصة.</p></div>
+<div class="reports-grid">
+<div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name">تقرير الذهب الشهري</h3><p class="report-date en">Monthly Gold Lens</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name">تقرير الاقتصاد العالمي</h3><p class="report-date en">Global Macro Brief</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name">تقرير السيولة والأسواق</h3><p class="report-date en">Liquidity & Markets</p><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+</div>
+</div>
+</section>
+
 <!-- CONSULTATIONS -->
 <section class="section" id="consultations">
 <div class="container">
 <div class="section-head reveal">
-<span class="section-label en">Services</span>
-<h2 class="section-title">الاستشارات</h2>
+<span class="section-label en">Consultations</span>
+<h2 class="section-title">استشارات هنادي</h2>
 <div class="green-line"></div>
-<p class="section-subtitle">جلسات مصممة للمتداول الجاد والمستثمر الباحث عن وضوح.</p>
+<p class="section-subtitle">جلسات مخصصة للمتداول الجاد والمستثمر الذي يريد وضوحاً لا ضجيجاً.</p>
 </div>
 <div class="cons-grid">
-<div class="cons-card reveal delay-1"><div class="cons-icon">🔭</div><h3 class="cons-name">جلسة قراءة سوق</h3><p class="cons-desc">قراءة شاملة للمشهد الحالي للأسواق: أين نحن؟ ما السيناريوهات الأكثر ترجيحًا؟ وما الذي يجب أن تراقبه.</p><div class="cons-duration">60 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px">احجز الآن</a></div>
-<div class="cons-card featured reveal delay-2"><div class="cons-icon">🛡️</div><h3 class="cons-name">جلسة إدارة مخاطر</h3><p class="cons-desc">تقييم محفظتك الحالية وبناء خطة واضحة لإدارة المخاطر بناءً على المشهد الاقتصادي الراهن.</p><div class="cons-duration">90 min</div><a href="#booking" class="btn btn-green" style="margin-top:8px">احجز الآن</a></div>
-<div class="cons-card reveal delay-3"><div class="cons-icon">🏦</div><h3 class="cons-name">استشارة خاصة</h3><p class="cons-desc">للمستثمرين والشركات: تحليل مخصص يربط القرارات الاستراتيجية بديناميكيات الأسواق الدولية.</p><div class="cons-duration">120 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px">احجز الآن</a></div>
+<div class="cons-card reveal delay-1"><div class="cons-icon">◉</div><h3 class="cons-name">تقييم المتداول</h3><p class="cons-desc">مراجعة طريقة التفكير، الأخطاء المتكررة، حجم الدخول، وطريقة التعامل مع الخسارة والربح.</p><div class="cons-duration">60 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px">طلب استشارة</a></div>
+<div class="cons-card featured reveal delay-2"><div class="cons-icon">◈</div><h3 class="cons-name">جلسة إدارة مخاطر</h3><p class="cons-desc">بناء إطار واضح لإدارة رأس المال، ضبط حجم الصفقات، وتحديد حدود الخطر المناسبة للحساب.</p><div class="cons-duration">90 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px">طلب استشارة</a></div>
+<div class="cons-card reveal delay-3"><div class="cons-icon">◎</div><h3 class="cons-name">قراءة المشهد الاقتصادي</h3><p class="cons-desc">فهم السياق العالمي الحالي: ذهب، دولار، فائدة، نفط، وسيولة، وتحويله إلى سيناريوهات متابعة.</p><div class="cons-duration">90 min</div><a href="#booking" class="btn btn-outline" style="margin-top:8px">طلب استشارة</a></div>
 </div>
+<div class="cons-note reveal">لا توجد في هذه الجلسات توصيات شراء وبيع مباشرة؛ الهدف هو رفع جودة القرار، فهم المخاطر، وبناء طريقة قراءة أكثر نضجاً للسوق.</div>
 </div>
 </section>
 
@@ -787,10 +868,10 @@ body *{font-variant-numeric:lining-nums;}
 <section class="section" id="booking">
 <div class="container">
 <div class="section-head reveal">
-<span class="section-label en">Book a Session</span>
-<h2 class="section-title">احجز موعدك</h2>
+<span class="section-label en">Booking</span>
+<h2 class="section-title">حجز استشارة</h2>
 <div class="green-line"></div>
-<p class="section-subtitle">اختر اليوم والوقت المناسب لك — ثلاثة مواعيد يومياً.</p>
+<p class="section-subtitle">اختر موعداً مبدئياً للتواصل ومراجعة نوع الاستشارة المناسبة.</p>
 </div>
 <div class="booking-wrapper reveal">
 <div class="cal-header">
@@ -812,62 +893,20 @@ body *{font-variant-numeric:lining-nums;}
 </div>
 </section>
 
-<!-- ABOUT -->
-<section class="section" id="about">
+<!-- QUICK INSIGHTS / Q&A -->
+<section class="section" id="notes">
 <div class="container">
 <div class="section-head reveal">
-<span class="section-label en">About Hanadi</span>
-<h2 class="section-title">عن هنادي</h2>
+<span class="section-label en">Questions</span>
+<h2 class="section-title">أسئلة قبل الاستشارة</h2>
 <div class="green-line"></div>
+<p class="section-subtitle">إجابات مختصرة توضّح فلسفة المنصة وحدود ما تقدمه.</p>
 </div>
-<div class="about-inner">
-<div>
-<p class="about-text reveal">بدأت هنادي رحلتها في عالم الأسواق عام 1998، من عمّان، قبل أن تؤسس عام 2002 أول مكتب فوركس في دمشق. منذ 2003 تقدّم التدريب والتحليل في عالم الأسواق المالية، بمنهجية تربط الحدث السياسي بالأثر الاقتصادي وسلوك السيولة وصولاً إلى قرار المتداول.</p>
-<p class="about-text reveal">ليست منصة توصيات — بل منصة تعليم، تحليل، وبناء وعي. لأن المتداول الذي يفهم لماذا يتحرك السوق، يختلف تماماً عمّن يلاحق الأسعار.</p>
-<div class="timeline reveal">
-<div class="timeline-item"><span class="timeline-year en">1998</span><p class="timeline-title">البداية في عالم الأسواق، عمّان</p></div>
-<div class="timeline-item"><span class="timeline-year en">2002</span><p class="timeline-title">تأسيس أول مكتب فوركس في دمشق</p></div>
-<div class="timeline-item"><span class="timeline-year en">2003</span><p class="timeline-title">أولى الكورسات والتدريبات في تحليل الأسواق</p></div>
-<div class="timeline-item"><span class="timeline-year en">Today</span><p class="timeline-title">منصة تحليل اقتصادي وأسواق عالمية</p></div>
-</div>
-</div>
-<div class="about-photo reveal delay-2"><div style="color:var(--accent-dim);font-size:2rem;position:relative;z-index:1;">◈</div></div>
-</div>
-</div>
-</section>
-
-<!-- LIBRARY -->
-<section class="section" id="library">
-<div class="container">
-<div class="section-head reveal">
-<span class="section-label en">Learning Hub</span>
-<h2 class="section-title">المكتبة التعليمية</h2>
-<div class="green-line"></div>
-<p class="section-subtitle">محتوى دائم يبني أساساً متيناً للمتداول.</p>
-</div>
-<div class="library-grid">
-<div class="lib-card reveal delay-1"><span class="lib-index en">01</span><span class="lib-name">ما هو التداول؟</span></div>
-<div class="lib-card reveal delay-2"><span class="lib-index en">02</span><span class="lib-name">إدارة رأس المال</span></div>
-<div class="lib-card reveal delay-3"><span class="lib-index en">03</span><span class="lib-name">كيف تُقرأ الأخبار الاقتصادية؟</span></div>
-<div class="lib-card reveal delay-1"><span class="lib-index en">04</span><span class="lib-name">أساسيات الذهب</span></div>
-<div class="lib-card reveal delay-2"><span class="lib-index en">05</span><span class="lib-name">البنوك المركزية وأسعار الفائدة</span></div>
-<div class="lib-card reveal delay-3"><span class="lib-index en">06</span><span class="lib-name">كيف يفكر المتداول المحترف؟</span></div>
-</div>
-</div>
-</section>
-
-<!-- REPORTS -->
-<section class="section" id="reports">
-<div class="container">
-<div class="section-head reveal">
-<span class="section-label en">Market Reports</span>
-<h2 class="section-title">تقارير الأسواق</h2>
-<div class="green-line"></div>
-<p class="section-subtitle">تقارير دورية لأبرز ما يتحرك في الأسواق العالمية.</p></div>
-<div class="reports-grid">
-<div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name">تقرير الذهب الشهري</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
-<div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name">تقرير الاقتصاد العالمي</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
-<div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name">تقرير السيولة والأسواق</h3><a href="#" class="btn btn-ghost">تحميل التقرير</a></div>
+<div class="qa-list">
+<div class="qa-item open reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span>هل تقدم هنادي توصيات بيع وشراء مباشرة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">لا. المنصة تعليمية وتحليلية، وهدفها بناء فهم أعمق للسوق وإدارة المخاطر، لا بيع إشارات دخول وخروج.</div></div></div>
+<div class="qa-item reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span>ما الفرق بين التحليل والاستشارة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">التحليل يشرح المشهد العام، أما الاستشارة فتساعد المتداول أو المستثمر على فهم أخطائه ومنهجيته وحدود مخاطره ضمن سياق شخصي.</div></div></div>
+<div class="qa-item reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span>هل المحتوى مناسب للمبتدئين؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">نعم، لكن ليس بروح التبسيط السطحي. المحتوى يساعد المبتدئ على بناء أساس صحيح قبل الدخول العشوائي في السوق.</div></div></div>
+<div class="qa-item reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span>لماذا التركيز على السياسة والاقتصاد؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">لأن السعر لا يتحرك وحده. خلف كل حركة توجد توقعات وسيولة وخوف وثقة وقرارات بنوك مركزية ومصالح كبرى.</div></div></div>
 </div>
 </div>
 </section>
@@ -901,20 +940,6 @@ body *{font-variant-numeric:lining-nums;}
 </div>
 </section>
 
-<!-- ARTICLES CTA -->
-<section id="articles-cta">
-<div class="container">
-<div class="articles-cta-inner reveal">
-<div>
-<span class="section-label en" style="margin-bottom:10px;">All Articles</span>
-<h2 class="section-title" style="margin-bottom:10px;">أرشيف المقالات الكامل</h2>
-<p style="color:var(--text-dim);font-size:0.97rem;">أكثر من 50 مقالاً في التحليل الاقتصادي وأسواق المال</p>
-</div>
-<a href="articles.html" class="btn btn-green" style="flex-shrink:0;">تصفح جميع المقالات ←</a>
-</div>
-</div>
-</section>
-
 <!-- NEWSLETTER -->
 <section id="newsletter">
 <div class="container">
@@ -924,7 +949,7 @@ body *{font-variant-numeric:lining-nums;}
 <div class="green-line" style="margin:16px auto 32px;"></div>
 <p class="section-subtitle" style="text-align:center;margin:0 auto 44px;">تحليل هادئ لأهم ما يتحرك خلف الأسواق... يصلك مباشرة إلى بريدك.</p>
 <div class="nl-form">
-<input type="email" class="nl-input" placeholder="your@email.com"/>
+<input type="email" class="nl-input" placeholder="your@email.com">
 <button class="btn btn-green" id="nlBtn" type="submit">اشتراك</button>
 </div>
 </div>
@@ -937,7 +962,7 @@ body *{font-variant-numeric:lining-nums;}
 <div class="footer-top">
 <div class="footer-brand">
 <div class="logo"><span class="logo-main en">Hanadi Insights</span><span class="logo-sub en">Strategic Market Analysis</span></div>
-<p>منصة تحليل اقتصادي وأسواق عالمية تربط السياسة والاقتصاد والسيولة بسلوك الأسواق.</p>
+<p>منصة شخصية لتحليل الأسواق تربط السياسة والاقتصاد والسيولة وإدارة المخاطر بمنهجية هنادي.</p>
 <div class="social-links">
 <a href="#" class="social-link" title="Facebook"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.532-4.697 1.313 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg></a>
 <a href="#" class="social-link" title="Instagram"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
@@ -946,12 +971,14 @@ body *{font-variant-numeric:lining-nums;}
 <div class="footer-col">
 <h4>روابط سريعة</h4>
 <ul>
+<li><a href="#about">عن هنادي</a></li>
+<li><a href="#difference">لماذا هنادي؟</a></li>
+<li><a href="#method">المنهجية</a></li>
 <li><a href="#insights">التحليلات</a></li>
 <li><a href="articles.html">المقالات</a></li>
-<li><a href="#notes">الرؤى السريعة</a></li>
+<li id="footerLibrary" style="display:none;"><a href="#library">المكتبة المعرفية</a></li>
+<li><a href="#reports">التقارير</a></li>
 <li id="footerConsultations" style="display:none;"><a href="#consultations">الاستشارات</a></li>
-<li id="footerBooking" style="display:none;"><a href="#booking">حجز موعد</a></li>
-<li><a href="#about">عن هنادي</a></li>
 </ul>
 </div>
 <div class="footer-col">
@@ -959,7 +986,6 @@ body *{font-variant-numeric:lining-nums;}
 <ul>
 <li><a href="#newsletter">النشرة البريدية</a></li>
 <li id="footerBookingCta" style="display:none;"><a href="#booking">احجز استشارة</a></li>
-<li id="footerLibrary" style="display:none;"><a href="#library">المكتبة التعليمية</a></li>
 </ul>
 </div>
 </div>
@@ -1203,6 +1229,14 @@ const _SEC_MAP={
     {field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v},
   ]},
   'articles-preview':{el:'#articles-preview', updates:[
+    {field:'title',   sel:'.section-title',  fn:(el,v)=>el.textContent=v},
+    {field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v},
+  ]},
+  difference:{el:'#difference', grid:'.brand-grid', updates:[
+    {field:'title',   sel:'.section-title',  fn:(el,v)=>el.textContent=v},
+    {field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v},
+  ]},
+  trust:{el:'#trust', grid:'.proof-grid', updates:[
     {field:'title',   sel:'.section-title',  fn:(el,v)=>el.textContent=v},
     {field:'subtitle',sel:'.section-subtitle',fn:(el,v)=>el.textContent=v},
   ]},
@@ -1816,13 +1850,18 @@ setTimeout(closeBookingModal,3500);
 buildWeekdays();
 buildCalendar();
 
-// Q&A TOGGLE (legacy, kept for backwards compat)
+// Q&A ACCORDION toggle
 function toggleQA(btn){
 const item=btn.closest('.qa-item');
 const isOpen=item.classList.contains('open');
 document.querySelectorAll('.qa-item.open').forEach(i=>i.classList.remove('open'));
 if(!isOpen)item.classList.add('open');
 }
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('#notes .qa-question').forEach(function(b){
+    b.addEventListener('click',function(){toggleQA(b);});
+  });
+});
 
 // QA Carousel functions defined above (search initQACarousel)
 
