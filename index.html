@@ -1255,6 +1255,33 @@ const _SEC_MAP={
   trust:{el:'#trust', grid:'.proof-grid'},
 };
 
+// ── REPEATABLE ITEMS (CMS) ────────────────────
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const ITEM_TEMPLATES={
+  difference:it=>`<div class="brand-card reveal visible"><span class="brand-num en">${esc(it.num)}</span><h3 class="brand-title">${esc(it.title)}</h3><p class="brand-desc">${esc(it.desc)}</p></div>`,
+  trust:it=>`<div class="proof-card reveal visible"><span class="proof-value en">${esc(it.value)}</span><p class="proof-label">${esc(it.label)}</p></div>`,
+  method:it=>`<div class="method-card reveal visible"><span class="method-num en">${esc(it.num)}</span><div class="method-icon">${esc(it.icon)}</div><h3 class="method-name">${esc(it.name)}</h3><p class="method-desc">${esc(it.desc)}</p></div>`,
+  library:it=>`<div class="hub-card reveal visible"><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`,
+  reports:it=>`<div class="report-card reveal visible"><div class="report-icon">${esc(it.icon||'📄')}</div><h3 class="report-name">${esc(it.name)}</h3><p class="report-date en">${esc(it.date)}</p><a href="#" class="btn btn-ghost">${esc(it.btn||'تحميل التقرير')}</a></div>`,
+  consultations:it=>`<div class="cons-card reveal visible${it.featured?' featured':''}"><div class="cons-icon">${esc(it.icon)}</div><h3 class="cons-name">${esc(it.name)}</h3><p class="cons-desc">${esc(it.desc)}</p><div class="cons-duration">${esc(it.duration||'')}</div><button class="btn btn-outline" style="margin-top:8px" onclick="openConsModal(this)">${esc(it.btn||'طلب استشارة')}</button></div>`,
+  notes:it=>`<div class="qa-item reveal visible"><button class="qa-question" onclick="toggleQA(this)"><span class="qa-q-icon">س</span><span>${esc(it.question)}</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">${esc(it.answer)}</div></div></div>`,
+  about:it=>`<div class="timeline-item"><span class="timeline-year en">${esc(it.year)}</span><p class="timeline-title">${esc(it.title)}</p></div>`,
+};
+function rebuildSectionItems(sec,domEl){
+  const items=sec.content&&sec.content._items;
+  if(!Array.isArray(items)||!items.length)return;
+  const tpl=ITEM_TEMPLATES[sec.section_key];
+  if(!tpl)return;
+  let gridSel;
+  if(sec.section_key==='about')gridSel='.timeline';
+  else{const m=_SEC_MAP[sec.section_key];gridSel=m&&m.grid;}
+  if(!gridSel)return;
+  const gridEl=domEl.querySelector(gridSel);
+  if(!gridEl)return;
+  gridEl.innerHTML=items.map(tpl).join('');
+  gridEl.querySelectorAll('.reveal').forEach(r=>r.classList.add('visible'));
+}
+
 // ── CAROUSEL BUILDER ──────────────────────────
 function makeCarousel(gridEl){
   if(!gridEl||gridEl.closest('.carousel-wrap'))return; // already done
@@ -1503,6 +1530,9 @@ async function loadPageSections(){
           if(t)t.textContent=val;
         });
       }
+
+      // Repeatable items — rebuild grid from content._items (before carousel runs)
+      rebuildSectionItems(sec,domEl);
 
       // Carousel / Grid layout
       if(map.grid&&sec.content){

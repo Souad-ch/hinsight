@@ -1436,6 +1436,122 @@ const DEFAULT_SECTIONS=[
 function escS(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escSAttr(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 
+// ── Repeatable items registry (add/remove/reorder) ──
+const SECTION_ITEMS={
+  difference:{itemLabel:'بطاقة',addLabel:'➕ إضافة بطاقة',
+    fields:[{key:'num',label:'الرقم',type:'text'},{key:'title',label:'العنوان',type:'text'},{key:'desc',label:'الوصف',type:'textarea'}],
+    defaults:[
+      {num:'01',title:'خبرة عملية لا تنظير',desc:'تجربة بدأت من داخل السوق، بين العملاء، الحسابات، الخسائر، إدارة العواطف، وفهم القرار قبل تنفيذه.'},
+      {num:'02',title:'ضد ثقافة التوصيات',desc:'المنصة لا تبيع وهم الدخول والخروج، بل تشرح لماذا يتحرك السوق وكيف يتعامل المتداول مع الاحتمالات.'},
+      {num:'03',title:'السياسة قبل السعر',desc:'الحرب، الفائدة، البنوك المركزية، الصين، النفط والذهب؛ كلها تُقرأ كعوامل تحرك السيولة لا كعناوين أخبار فقط.'},
+      {num:'04',title:'إدارة المخاطر أولاً',desc:'النجاح في السوق لا يبدأ من توقع الاتجاه، بل من حماية الحساب وضبط حجم الدخول والقرار النفسي.'},
+    ]},
+  trust:{itemLabel:'إحصائية',addLabel:'➕ إضافة إحصائية',
+    fields:[{key:'value',label:'القيمة',type:'text'},{key:'label',label:'الوصف',type:'text'}],
+    defaults:[
+      {value:'+25',label:'سنة خبرة في الأسواق'},
+      {value:'1998',label:'بداية عملية مبكرة'},
+      {value:'2002',label:'أول مكتب فوركس في دمشق'},
+      {value:'2003',label:'تدريب وتحليل منذ بدايات السوق'},
+      {value:'5%',label:'فلسفة صارمة لإدارة المخاطر'},
+    ]},
+  method:{itemLabel:'خطوة',addLabel:'➕ إضافة خطوة',
+    fields:[{key:'num',label:'الرقم',type:'text'},{key:'icon',label:'الأيقونة',type:'text'},{key:'name',label:'الاسم',type:'text'},{key:'desc',label:'الوصف',type:'textarea'}],
+    defaults:[
+      {num:'01',icon:'◈',name:'الحدث السياسي',desc:'تمييز الحدث الحقيقي من الضجيج الإعلامي، وفهم وزنه على الأسواق.'},
+      {num:'02',icon:'◇',name:'الأثر الاقتصادي',desc:'تحويل الحدث إلى أسئلة: تضخم؟ فائدة؟ نمو؟ ركود؟ طاقة؟ تجارة؟'},
+      {num:'03',icon:'◆',name:'حركة السيولة',desc:'قراءة أين تتحرك الأموال: ذهب، دولار، سندات، نفط، أسهم أم أصول عالية المخاطر.'},
+      {num:'04',icon:'◌',name:'نفسية المتداول',desc:'فصل الخوف والطمع والاندفاع عن القرار، حتى لا يتحول الخبر إلى فخ.'},
+      {num:'05',icon:'◎',name:'قرار التداول',desc:'ترجمة القراءة إلى سيناريوهات واحتمالات وخطة مخاطر، لا إلى توصية عشوائية.'},
+    ]},
+  library:{itemLabel:'موضوع',addLabel:'➕ إضافة موضوع',
+    fields:[{key:'index',label:'الرقم',type:'text'},{key:'title',label:'العنوان',type:'text'},{key:'desc',label:'الوصف',type:'textarea'}],
+    defaults:[
+      {index:'01',title:'ما هو التداول؟',desc:'فهم التداول كقرار واحتمال ومخاطر، لا كضغط زر.'},
+      {index:'02',title:'إدارة رأس المال',desc:'كيف يحمي المتداول حسابه قبل أن يبحث عن الربح.'},
+      {index:'03',title:'الذهب',desc:'قراءة الذهب كمرآة للثقة والتضخم والخوف العالمي.'},
+      {index:'04',title:'البنوك المركزية',desc:'الفائدة، التضخم، الدولار، وكيف تتحرك توقعات السوق.'},
+      {index:'05',title:'الصين والسيولة',desc:'لماذا مراقبة الصين تساعد على فهم الطلب والمخاطر والسلع.'},
+      {index:'06',title:'سيكولوجية التداول',desc:'الخوف، الطمع، الاندفاع، الانتقام، وفخ إثبات الذات أمام السوق.'},
+      {index:'07',title:'الأخبار الاقتصادية',desc:'كيف تُقرأ البيانات الاقتصادية قبل أن تتحول إلى حركة سعرية.'},
+      {index:'08',title:'الجيوسياسة والأسواق',desc:'الحروب والعقوبات والطاقة ومسارات المال الذكي.'},
+      {index:'09',title:'المتداول المحترف',desc:'كيف يفكر المتداول الذي يراقب الاحتمالات لا الضجيج.'},
+    ]},
+  reports:{itemLabel:'تقرير',addLabel:'➕ إضافة تقرير',
+    fields:[{key:'icon',label:'الأيقونة',type:'text'},{key:'name',label:'الاسم',type:'text'},{key:'date',label:'التاريخ/الوصف',type:'text'},{key:'btn',label:'نص الزر',type:'text'}],
+    defaults:[
+      {icon:'📄',name:'تقرير الذهب الشهري',date:'Monthly Gold Lens',btn:'تحميل التقرير'},
+      {icon:'📄',name:'تقرير الاقتصاد العالمي',date:'Global Macro Brief',btn:'تحميل التقرير'},
+      {icon:'📄',name:'تقرير السيولة والأسواق',date:'Liquidity & Markets',btn:'تحميل التقرير'},
+    ]},
+  consultations:{itemLabel:'استشارة',addLabel:'➕ إضافة استشارة',
+    fields:[{key:'icon',label:'الأيقونة',type:'text'},{key:'name',label:'الاسم',type:'text'},{key:'desc',label:'الوصف',type:'textarea'},{key:'duration',label:'المدة',type:'text'},{key:'btn',label:'نص الزر',type:'text'},{key:'featured',label:'مميّزة؟',type:'checkbox'}],
+    defaults:[
+      {icon:'◉',name:'تقييم المتداول',desc:'مراجعة طريقة التفكير، الأخطاء المتكررة، حجم الدخول، وطريقة التعامل مع الخسارة والربح.',duration:'60 min',btn:'طلب استشارة',featured:false},
+      {icon:'◈',name:'جلسة إدارة مخاطر',desc:'بناء إطار واضح لإدارة رأس المال، ضبط حجم الصفقات، وتحديد حدود الخطر المناسبة للحساب.',duration:'90 min',btn:'طلب استشارة',featured:true},
+      {icon:'◎',name:'قراءة المشهد الاقتصادي',desc:'فهم السياق العالمي الحالي: ذهب، دولار، فائدة، نفط، وسيولة، وتحويله إلى سيناريوهات متابعة.',duration:'90 min',btn:'طلب استشارة',featured:false},
+    ]},
+  notes:{itemLabel:'سؤال',addLabel:'➕ إضافة سؤال',
+    fields:[{key:'question',label:'السؤال',type:'text'},{key:'answer',label:'الجواب',type:'textarea'}],
+    defaults:[
+      {question:'هل تقدم هنادي توصيات بيع وشراء مباشرة؟',answer:'لا. المنصة تعليمية وتحليلية، وهدفها بناء فهم أعمق للسوق وإدارة المخاطر، لا بيع إشارات دخول وخروج.'},
+      {question:'ما الفرق بين التحليل والاستشارة؟',answer:'التحليل يشرح المشهد العام، أما الاستشارة فتساعد المتداول أو المستثمر على فهم أخطائه ومنهجيته وحدود مخاطره ضمن سياق شخصي.'},
+      {question:'هل المحتوى مناسب للمبتدئين؟',answer:'نعم، لكن ليس بروح التبسيط السطحي. المحتوى يساعد المبتدئ على بناء أساس صحيح قبل الدخول العشوائي في السوق.'},
+      {question:'لماذا التركيز على السياسة والاقتصاد؟',answer:'لأن السعر لا يتحرك وحده. خلف كل حركة توجد توقعات وسيولة وخوف وثقة وقرارات بنوك مركزية ومصالح كبرى.'},
+    ]},
+  about:{itemLabel:'محطة زمنية',addLabel:'➕ إضافة محطة زمنية',
+    fields:[{key:'year',label:'السنة',type:'text'},{key:'title',label:'العنوان',type:'text'}],
+    defaults:[
+      {year:'1998',title:'البداية العملية في عالم الأسواق — عمّان'},
+      {year:'2002',title:'تأسيس أول مكتب فوركس في دمشق'},
+      {year:'2003',title:'أولى الدورات والتدريبات المتخصصة في الفوركس'},
+      {year:'Today',title:'منصة تحليل اقتصادي وأسواق عالمية'},
+    ]},
+};
+let pbItems=[];
+function deepCopyItems(arr){return JSON.parse(JSON.stringify(arr||[]));}
+function renderItemsEditor(){
+  const box=document.getElementById('pbItemsBox');
+  if(!box)return;
+  const sec=builderSections.find(s=>s.id===selectedSectionId);
+  if(!sec)return;
+  const reg=SECTION_ITEMS[sec.section_key];
+  if(!reg)return;
+  let h=`<div class="pb-divider"></div><div class="pb-group-label">🧩 العناصر (إضافة/حذف)</div>`;
+  pbItems.forEach((it,i)=>{
+    h+=`<div class="pb-field" style="border:1px solid var(--border,#333);border-radius:8px;padding:10px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong style="font-size:0.7rem;">${reg.itemLabel} ${i+1}</strong>
+        <span>
+          <button type="button" onclick="moveItem(${i},-1)" title="أعلى">▲</button>
+          <button type="button" onclick="moveItem(${i},1)" title="أسفل">▼</button>
+          <button type="button" onclick="removeItem(${i})" title="حذف">🗑</button>
+        </span>
+      </div>`;
+    reg.fields.forEach(f=>{
+      if(f.type==='checkbox'){
+        h+=`<label style="display:flex;gap:6px;align-items:center;font-size:0.7rem;"><input type="checkbox" oninput="updateItem(${i},'${f.key}',this.checked)"${it[f.key]?' checked':''}/> ${f.label}</label>`;
+      }else if(f.type==='textarea'){
+        h+=`<label style="font-size:0.7rem;">${f.label}</label><textarea rows="2" oninput="updateItem(${i},'${f.key}',this.value)">${escS(it[f.key]||'')}</textarea>`;
+      }else{
+        h+=`<label style="font-size:0.7rem;">${f.label}</label><input type="text" value="${escSAttr(it[f.key]||'')}" oninput="updateItem(${i},'${f.key}',this.value)"/>`;
+      }
+    });
+    h+=`</div>`;
+  });
+  h+=`<button type="button" class="pb-save-btn" style="display:block;width:100%;" onclick="addItem()">${reg.addLabel}</button>`;
+  box.innerHTML=h;
+}
+function updateItem(i,key,val){if(pbItems[i])pbItems[i][key]=val;}
+function removeItem(i){pbItems.splice(i,1);renderItemsEditor();}
+function moveItem(i,dir){const ni=i+dir;if(ni<0||ni>=pbItems.length)return;const t=pbItems[i];pbItems[i]=pbItems[ni];pbItems[ni]=t;renderItemsEditor();}
+function addItem(){
+  const sec=builderSections.find(s=>s.id===selectedSectionId);
+  const reg=sec&&SECTION_ITEMS[sec.section_key];if(!reg)return;
+  const blank={};reg.fields.forEach(f=>{blank[f.key]=f.type==='checkbox'?false:'';});
+  pbItems.push(blank);renderItemsEditor();
+}
+
 // ── Load builder ──────────────────────────────
 async function loadBuilder(){
   const el=document.getElementById('pbSectionsList');
@@ -1552,7 +1668,14 @@ function renderProps(){
       html+=`<div style="font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);text-align:center;padding:20px;">لا توجد محتويات قابلة للتعديل.</div>`;
     }
   }
+  const reg=SECTION_ITEMS[sec.section_key];
+  if(reg){
+    pbItems=(sec.content&&Array.isArray(sec.content._items)&&sec.content._items.length)
+      ?deepCopyItems(sec.content._items):deepCopyItems(reg.defaults);
+    html+=`<div id="pbItemsBox"></div>`;
+  }
   body.innerHTML=html;
+  if(reg)renderItemsEditor();
   if(sec.section_type==='testimonials') loadTestimonialsForProps();
 }
 
@@ -1696,6 +1819,7 @@ async function saveProps(){
     if(ce)content.count=parseInt(ce.value);
     if(le)content.layout=le.value;
   }
+  if(SECTION_ITEMS[sec.section_key]){content._items=deepCopyItems(pbItems);}
   const animEl=document.getElementById('pbAnim');
   const animation=animEl?animEl.value:sec.animation;
   const{error}=await sb.from('page_sections').update({content,animation,updated_at:new Date().toISOString()}).eq('id',sec.id);
