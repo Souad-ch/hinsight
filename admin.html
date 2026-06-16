@@ -1414,6 +1414,24 @@ function fieldsFor(sec){
   return (sec&&SECTION_FIELDS_BY_KEY[sec.section_key])||SECTION_FIELDS[sec.section_type]||[];
 }
 
+// يقرأ النص الحالي من معاينة الموقع (iframe) ليعبّي الحقول الفارغة تلقائياً
+function pbDef(sec,key){
+  try{
+    const fr=document.getElementById('pbFrame');
+    const d=fr&&fr.contentDocument;
+    if(!d)return '';
+    const scope=d.getElementById(sec.section_key)||d;
+    const el=scope.querySelector('[data-edit="'+key+'"]');
+    if(el)return (el.textContent||'').trim();
+  }catch(e){}
+  return '';
+}
+function pbVal(sec,key){
+  const c=sec.content&&sec.content[key];
+  if(c!==undefined&&c!==null&&String(c).trim()!=='')return c;
+  return pbDef(sec,key);
+}
+
 const DEFAULT_SECTIONS=[
   {section_key:'hero',         section_name:'🏠 الهيرو',             section_type:'hero',         order_index:0,   animation:'heroReveal',visible:true, content:{}},
   {section_key:'ticker',       section_name:'📈 شريط الأسعار',        section_type:'ticker',       order_index:0.5, animation:'none',      visible:true, content:{}},
@@ -1464,8 +1482,8 @@ const SECTION_ITEMS={
       {num:'04',icon:'◌',name:'نفسية المتداول',desc:'فصل الخوف والطمع والاندفاع عن القرار، حتى لا يتحول الخبر إلى فخ.'},
       {num:'05',icon:'◎',name:'قرار التداول',desc:'ترجمة القراءة إلى سيناريوهات واحتمالات وخطة مخاطر، لا إلى توصية عشوائية.'},
     ]},
-  library:{itemLabel:'موضوع',addLabel:'➕ إضافة موضوع',
-    fields:[{key:'index',label:'الرقم',type:'text'},{key:'title',label:'العنوان',type:'text'},{key:'desc',label:'الوصف',type:'textarea'}],
+  library:{itemLabel:'موضوع / فيديو',addLabel:'➕ إضافة موضوع أو فيديو',
+    fields:[{key:'index',label:'الرقم',type:'text'},{key:'title',label:'العنوان',type:'text'},{key:'desc',label:'الوصف',type:'textarea'},{key:'url',label:'رابط الفيديو (YouTube أو أي رابط — اختياري)',type:'text'}],
     defaults:[
       {index:'01',title:'ما هو التداول؟',desc:'فهم التداول كقرار واحتمال ومخاطر، لا كضغط زر.'},
       {index:'02',title:'إدارة رأس المال',desc:'كيف يحمي المتداول حسابه قبل أن يبحث عن الربح.'},
@@ -1580,6 +1598,8 @@ async function loadBuilder(){
   const frame=document.getElementById('pbFrame');
   if(frame.src==='about:blank'||!frame.src.includes('index.html'))
     frame.src='index.html?t='+Date.now();
+  // أعد عرض الخصائص بعد تحميل المعاينة لتعبئة الحقول من نص الموقع
+  if(!frame._pbHooked){frame._pbHooked=true;frame.addEventListener('load',()=>{if(selectedSectionId)renderProps();});}
 }
 
 function renderSectionsList(){
@@ -1647,8 +1667,8 @@ function renderProps(){
         <div class="pb-field">
           <label>${f.label}</label>
           ${f.type==='textarea'
-            ?`<textarea rows="${f.rows||3}" id="pbf_${f.key}">${escS(sec.content?.[f.key]||'')}</textarea>`
-            :`<input type="text" id="pbf_${f.key}" value="${escSAttr(sec.content?.[f.key]||'')}"/>`}
+            ?`<textarea rows="${f.rows||3}" id="pbf_${f.key}">${escS(pbVal(sec,f.key))}</textarea>`
+            :`<input type="text" id="pbf_${f.key}" value="${escSAttr(pbVal(sec,f.key))}"/>`}
         </div>`).join('');
       // Layout selector (for sections with grids)
       const hasLayout=fields.some(f=>f.type==='layout_select');
@@ -1687,8 +1707,8 @@ function renderInsightsProps(sec){
       <div class="pb-field">
         <label>${f.label}</label>
         ${f.type==='textarea'
-          ?`<textarea rows="${f.rows||2}" id="pbf_${f.key}">${escS(c[f.key]||'')}</textarea>`
-          :`<input type="text" id="pbf_${f.key}" value="${escSAttr(c[f.key]||'')}"/>`}
+          ?`<textarea rows="${f.rows||2}" id="pbf_${f.key}">${escS(pbVal(sec,f.key))}</textarea>`
+          :`<input type="text" id="pbf_${f.key}" value="${escSAttr(pbVal(sec,f.key))}"/>`}
       </div>`).join('')}
     <div class="pb-divider"></div>
     <div class="pb-group-label">إعدادات العرض</div>
@@ -1718,8 +1738,8 @@ function renderTestimonialsProps(sec){
       <div class="pb-field">
         <label>${f.label}</label>
         ${f.type==='textarea'
-          ?`<textarea rows="${f.rows||2}" id="pbf_${f.key}">${escS(c[f.key]||'')}</textarea>`
-          :`<input type="text" id="pbf_${f.key}" value="${escSAttr(c[f.key]||'')}"/>`}
+          ?`<textarea rows="${f.rows||2}" id="pbf_${f.key}">${escS(pbVal(sec,f.key))}</textarea>`
+          :`<input type="text" id="pbf_${f.key}" value="${escSAttr(pbVal(sec,f.key))}"/>`}
       </div>`).join('')}
     <div class="pb-divider"></div>
     <div class="pb-group-label">شكل العرض</div>

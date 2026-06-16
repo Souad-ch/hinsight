@@ -556,6 +556,9 @@ body *{font-variant-numeric:lining-nums;}
 .hub-index{font-family:var(--font-en);font-size:1.35rem;font-weight:300;color:rgba(159,187,164,0.35);line-height:1;flex-shrink:0;}
 .hub-title{font-size:0.98rem;color:var(--text);margin-bottom:6px;}
 .hub-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.75;}
+.hub-play{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:0.55rem;margin-inline-start:8px;vertical-align:middle;}
+.hub-clickable{cursor:pointer;}
+a:hover>.hub-clickable{border-color:rgba(120,144,124,0.5);}
 .cons-note{margin-top:34px;padding:22px 28px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(120,144,124,0.045);color:var(--text-dim);font-size:0.9rem;line-height:1.85;}
 .about-quote{margin-top:34px;padding:22px 28px;border-right:3px solid var(--accent);background:rgba(120,144,124,0.05);border-radius:0 var(--radius) var(--radius) 0;color:var(--text-dim);line-height:1.9;}
 .about-photo .portrait-word{position:relative;z-index:1;text-align:center;}
@@ -673,6 +676,9 @@ body *{font-variant-numeric:lining-nums;}
 </div>
 </div>
 </section>
+
+<!-- TICKER -->
+<div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
 
 <!-- ABOUT -->
 <section class="section" id="about">
@@ -1015,7 +1021,11 @@ body *{font-variant-numeric:lining-nums;}
 <!-- Contact form -->
 <div id="consFormWrap">
 <div class="form-group"><label class="form-label">الاسم الكامل *</label><input type="text" class="form-input" id="consName" placeholder="أدخل اسمك الكامل"/></div>
-<div class="form-group"><label class="form-label">رقم واتساب / الهاتف *</label><input type="text" class="form-input" id="consPhone" placeholder="+966 5x xxx xxxx" dir="ltr"/></div>
+<div class="form-group"><label class="form-label">رقم واتساب / الهاتف *</label>
+<div style="display:flex;gap:8px;" dir="ltr">
+<select class="form-input" id="consCountry" style="flex:0 0 130px;padding-inline:8px;"></select>
+<input type="tel" class="form-input" id="consPhone" placeholder="5x xxx xxxx" dir="ltr" style="flex:1;"/>
+</div></div>
 <div class="form-group"><label class="form-label">البريد الإلكتروني * <span style="color:var(--text-muted);font-size:0.78rem;">(لإرسال تأكيد الحجز)</span></label><input type="email" class="form-input" id="consEmail" placeholder="your@email.com" dir="ltr"/></div>
 <div class="form-group"><label class="form-label">نوع الاستشارة</label><select class="form-input" id="consType"></select></div>
 <div class="form-group"><label class="form-label">رسالة مختصرة (اختياري)</label><textarea class="form-input" id="consMsg" rows="3" placeholder="اكتب باختصار ما تريد مناقشته..."></textarea></div>
@@ -1261,7 +1271,7 @@ const ITEM_TEMPLATES={
   difference:it=>`<div class="brand-card reveal visible"><span class="brand-num en">${esc(it.num)}</span><h3 class="brand-title">${esc(it.title)}</h3><p class="brand-desc">${esc(it.desc)}</p></div>`,
   trust:it=>`<div class="proof-card reveal visible"><span class="proof-value en">${esc(it.value)}</span><p class="proof-label">${esc(it.label)}</p></div>`,
   method:it=>`<div class="method-card reveal visible"><span class="method-num en">${esc(it.num)}</span><div class="method-icon">${esc(it.icon)}</div><h3 class="method-name">${esc(it.name)}</h3><p class="method-desc">${esc(it.desc)}</p></div>`,
-  library:it=>`<div class="hub-card reveal visible"><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`,
+  library:it=>{const u=(it.url||'').trim();const play=u?'<span class="hub-play">▶</span>':'';const inner=`<div class="hub-card reveal visible${u?' hub-clickable':''}"><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}${play}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`;return u?`<a href="${esc(u)}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">${inner}</a>`:inner;},
   reports:it=>`<div class="report-card reveal visible"><div class="report-icon">${esc(it.icon||'📄')}</div><h3 class="report-name">${esc(it.name)}</h3><p class="report-date en">${esc(it.date)}</p><a href="#" class="btn btn-ghost">${esc(it.btn||'تحميل التقرير')}</a></div>`,
   consultations:it=>`<div class="cons-card reveal visible${it.featured?' featured':''}"><div class="cons-icon">${esc(it.icon)}</div><h3 class="cons-name">${esc(it.name)}</h3><p class="cons-desc">${esc(it.desc)}</p><div class="cons-duration">${esc(it.duration||'')}</div><button class="btn btn-outline" style="margin-top:8px" onclick="openConsModal(this)">${esc(it.btn||'طلب استشارة')}</button></div>`,
   notes:it=>`<div class="qa-item reveal visible"><button class="qa-question" onclick="toggleQA(this)"><span class="qa-q-icon">س</span><span>${esc(it.question)}</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">${esc(it.answer)}</div></div></div>`,
@@ -2018,7 +2028,19 @@ fetchLivePrices();
 setInterval(fetchLivePrices,3000);
 
 // ── CONSULTATION MODAL ──
+const COUNTRY_CODES=[
+  {c:'🇸🇦 +966',v:'+966'},{c:'🇦🇪 +971',v:'+971'},{c:'🇶🇦 +974',v:'+974'},
+  {c:'🇰🇼 +965',v:'+965'},{c:'🇧🇭 +973',v:'+973'},{c:'🇴🇲 +968',v:'+968'},
+  {c:'🇯🇴 +962',v:'+962'},{c:'🇱🇧 +961',v:'+961'},{c:'🇸🇾 +963',v:'+963'},
+  {c:'🇮🇶 +964',v:'+964'},{c:'🇪🇬 +20',v:'+20'},{c:'🇵🇸 +970',v:'+970'},
+  {c:'🇾🇪 +967',v:'+967'},{c:'🇱🇾 +218',v:'+218'},{c:'🇩🇿 +213',v:'+213'},
+  {c:'🇲🇦 +212',v:'+212'},{c:'🇹🇳 +216',v:'+216'},{c:'🇸🇩 +249',v:'+249'},
+  {c:'🇹🇷 +90',v:'+90'},{c:'🇬🇧 +44',v:'+44'},{c:'🇺🇸 +1',v:'+1'},
+  {c:'🇩🇪 +49',v:'+49'},{c:'🇫🇷 +33',v:'+33'}
+];
 function openConsModal(btn){
+  const cc=document.getElementById('consCountry');
+  if(cc&&!cc.options.length){cc.innerHTML=COUNTRY_CODES.map(o=>`<option value="${o.v}">${o.c}</option>`).join('');}
   const sel=document.getElementById('consType');
   // ابنِ القائمة ديناميكياً من كروت الاستشارات الموجودة (أي استشارة تُضاف تظهر تلقائياً)
   if(sel){
@@ -2036,12 +2058,16 @@ function openConsModal(btn){
 }
 async function sendConsRequest(){
   const name=document.getElementById('consName').value.trim();
-  const phone=document.getElementById('consPhone').value.trim();
+  const cc=document.getElementById('consCountry').value;
+  const phoneNum=document.getElementById('consPhone').value.trim();
+  const phone=phoneNum?cc+' '+phoneNum:'';
   const email=document.getElementById('consEmail').value.trim();
   const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if(!name||!phone){alert('الرجاء إدخال الاسم ورقم الهاتف');return;}
-  if(!emailOk){document.getElementById('consEmail').style.borderColor='#c0392b';alert('الرجاء إدخال بريد إلكتروني صحيح لإرسال تأكيد الحجز');return;}
-  document.getElementById('consEmail').style.borderColor='';
+  const mark=(id,bad)=>{document.getElementById(id).style.borderColor=bad?'#c0392b':'';};
+  mark('consName',!name);mark('consPhone',!phoneNum);mark('consEmail',!emailOk);
+  if(!name||!phoneNum||!emailOk){
+    alert('الرجاء تعبئة جميع الحقول المطلوبة (الاسم، الهاتف، بريد إلكتروني صحيح)');return;
+  }
   const btn=document.getElementById('consSendBtn');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
   const type=document.getElementById('consType').value;
