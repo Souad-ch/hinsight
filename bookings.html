@@ -367,6 +367,7 @@ a{text-decoration:none;color:inherit}
                 <button class="btn btn-outline" data-act="copy">نسخ بيانات التواصل</button>
                 <button class="btn btn-danger" data-act="cancelled">إلغاء الحجز</button>
               </div>
+              <button class="btn btn-green" id="sendMsgBtn" style="width:100%;margin-top:10px">✉ إرسال رسالة للزبون</button>
             </div>
             <div>
               <div class="msg-label">Activity Timeline</div>
@@ -407,6 +408,12 @@ a{text-decoration:none;color:inherit}
       <button class="btn btn-ghost" id="closeModal" style="width:auto">إغلاق</button>
     </div>
     <div class="modal-body">
+      <select class="select" id="tplPicker" style="width:100%;margin-bottom:14px;display:none">
+        <option value="received">قالب: تأكيد استلام الطلب</option>
+        <option value="confirm">قالب: تأكيد الموعد والتعليمات</option>
+        <option value="more">قالب: طلب معلومات إضافية</option>
+        <option value="reject">قالب: اعتذار مهذّب عن الموعد</option>
+      </select>
       <div class="message-preview" id="messagePreview"></div>
       <div style="margin-top:16px">
         <input class="login-input" id="emailSubject" style="text-align:right;margin-bottom:10px" placeholder="عنوان الإيميل (Subject)" value="بخصوص استشارتك مع Hanadi Insights"/>
@@ -680,8 +687,22 @@ const TPL={
 document.querySelectorAll('[data-template]').forEach(btn=>btn.addEventListener('click',()=>{
   const key=btn.dataset.template;const b=selBooking();
   if(['received','confirm','more','reject'].includes(key)&&!b)return toast('اختاري طلباً أولاً');
+  document.getElementById('tplPicker').style.display='none';
   openModal(btn.closest('.template-card')?.querySelector('.template-title')?.textContent||'معاينة الرسالة',TPL[key](b||{}));
 }));
+
+// زر "إرسال رسالة" من تفاصيل الطلب: يفتح النافذة مع قائمة القوالب القابلة للاختيار
+document.getElementById('sendMsgBtn').addEventListener('click',()=>{
+  const b=selBooking();
+  if(!b)return toast('اختاري طلباً أولاً');
+  const picker=document.getElementById('tplPicker');
+  picker.style.display='block';
+  const fill=()=>{document.getElementById('messagePreview').textContent=TPL[picker.value](selBooking()||{});};
+  picker.onchange=fill;
+  document.getElementById('modalTitle').textContent='إرسال رسالة إلى '+(b.client_name||'الزبون');
+  fill();
+  modal.classList.add('open');
+});
 document.getElementById('closeModal').addEventListener('click',()=>modal.classList.remove('open'));
 modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
 document.getElementById('copyMessage').addEventListener('click',async()=>{
