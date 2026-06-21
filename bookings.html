@@ -131,6 +131,34 @@ a{text-decoration:none;color:inherit}
 .toast{position:fixed;bottom:24px;left:24px;z-index:999;border:1px solid rgba(159,187,164,.26);background:rgba(12,11,15,.86);backdrop-filter:blur(20px);color:var(--text);border-radius:14px;padding:14px 18px;box-shadow:0 18px 54px rgba(0,0,0,.45);transform:translateY(140%);opacity:0;transition:var(--tr)}
 .toast.show{transform:translateY(0);opacity:1}
 
+/* PIPELINE */
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:20px 22px 24px}
+.pipe-step{border:1px solid var(--border);background:rgba(12,11,15,.42);border-radius:16px;padding:14px;min-height:105px}
+.pipe-num{font-family:'DIN Nums',var(--font-ar);color:var(--accent-light);font-size:1.4rem;line-height:1;margin-bottom:8px}
+.pipe-title{color:var(--text);font-size:.84rem;margin-bottom:3px}
+.pipe-sub{color:var(--text-muted);font-size:.7rem}
+
+/* TEMPLATES */
+.templates{display:grid;gap:12px;padding:20px 22px 24px}
+.template-card{border:1px solid var(--border);background:rgba(22,24,24,.72);border-radius:16px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;transition:var(--tr)}
+.template-card:hover{border-color:rgba(159,187,164,.28);background:rgba(120,144,124,.06)}
+.template-title{font-size:.9rem;color:var(--text)}
+.template-desc{color:var(--text-muted);font-size:.75rem;margin-top:3px}
+
+/* TIMELINE */
+.timeline{display:grid;gap:10px}
+.tl-item{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;color:var(--text-dim);font-size:.78rem}
+.tl-dot{width:22px;height:22px;border-radius:50%;border:1px solid rgba(159,187,164,.28);background:rgba(120,144,124,.08);display:flex;align-items:center;justify-content:center;font-family:'DIN Nums',var(--font-ar);color:var(--accent-light);font-size:.7rem}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:800;background:rgba(5,5,8,.78);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:22px}
+.modal-overlay.open{display:flex}
+.modal{width:min(680px,100%);max-height:86vh;overflow:auto;border:1px solid rgba(159,187,164,.25);background:linear-gradient(145deg,rgba(22,24,24,.98),rgba(12,11,15,.98));border-radius:20px;box-shadow:0 60px 140px rgba(0,0,0,.75)}
+.modal-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.modal-title{font-size:1.1rem}
+.modal-body{padding:24px}
+.message-preview{background:rgba(12,11,15,.55);border:1px solid var(--border);border-radius:16px;padding:18px;color:var(--text-dim);line-height:1.9;white-space:pre-line;font-size:.9rem}
+
 @media(max-width:1280px){
   .app{grid-template-columns:86px 1fr}
   .sidebar{padding:22px 14px;align-items:center}
@@ -180,7 +208,10 @@ a{text-decoration:none;color:inherit}
       <div class="side-label">Workspace</div>
       <nav class="nav">
         <div class="nav-item active" data-view="requests"><span><i>01</i> الطلبات</span><span class="nav-count" id="navReq">0</span></div>
-        <div class="nav-item" data-view="slots"><span><i>02</i> المواعيد المقفلة</span><span class="nav-count" id="navSlots">0</span></div>
+        <div class="nav-item" data-scroll="pipelinePanel"><span><i>02</i> المسار</span></div>
+        <div class="nav-item" data-scroll="templatesPanel"><span><i>03</i> الرسائل</span></div>
+        <div class="nav-item" data-scroll="settingsPanel"><span><i>04</i> الإعدادات</span></div>
+        <div class="nav-item" data-view="slots"><span><i>05</i> المواعيد المقفلة</span><span class="nav-count" id="navSlots">0</span></div>
       </nav>
     </div>
     <div class="side-card">
@@ -197,6 +228,7 @@ a{text-decoration:none;color:inherit}
         <h1 class="top-title">لوحة إدارة الحجوزات</h1>
       </div>
       <div class="top-actions">
+        <button class="btn btn-ghost" id="dailyBtn">📊 تقرير اليوم</button>
         <button class="btn btn-ghost" id="refreshBtn">🔄 تحديث</button>
         <button class="btn btn-outline" id="exportBtn">⬇ تصدير Excel</button>
       </div>
@@ -212,7 +244,23 @@ a{text-decoration:none;color:inherit}
     <!-- REQUESTS VIEW -->
     <div class="dashboard-grid" id="viewRequests">
       <div class="left-col">
-        <section class="panel">
+        <section class="panel" id="pipelinePanel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">مسار تشغيل الطلب</h2>
+              <p class="panel-sub">تصوّر مبسّط لحالة الطلب من لحظة الإرسال حتى المتابعة.</p>
+            </div>
+          </div>
+          <div class="pipeline">
+            <div class="pipe-step"><div class="pipe-num">01</div><h3 class="pipe-title">طلب جديد</h3><p class="pipe-sub">يدخل من نموذج الموقع.</p></div>
+            <div class="pipe-step"><div class="pipe-num">02</div><h3 class="pipe-title">مراجعة ملاءمة</h3><p class="pipe-sub">فرز العميل والمسار.</p></div>
+            <div class="pipe-step"><div class="pipe-num">03</div><h3 class="pipe-title">قبول ودفع</h3><p class="pipe-sub">إرسال رابط الدفع.</p></div>
+            <div class="pipe-step"><div class="pipe-num">04</div><h3 class="pipe-title">تأكيد الموعد</h3><p class="pipe-sub">رابط الاجتماع والتحضير.</p></div>
+            <div class="pipe-step"><div class="pipe-num">05</div><h3 class="pipe-title">ملخص متابعة</h3><p class="pipe-sub">ملاحظات ما بعد الاستشارة.</p></div>
+          </div>
+        </section>
+
+        <section class="panel" id="requestsPanel">
           <div class="panel-head">
             <div>
               <h2 class="panel-title">طلبات الاستشارة</h2>
@@ -230,6 +278,58 @@ a{text-decoration:none;color:inherit}
             </select>
           </div>
           <div class="requests-list" id="requestsList"><div class="empty">جارٍ التحميل...</div></div>
+        </section>
+
+        <section class="panel" id="templatesPanel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">قوالب الرسائل الجاهزة</h2>
+              <p class="panel-sub">رسائل مهنية يمكن إرسالها بعد تعديل بسيط حسب حالة العميل. تُملأ تلقائياً باسم الطلب المختار.</p>
+            </div>
+          </div>
+          <div class="templates">
+            <div class="template-card">
+              <div><h3 class="template-title">تأكيد استلام الطلب</h3><p class="template-desc">رسالة ترحيب بعد وصول الطلب.</p></div>
+              <button class="btn btn-ghost" style="width:auto" data-template="received">معاينة</button>
+            </div>
+            <div class="template-card">
+              <div><h3 class="template-title">تأكيد الموعد والتعليمات</h3><p class="template-desc">بعد تأكيد الحجز وتثبيت الوقت.</p></div>
+              <button class="btn btn-ghost" style="width:auto" data-template="confirm">معاينة</button>
+            </div>
+            <div class="template-card">
+              <div><h3 class="template-title">طلب معلومات إضافية</h3><p class="template-desc">عندما تكون التفاصيل ناقصة أو غير واضحة.</p></div>
+              <button class="btn btn-ghost" style="width:auto" data-template="more">معاينة</button>
+            </div>
+            <div class="template-card">
+              <div><h3 class="template-title">اعتذار مهذّب عن الموعد</h3><p class="template-desc">عند إلغاء أو تعذّر الموعد.</p></div>
+              <button class="btn btn-ghost" style="width:auto" data-template="reject">معاينة</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="settingsPanel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">إعدادات تشغيل الاستشارات</h2>
+              <p class="panel-sub">المرجع التشغيلي للأيام والأوقات وقواعد القبول.</p>
+            </div>
+          </div>
+          <div style="padding:20px 22px 24px;display:grid;gap:16px">
+            <div class="info-grid">
+              <div class="info-box"><div class="info-label">أيام الاستشارات</div><div class="info-value">السبت / الثلاثاء / الخميس</div></div>
+              <div class="info-box"><div class="info-label">الأوقات المتاحة</div><div class="info-value" style="direction:ltr">6:00 — 9:00 م</div></div>
+              <div class="info-box"><div class="info-label">Buffer بين الجلسات</div><div class="info-value">30 دقيقة</div></div>
+              <div class="info-box"><div class="info-label">طريقة الحجز</div><div class="info-value">طلب → مراجعة → تأكيد</div></div>
+            </div>
+            <div class="template-card">
+              <div><h3 class="template-title">قواعد القبول</h3><p class="template-desc">يتم توضيح أو رفض الطلبات التي تبحث عن توصيات شراء/بيع مباشرة، إدارة حسابات، أو وعود أرباح.</p></div>
+              <button class="btn btn-ghost" style="width:auto" data-template="rules">عرض القواعد</button>
+            </div>
+            <div class="template-card">
+              <div><h3 class="template-title">قنوات التواصل</h3><p class="template-desc">واتساب للتأكيدات السريعة، الإيميل للملخصات الرسمية.</p></div>
+              <button class="btn btn-ghost" style="width:auto" data-template="channels">عرض القنوات</button>
+            </div>
+          </div>
         </section>
       </div>
 
@@ -268,6 +368,10 @@ a{text-decoration:none;color:inherit}
                 <button class="btn btn-danger" data-act="cancelled">إلغاء الحجز</button>
               </div>
             </div>
+            <div>
+              <div class="msg-label">Activity Timeline</div>
+              <div class="timeline" id="dTimeline"></div>
+            </div>
           </div>
         </section>
       </aside>
@@ -294,6 +398,22 @@ a{text-decoration:none;color:inherit}
     </div>
   </main>
 </div>
+</div>
+
+<div class="modal-overlay" id="messageModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 class="modal-title" id="modalTitle">معاينة الرسالة</h3>
+      <button class="btn btn-ghost" id="closeModal" style="width:auto">إغلاق</button>
+    </div>
+    <div class="modal-body">
+      <div class="message-preview" id="messagePreview"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-green" style="width:auto" id="copyMessage">نسخ النص</button>
+        <button class="btn btn-outline" style="width:auto" id="waMessage">إرسال عبر واتساب</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast">تم</div>
@@ -387,6 +507,13 @@ function renderDetail(){
   document.getElementById('dMessage').textContent=b.message||'—';
   const created=b.created_at?new Date(b.created_at).toLocaleString('ar-EG'):'';
   document.getElementById('dTags').innerHTML=`<span class="chip">${esc(b.client_phone||'')}</span>${created?`<span class="chip">${esc(created)}</span>`:''}`;
+  // Activity Timeline مبني على حالة الطلب الفعلية
+  const tl=['تم استلام الطلب من نموذج الموقع'];
+  const st=(b.status||'pending');
+  if(st==='pending')tl.push('بانتظار المراجعة والقرار');
+  if(st==='confirmed')tl.push('تمت مراجعة الطلب','تم تأكيد الحجز وتثبيت الموعد');
+  if(st==='cancelled')tl.push('تمت مراجعة الطلب','تم إلغاء الحجز وتحرير الموعد');
+  document.getElementById('dTimeline').innerHTML=tl.map((x,i)=>`<div class="tl-item"><div class="tl-dot">${i+1}</div><div>${esc(x)}</div></div>`).join('');
 }
 async function setStatus(status){
   const b=_all.find(x=>String(x.id)===String(_selId));
@@ -475,6 +602,96 @@ document.getElementById('exportBtn').addEventListener('click',()=>{
   const csv='﻿'+[head.join(','),...rows].join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='bookings.csv';a.click();
 });
+
+// ── MODAL & TEMPLATES ──
+const modal=document.getElementById('messageModal');
+function selBooking(){return _all.find(x=>String(x.id)===String(_selId))||null;}
+function openModal(title,msg){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('messagePreview').textContent=msg;
+  modal.classList.add('open');
+}
+const TPL={
+  received:b=>`مرحباً ${b.client_name||''}،
+
+شكراً لإرسال طلب الاستشارة (${b.consultation_type||'استشارة'}).
+
+تم استلام طلبك وسيتم مراجعته وتحديد الخطوة التالية قريباً. ستصلك تفاصيل تأكيد الموعد على بريدك الإلكتروني.
+
+تنويه: الاستشارة تعليمية وتحليلية، ولا تتضمن توصيات شراء أو بيع مباشرة، ولا إدارة حساب، ولا ضمان أرباح.`,
+  confirm:b=>`مرحباً ${b.client_name||''}،
+
+يسعدنا تأكيد موعد استشارتك:
+الجلسة: ${b.consultation_type||'استشارة'}
+الموعد: ${b.time||b.date||'سيتم تأكيده'}
+
+يرجى الانضمام قبل الموعد بخمس دقائق. سيصلك رابط الاجتماع وتعليمات التحضير قبل الجلسة.`,
+  more:b=>`مرحباً ${b.client_name||''}،
+
+حتى نتمكن من تحديد المسار الأنسب لك، نحتاج توضيحاً مختصراً حول:
+1. ما أكثر خطأ يتكرر معك أثناء التداول؟
+2. هل لديك قواعد مكتوبة لإدارة رأس المال؟
+3. هل تبحث عن فهم وتحليل، أم توصيات دخول وخروج مباشرة؟
+
+بعد استلام إجابتك تتم مراجعة الطلب وتحديد الخطوة التالية.`,
+  reject:b=>`مرحباً ${b.client_name||''}،
+
+نعتذر، تعذّر تثبيت الموعد المطلوب في هذا الوقت، وقد تم تحرير الوقت لإتاحته من جديد.
+
+يمكنك إعادة اختيار موعد آخر متاح من صفحة الاستشارات. شكراً لتفهمك.`,
+  rules:()=>`قواعد قبول الطلبات:
+
+طلبات مناسبة:
+- العميل يريد فهم أخطائه.
+- العميل يريد ضبط إدارة المخاطر.
+- العميل يريد قراءة السياق الاقتصادي.
+
+طلبات تحتاج توضيح أو رفض:
+- طلب توصيات شراء وبيع مباشرة.
+- طلب إدارة حساب.
+- طلب أرباح مضمونة.`,
+  channels:()=>`قنوات التواصل المقترحة:
+
+- WhatsApp: تأكيدات سريعة وتذكير قبل الموعد.
+- Email: رسائل رسمية وملخصات ما بعد الاستشارة.`
+};
+document.querySelectorAll('[data-template]').forEach(btn=>btn.addEventListener('click',()=>{
+  const key=btn.dataset.template;const b=selBooking();
+  if(['received','confirm','more','reject'].includes(key)&&!b)return toast('اختاري طلباً أولاً');
+  openModal(btn.closest('.template-card')?.querySelector('.template-title')?.textContent||'معاينة الرسالة',TPL[key](b||{}));
+}));
+document.getElementById('closeModal').addEventListener('click',()=>modal.classList.remove('open'));
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+document.getElementById('copyMessage').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText(document.getElementById('messagePreview').textContent);toast('تم نسخ النص');}
+  catch(e){toast('انسخي النص يدوياً');}
+});
+document.getElementById('waMessage').addEventListener('click',()=>{
+  const b=selBooking();const txt=document.getElementById('messagePreview').textContent;
+  const ph=(b&&b.client_phone||'').replace(/[^0-9]/g,'');
+  window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(txt),'_blank');
+});
+
+// ── DAILY REPORT ──
+document.getElementById('dailyBtn').addEventListener('click',()=>{
+  const c=s=>_all.filter(b=>(b.status||'pending')===s).length;
+  openModal('تقرير اليوم',`ملخص الطلبات:
+
+- قيد المراجعة: ${c('pending')}
+- مؤكدة: ${c('confirmed')}
+- ملغاة: ${c('cancelled')}
+- الإجمالي: ${_all.length}
+
+الأولوية المقترحة: مراجعة الطلبات قيد الانتظار وتأكيد المواعيد المناسبة.`);
+});
+
+// ── NAV SCROLL ──
+document.querySelectorAll('.nav-item[data-scroll]').forEach(n=>n.addEventListener('click',()=>{
+  // تأكد أننا في عرض الطلبات
+  document.querySelector('.nav-item[data-view="requests"]').click();
+  const el=document.getElementById(n.dataset.scroll);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}));
 </script>
 </body>
 </html>
