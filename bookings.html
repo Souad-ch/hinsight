@@ -408,10 +408,15 @@ a{text-decoration:none;color:inherit}
     </div>
     <div class="modal-body">
       <div class="message-preview" id="messagePreview"></div>
-      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
-        <button class="btn btn-green" style="width:auto" id="copyMessage">نسخ النص</button>
-        <button class="btn btn-outline" style="width:auto" id="waMessage">إرسال عبر واتساب</button>
+      <div style="margin-top:16px">
+        <input class="login-input" id="emailSubject" style="text-align:right;margin-bottom:10px" placeholder="عنوان الإيميل (Subject)" value="بخصوص استشارتك مع Hanadi Insights"/>
       </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-green" style="width:auto" id="emailMessage">✉ إرسال عبر الإيميل</button>
+        <button class="btn btn-outline" style="width:auto" id="waMessage">إرسال عبر واتساب</button>
+        <button class="btn btn-ghost" style="width:auto" id="copyMessage">نسخ النص</button>
+      </div>
+      <div id="emailStatus" style="font-size:.78rem;margin-top:10px;display:none"></div>
     </div>
   </div>
 </div>
@@ -419,8 +424,16 @@ a{text-decoration:none;color:inherit}
 <div class="toast" id="toast">تم</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 const sb=supabase.createClient('https://ozxwyyeyxmpkhsygntoy.supabase.co','sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG');
+
+// ── EmailJS (إرسال الرسائل من اللوحة مباشرة) ──
+const EJS_PUBLIC_KEY='6NHm0wz_2eclb5bbW';
+const EJS_SERVICE_ID='service_c8o89cr';
+// قالب رسالة عامة: أنشئيه في EmailJS بالحقول {{to_email}} {{to_name}} {{subject}} {{message}}
+const EJS_MANUAL_TEMPLATE_ID='template_manual';
+if(window.emailjs)emailjs.init(EJS_PUBLIC_KEY);
 
 // ── AUTH ──
 function showLogin(){document.getElementById('loginScreen').style.display='flex';document.getElementById('app').style.display='none';}
@@ -679,6 +692,27 @@ document.getElementById('waMessage').addEventListener('click',()=>{
   const b=selBooking();const txt=document.getElementById('messagePreview').textContent;
   const ph=(b&&b.client_phone||'').replace(/[^0-9]/g,'');
   window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(txt),'_blank');
+});
+document.getElementById('emailMessage').addEventListener('click',async()=>{
+  const b=selBooking();
+  const status=document.getElementById('emailStatus');
+  const showS=(t,ok)=>{status.style.display='block';status.style.color=ok?'#a7d0b1':'#e0ada7';status.textContent=t;};
+  if(!b||!b.client_email){showS('⚠ لا يوجد بريد إلكتروني لهذا الطلب.',false);return;}
+  if(!window.emailjs){showS('⚠ خدمة الإيميل غير محمّلة. أعيدي تحميل الصفحة.',false);return;}
+  const txt=document.getElementById('messagePreview').textContent;
+  const subject=document.getElementById('emailSubject').value.trim()||'رسالة من Hanadi Insights';
+  const btn=document.getElementById('emailMessage');btn.disabled=true;btn.textContent='جارٍ الإرسال...';
+  try{
+    await emailjs.send(EJS_SERVICE_ID,EJS_MANUAL_TEMPLATE_ID,{
+      to_email:b.client_email,email:b.client_email,
+      to_name:b.client_name||'',name:b.client_name||'',
+      subject:subject,message:txt,reply_to:''
+    });
+    showS('✅ تم إرسال الإيميل إلى '+b.client_email,true);
+  }catch(e){
+    console.error('email send error:',e);
+    showS('⚠ تعذّر الإرسال: '+((e&&(e.text||e.message))||'تأكدي من إنشاء القالب template_manual في EmailJS'),false);
+  }finally{btn.disabled=false;btn.textContent='✉ إرسال عبر الإيميل';}
 });
 
 // ── DAILY REPORT ──
