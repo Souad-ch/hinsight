@@ -912,6 +912,20 @@ a:hover>.hub-clickable{border-color:rgba(120,144,124,0.5);}
 
 <!-- QUICK INSIGHTS / Q&A -->
 <section class="section" id="notes">
+<style>
+#faqGrid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;max-width:1000px;margin:0 auto;}
+#faqPills{display:none;}
+@media(max-width:700px){
+  #faqGrid{grid-template-columns:1fr;gap:0;}
+  #faqAnswerWrap{position:static!important;top:auto!important;order:2;}
+  #faqList{display:none!important;}
+  #faqPills{display:flex;gap:10px;overflow-x:auto;padding-bottom:14px;scrollbar-width:none;margin-bottom:24px;order:1;-webkit-overflow-scrolling:touch;}
+  #faqPills::-webkit-scrollbar{display:none;}
+  .faq-pill{flex-shrink:0;border:1px solid rgba(201,178,123,.2);border-radius:999px;padding:9px 16px;font-size:.78rem;color:var(--text-dim);cursor:pointer;background:rgba(22,20,14,.8);white-space:nowrap;transition:.25s;}
+  .faq-pill.active{background:rgba(201,178,123,.1);border-color:rgba(201,178,123,.55);color:var(--gold);}
+  #faqCard{padding:28px 20px!important;}
+}
+</style>
 <div class="container">
 <div class="section-head reveal" style="text-align:center;margin-bottom:60px;">
   <div style="font-family:var(--font-en);font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-light);margin-bottom:18px;">HANADI INSIGHTS</div>
@@ -920,7 +934,14 @@ a:hover>.hub-clickable{border-color:rgba(120,144,124,0.5);}
   <p style="color:var(--text-dim);font-size:.95rem;max-width:440px;margin:0 auto;">إجابات مختصرة توضّح فلسفة المنصة وحدود ما تقدمه.</p>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;max-width:1000px;margin:0 auto;">
+<div id="faqGrid">
+  <!-- mobile pills (hidden on desktop) -->
+  <div id="faqPills">
+    <div class="faq-pill active" data-q="0">01 — هل تقدم هنادي توصيات؟</div>
+    <div class="faq-pill" data-q="1">02 — التحليل والاستشارة</div>
+    <div class="faq-pill" data-q="2">03 — للمبتدئين؟</div>
+    <div class="faq-pill" data-q="3">04 — السياسة والاقتصاد</div>
+  </div>
   <!-- answer card (left) -->
   <div style="position:sticky;top:100px;" id="faqAnswerWrap" class="reveal">
     <div id="faqCard" style="background:linear-gradient(145deg,rgba(22,20,14,.95),rgba(14,13,10,.98));border:1px solid rgba(201,178,123,.22);border-radius:20px;padding:40px 36px;min-height:280px;position:relative;overflow:hidden;">
@@ -1001,6 +1022,13 @@ a:hover>.hub-clickable{border-color:rgba(120,144,124,0.5);}
   }
   document.querySelectorAll('.faq-row').forEach((r,idx)=>{
     r.addEventListener('click',()=>setFaq(idx));
+  });
+  document.querySelectorAll('.faq-pill').forEach((p,idx)=>{
+    p.addEventListener('click',()=>{
+      document.querySelectorAll('.faq-pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      setFaq(idx);
+    });
   });
   // activate first bar
   const b=document.getElementById('faqBar0');if(b)b.style.opacity='1';
