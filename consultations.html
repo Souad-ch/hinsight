@@ -746,8 +746,8 @@ const ADMIN_EMAIL='souchamaa35@gmail.com';
 (function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';s.onload=function(){emailjs.init(EJS_PUBLIC_KEY);};document.head.appendChild(s);})();
 
 // Supabase
-const SB_URL='https://nfbzwwxnzcpdqwgptqhq.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5mYnp3d3huemNwZHF3Z3B0cWhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2NTEwMzIsImV4cCI6MjA2NDIyNzAzMn0.NeGhDVAL8P_IFPggxBE79VPVVDiIWv_Ov4E8rVF3TLg';
+const SB_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
+const SB_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
 let sbClient=null;
 (function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';s.onload=function(){sbClient=supabase.createClient(SB_URL,SB_KEY);};document.head.appendChild(s);})();
 
@@ -892,6 +892,8 @@ iNext.addEventListener('click',async()=>{
   const goal=document.getElementById('iGoal').value.trim();
   const when=`${iState.day} ${iState.time}`;
   const dateStr=new Date().toLocaleDateString('ar-EG');
+  const reqNum=Math.floor(1000+Math.random()*9000);
+  const reqCode='HN-REQUEST-'+reqNum;
 
   // Supabase
   try{
@@ -899,7 +901,7 @@ iNext.addEventListener('click',async()=>{
       await sbClient.from('bookings').insert({
         client_name:name,client_phone:phone,client_email:email,
         consultation_type:type,
-        message:`الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
+        message:`${reqCode} | الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
         date:null,time:iState.time||null,status:'pending'
       });
     }
@@ -919,7 +921,8 @@ iNext.addEventListener('click',async()=>{
         from_name:name,phone:phone,from_email:email,
         session:type,consultation_type:type,
         appointment:`${iState.day} — ${iState.time}`,
-        message:`مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
+        request_code:reqCode,
+        message:`رقم الطلب: ${reqCode} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
         date:iState.day,time:iState.time,day:iState.day,to_email:ADMIN_EMAIL,reply_to:email
       });
     }
@@ -934,13 +937,14 @@ iNext.addEventListener('click',async()=>{
         consultation_type:type,session:type,type:type,
         phone:phone,message:`${type} — الموعد المبدئي: ${when}`,
         appt_date:iState.day,appt_time:iState.time,
+        request_code:reqCode,
         date:iState.day,time:iState.time,day:iState.day,
         reply_to:ADMIN_EMAIL
       });
     }
   }catch(e){console.warn('emailjs confirm:',e);}
 
-  document.getElementById('iRequestCode').textContent=Math.floor(1000+Math.random()*9000);
+  document.getElementById('iRequestCode').textContent=reqNum;
   iState.step=5;iUpdateUI();
   iNext.disabled=false;iNext.innerHTML='التالي';
 });
