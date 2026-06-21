@@ -911,8 +911,8 @@ iNext.addEventListener('click',async()=>{
       const row={
         client_name:name,client_email:email,
         consultation_type:type,
-        message:`${reqCode} | الهاتف: ${phone} | الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
-        date:null,time:iState.time||null,status:'pending'
+        message:`${reqCode} | الهاتف: ${phone} | اليوم المطلوب: ${iState.day} | الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
+        date:new Date().toISOString().slice(0,10),time:(iState.day?iState.day+' — ':'')+(iState.time||''),status:'pending'
       };
       // إدخال أولي يحاول مع عمود الهاتف، وإذا غير موجود يعيد المحاولة بدونه
       let bkErr;
