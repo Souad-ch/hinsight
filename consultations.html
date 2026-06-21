@@ -919,7 +919,7 @@ iNext.addEventListener('click',async()=>{
         from_name:name,phone:phone,from_email:email,
         session:type,consultation_type:type,
         message:`طلب استشارة جديد (${type}) — الموعد المبدئي: ${when} — مستوى: ${exp}، سوق: ${market}، تحدي: ${challenge}${goal?' — '+goal:''}`,
-        date:dateStr+' / '+when,to_email:ADMIN_EMAIL,reply_to:email
+        date:iState.day,time:iState.time,day:iState.day,to_email:ADMIN_EMAIL,reply_to:email
       });
     }
   }catch(e){console.warn('emailjs admin:',e);}
@@ -931,7 +931,8 @@ iNext.addEventListener('click',async()=>{
         to_name:name,name:name,client_name:name,
         to_email:email,email:email,
         consultation_type:type,session:type,type:type,
-        phone:phone,message:`${type} — الموعد المبدئي: ${when}`,date:when,
+        phone:phone,message:`${type} — الموعد المبدئي: ${when}`,
+        date:iState.day,time:iState.time,day:iState.day,
         reply_to:ADMIN_EMAIL
       });
     }
