@@ -159,13 +159,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .receive-title{font-size:.98rem;margin-bottom:4px}
 .receive-text{font-size:.84rem;color:var(--text-dim);line-height:1.75}
 .note-card{background:linear-gradient(145deg,#151717,#0c0c10);border:1px solid rgba(159,187,164,.24);border-radius:16px;padding:30px;min-height:100%;position:relative;overflow:hidden}
-.note-card::before{content:'SESSION NOTE';position:absolute;bottom:-16px;left:18px;font-family:var(--font-en);font-size:3.1rem;color:rgba(120,144,124,.05);letter-spacing:.1em}
-.note-title{font-size:1.28rem;margin-bottom:16px}
-.note-lines{display:grid;gap:12px;margin-top:20px;position:relative;z-index:1}
-.note-line{height:12px;border-radius:999px;background:linear-gradient(90deg,rgba(120,144,124,.18),rgba(120,144,124,.05))}
-.note-line:nth-child(2){width:84%}
-.note-line:nth-child(3){width:64%}
-.note-line:nth-child(4){width:76%}
+.note-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.note-stamp{font-family:var(--font-en);font-size:.66rem;letter-spacing:.18em;color:var(--accent-light);border:1px solid rgba(159,187,164,.24);background:rgba(120,144,124,.06);border-radius:999px;padding:5px 12px}
+.note-title{font-size:1.28rem;margin-bottom:14px}
+.note-list{list-style:none;display:grid;gap:14px;margin-top:24px;position:relative;z-index:1}
+.note-list li{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:rgba(12,11,15,.4);transition:var(--tr)}
+.note-list li:hover{border-color:rgba(120,144,124,.32);transform:translateX(-3px)}
+.note-check{width:26px;height:26px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:#0b0b0e;font-size:.8rem;font-weight:800;box-shadow:0 4px 12px rgba(120,144,124,.25)}
+.note-list b{display:block;font-size:.92rem;color:var(--text);margin-bottom:3px}
+.note-list span{display:block;font-size:.82rem;color:var(--text-dim);line-height:1.7}
 
 /* BOOKING CTA */
 .booking-cta{margin-top:46px;border:1px solid rgba(159,187,164,.24);border-radius:18px;padding:42px;background:linear-gradient(135deg,rgba(120,144,124,.07),rgba(12,11,15,.25));display:flex;align-items:center;justify-content:space-between;gap:28px;animation:glowPulse 4.5s ease-in-out infinite}
@@ -489,10 +491,17 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         </div>
       </div>
       <div class="note-card reveal">
-        <span class="section-label en">Session Note</span>
+        <div class="note-head">
+          <span class="section-label en" style="margin-bottom:0">Session Note</span>
+          <span class="note-stamp en">HN-2025</span>
+        </div>
         <h3 class="note-title">ملخص استشاري أنيق بعد الجلسة</h3>
-        <p class="section-subtitle" style="font-size:.93rem">يتضمن أهم النقاط التي تم التوقف عندها، الأخطاء أو المخاطر الأبرز، ومحاور المتابعة التعليمية المناسبة.</p>
-        <div class="note-lines"><span class="note-line"></span><span class="note-line"></span><span class="note-line"></span><span class="note-line"></span></div>
+        <p class="section-subtitle" style="font-size:.93rem;max-width:none">يتضمن أهم النقاط التي تم التوقف عندها، الأخطاء أو المخاطر الأبرز، ومحاور المتابعة التعليمية المناسبة.</p>
+        <ul class="note-list">
+          <li><span class="note-check">✓</span><div><b>أبرز نقطة في الجلسة</b><span>تشخيص واضح لمصدر القرار المتسرّع.</span></div></li>
+          <li><span class="note-check">✓</span><div><b>المخاطر الأساسية</b><span>حجم دخول أكبر من حدود الحساب.</span></div></li>
+          <li><span class="note-check">✓</span><div><b>خطوة المتابعة</b><span>قاعدة توقف يومية بعد خسارتين متتاليتين.</span></div></li>
+        </ul>
       </div>
     </div>
     <div class="booking-cta reveal">
