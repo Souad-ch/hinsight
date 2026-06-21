@@ -127,13 +127,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .pkg-name{font-size:1.18rem;margin-bottom:8px}
 .pkg-for{display:block;font-size:.8rem;color:var(--gold);margin-bottom:14px}
 .pkg-desc{font-size:.87rem;color:var(--text-dim);line-height:1.85;margin-bottom:18px}
+.pkg-price{display:flex;align-items:baseline;gap:8px;margin:2px 0 16px;padding-bottom:16px;border-bottom:1px dashed var(--line)}
+.pkg-price .amount{font-family:Georgia,serif;font-size:1.9rem;font-weight:700;color:var(--accent-light);direction:ltr;letter-spacing:.01em}
+.pkg-price .per{font-size:.8rem;color:var(--text-muted)}
+.vip-package .pkg-price .amount{color:var(--gold)}
 .pkg-list{list-style:none;display:grid;gap:10px;margin:8px 0 22px}
 .pkg-list li{font-size:.82rem;color:var(--text-dim);display:flex;gap:9px;align-items:flex-start}
 .pkg-list li::before{content:'•';color:var(--accent-light);font-size:1rem;line-height:1.2}
 .pkg-footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:17px;color:var(--text-muted);font-size:.78rem}
 .package-card .btn{margin-top:18px;width:100%}
 .vip-package{border-color:rgba(201,178,123,.28)!important;background:linear-gradient(145deg,rgba(22,24,24,.82),rgba(18,17,16,.88))!important}
-.vip-package::before{background:linear-gradient(270deg,var(--gold),var(--accent-light),transparent)!important;transform:scaleX(1)!important}
+.vip-package::before{inset:auto!important;top:0;right:0;left:0;height:2px!important;background:linear-gradient(270deg,var(--gold),rgba(201,178,123,.3),transparent)!important;opacity:1!important;transform:none!important}
+.vip-package:hover::before{opacity:1!important}
 .vip-package .pkg-code,.vip-package .pkg-for{color:var(--gold)!important}
 .vip-package .pkg-icon{border-color:rgba(201,178,123,.36)!important;color:var(--gold)!important;background:rgba(201,178,123,.08)!important}
 .vip-package:hover{box-shadow:0 28px 70px rgba(0,0,0,.54),0 0 54px rgba(201,178,123,.08)!important}
@@ -215,6 +220,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .summary-value{font-size:.86rem;color:var(--text-dim);line-height:1.7}
 .consent{display:flex;gap:10px;align-items:flex-start;color:var(--text-dim);font-size:.8rem;line-height:1.7;margin-top:16px}
 .consent input{margin-top:7px;accent-color:var(--accent)}
+.dt-label{font-size:.84rem;color:var(--accent-light);font-family:var(--font-en);letter-spacing:.06em;margin:22px 0 12px;display:block}
+.dt-label:first-of-type{margin-top:6px}
+.day-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.day-pill{border:1px solid var(--border);background:rgba(12,11,15,.45);border-radius:12px;padding:16px 10px;text-align:center;cursor:pointer;transition:var(--tr)}
+.day-pill b{display:block;font-size:.98rem;color:var(--text);margin-bottom:3px}
+.day-pill span{display:block;font-size:.72rem;color:var(--text-muted);font-family:var(--font-en)}
+.day-pill:hover,.day-pill.selected{border-color:var(--accent);background:rgba(120,144,124,.1);transform:translateY(-2px)}
+.day-pill.selected b{color:var(--accent-light)}
+.slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.slot{border:1px solid var(--border);background:rgba(12,11,15,.45);border-radius:10px;padding:13px 6px;text-align:center;cursor:pointer;transition:var(--tr);font-family:var(--font-en);font-size:.9rem;color:var(--text);letter-spacing:.02em}
+.slot:hover,.slot.selected{border-color:var(--accent);background:rgba(120,144,124,.1);color:var(--accent-light);transform:translateY(-2px)}
+.dt-hint{font-size:.78rem;color:var(--text-muted);margin-top:14px;line-height:1.7;display:flex;gap:7px;align-items:flex-start}
+.dt-hint::before{content:'◷';color:var(--accent-light)}
 .modal-actions{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:30px}
 .modal-actions .left-actions{display:flex;gap:10px}
 .success-panel{text-align:center;padding:42px 10px}
@@ -396,13 +414,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         <div class="pkg-icon">◉</div>
         <h3 class="pkg-name">تقييم المتداول</h3>
         <span class="pkg-for">مناسب كبداية</span>
+        <div class="pkg-price"><span class="amount">$250</span><span class="per">/ ٣٠ دقيقة</span></div>
         <p class="pkg-desc">مراجعة طريقة التفكير، الأخطاء المتكررة، إدارة الخسارة والربح، ونمط اتخاذ القرار.</p>
         <ul class="pkg-list">
           <li>تشخيص نقاط الضعف السلوكية</li>
           <li>تحديد أسباب القرارات المتسرعة</li>
           <li>اقتراح إطار متابعة تعليمي</li>
         </ul>
-        <div class="pkg-footer"><span>60 min</span><span>تشخيص</span></div>
+        <div class="pkg-footer"><span>٣٠ دقيقة</span><span>تشخيص</span></div>
         <button class="btn btn-ghost" onclick="openIntakeModal('تقييم المتداول')">طلب هذا المسار</button>
       </article>
 
@@ -412,13 +431,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         <div class="pkg-icon">◈</div>
         <h3 class="pkg-name">هندسة المخاطر</h3>
         <span class="pkg-for">الأكثر أهمية للمتداول الجاد</span>
+        <div class="pkg-price"><span class="amount">$400</span><span class="per">/ ٣٠ دقيقة</span></div>
         <p class="pkg-desc">بناء إطار واضح للمخاطرة: حجم الدخول، حدود الخسارة، التوقف، وتجنب الانتقام من السوق.</p>
         <ul class="pkg-list">
           <li>مراجعة نسبة المخاطرة المناسبة</li>
           <li>حدود يومية وأسبوعية للتوقف</li>
           <li>قواعد التعامل مع الخسائر المتتالية</li>
         </ul>
-        <div class="pkg-footer"><span>90 min</span><span>عمق عالٍ</span></div>
+        <div class="pkg-footer"><span>٣٠ دقيقة</span><span>عمق عالٍ</span></div>
         <button class="btn btn-ghost" onclick="openIntakeModal('جلسة إدارة مخاطر')">طلب هذا المسار</button>
       </article>
 
@@ -427,13 +447,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         <div class="pkg-icon">◎</div>
         <h3 class="pkg-name">قراءة المشهد الاقتصادي</h3>
         <span class="pkg-for">للمهتم بالسياق الأكبر</span>
+        <div class="pkg-price"><span class="amount">$600</span><span class="per">/ ٤٥ دقيقة</span></div>
         <p class="pkg-desc">فهم الذهب، الدولار، الفائدة، النفط، السيولة، وتحويل المشهد إلى سيناريوهات متابعة.</p>
         <ul class="pkg-list">
           <li>قراءة المؤثرات الكبرى</li>
           <li>تحديد ما يستحق المراقبة</li>
           <li>فصل الضجيج عن الإشارة المهمة</li>
         </ul>
-        <div class="pkg-footer"><span>90 min</span><span>Macro</span></div>
+        <div class="pkg-footer"><span>٤٥ دقيقة</span><span>Macro</span></div>
         <button class="btn btn-ghost" onclick="openIntakeModal('قراءة المشهد الاقتصادي')">طلب هذا المسار</button>
       </article>
 
@@ -443,14 +464,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         <div class="pkg-icon">◇</div>
         <h3 class="pkg-name">عضوية VIP الشهرية</h3>
         <span class="pkg-for">اشتراك شهري انتقائي</span>
-        <p class="pkg-desc">عضوية متابعة شهرية للمتداول الجاد، تتضمن جلسات منظمة لمراجعة تطور القرار والالتزام بإدارة المخاطر.</p>
+        <div class="pkg-price"><span class="amount">$1000</span><span class="per">/ ٤ جلسات شهرياً</span></div>
+        <p class="pkg-desc">عضوية متابعة شهرية للمتداول الجاد، تتضمن ٤ جلسات منظمة (٤٥ دقيقة لكل جلسة) لمراجعة تطور القرار والالتزام بإدارة المخاطر.</p>
         <ul class="pkg-list">
-          <li>٤ جلسات متابعة خلال الشهر</li>
+          <li>٤ جلسات متابعة خلال الشهر — ٤٥ دقيقة لكل جلسة</li>
           <li>مراجعة الالتزام بخطة المخاطر</li>
           <li>أسئلة محددة قبل كل جلسة</li>
           <li>أولوية في جدولة المواعيد</li>
         </ul>
-        <div class="pkg-footer"><span>Monthly</span><span>4 Sessions</span></div>
+        <div class="pkg-footer"><span>٤ جلسات شهرياً</span><span>٤٥ دقيقة/جلسة</span></div>
         <button class="btn btn-ghost" onclick="openIntakeModal('عضوية VIP الشهرية')">التقديم على عضوية VIP</button>
       </article>
     </div>
@@ -646,16 +668,39 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
           </div>
         </div>
 
-        <!-- STEP 3: Review -->
+        <!-- STEP 3: Day & Time -->
         <div class="modal-step" data-step="3">
+          <h3 class="modal-title">اختيار اليوم والوقت</h3>
+          <p class="modal-desc">المواعيد المتاحة أيام السبت والثلاثاء والخميس فقط، من الساعة ٦ حتى ٩ مساءً.</p>
+          <span class="dt-label">اليوم المتاح</span>
+          <div class="day-pills" id="iDays">
+            <div class="day-pill" data-day="السبت"><b>السبت</b><span>Saturday</span></div>
+            <div class="day-pill" data-day="الثلاثاء"><b>الثلاثاء</b><span>Tuesday</span></div>
+            <div class="day-pill" data-day="الخميس"><b>الخميس</b><span>Thursday</span></div>
+          </div>
+          <span class="dt-label">الوقت المتاح (مساءً)</span>
+          <div class="slot-grid" id="iSlots">
+            <div class="slot" data-slot="6:00 م">6:00</div>
+            <div class="slot" data-slot="6:30 م">6:30</div>
+            <div class="slot" data-slot="7:00 م">7:00</div>
+            <div class="slot" data-slot="7:30 م">7:30</div>
+            <div class="slot" data-slot="8:00 م">8:00</div>
+            <div class="slot" data-slot="8:30 م">8:30</div>
+            <div class="slot" data-slot="9:00 م">9:00</div>
+          </div>
+          <div class="dt-hint">جميع الأوقات بالتوقيت المحلي، والموعد مبدئي ويُثبَّت بعد مراجعة الطلب وتأكيد التوفر.</div>
+        </div>
+
+        <!-- STEP 4: Review -->
+        <div class="modal-step" data-step="4">
           <h3 class="modal-title">مراجعة الطلب</h3>
           <p class="modal-desc">قبل الإرسال، يرجى مراجعة الملخص والتأكيد على فهم طبيعة الاستشارة.</p>
           <div class="summary-box"><div class="summary-label">Request Summary</div><div class="summary-value" id="iSummary">—</div></div>
           <label class="consent"><input type="checkbox" id="iConsent" /> <span>أقرّ أن الاستشارة تعليمية وتحليلية ولا تتضمن توصيات شراء أو بيع مباشرة، ولا إدارة حساب، ولا ضمان أرباح.</span></label>
         </div>
 
-        <!-- STEP 4: Success -->
-        <div class="modal-step" data-step="4">
+        <!-- STEP 5: Success -->
+        <div class="modal-step" data-step="5">
           <div class="success-panel">
             <div class="success-icon">✓</div>
             <h3 class="success-title">تم استلام طلب الاستشارة</h3>
@@ -691,7 +736,7 @@ let sbClient=null;
 (function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';s.onload=function(){sbClient=supabase.createClient(SB_URL,SB_KEY);};document.head.appendChild(s);})();
 
 // INTAKE MODAL STATE
-let iState={step:1,service:''};
+let iState={step:1,service:'',day:'',time:''};
 const iModal=document.getElementById('intakeModal');
 const iSteps=[...document.querySelectorAll('.modal-step')];
 const iDots=[...document.querySelectorAll('.progress-dot')];
@@ -699,10 +744,11 @@ const iNext=document.getElementById('iNext');
 const iPrev=document.getElementById('iPrev');
 
 function openIntakeModal(service){
-  iState={step:1,service:service||''};
+  iState={step:1,service:service||'',day:'',time:''};
   document.querySelectorAll('.choice').forEach(c=>{
     c.classList.toggle('selected',c.dataset.choice===service);
   });
+  document.querySelectorAll('.day-pill,.slot').forEach(el=>el.classList.remove('selected'));
   document.getElementById('briefService').textContent=service||'لم يتم الاختيار بعد';
   document.getElementById('briefFocus').textContent='سيظهر ملخص موجز بعد الإجابات.';
   document.getElementById('briefFit').textContent='قيد تعبئة الطلب';
@@ -725,13 +771,29 @@ document.querySelectorAll('.choice').forEach(ch=>{
   });
 });
 
+// Day & time selection
+document.querySelectorAll('.day-pill').forEach(d=>{
+  d.addEventListener('click',()=>{
+    iState.day=d.dataset.day;
+    document.querySelectorAll('.day-pill').forEach(x=>x.classList.remove('selected'));
+    d.classList.add('selected');
+  });
+});
+document.querySelectorAll('.slot').forEach(s=>{
+  s.addEventListener('click',()=>{
+    iState.time=s.dataset.slot;
+    document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));
+    s.classList.add('selected');
+  });
+});
+
 function iUpdateUI(){
   iSteps.forEach(s=>s.classList.toggle('active',Number(s.dataset.step)===iState.step));
   iDots.forEach((d,i)=>d.classList.toggle('active',i<Math.min(iState.step,4)));
   iPrev.style.visibility=iState.step===1?'hidden':'visible';
-  iNext.textContent=iState.step===3?'إرسال الطلب':'التالي';
-  document.getElementById('iActions').style.display=iState.step===4?'none':'flex';
-  if(iState.step===3) iUpdateSummary();
+  iNext.textContent=iState.step===4?'إرسال الطلب':'التالي';
+  document.getElementById('iActions').style.display=iState.step===5?'none':'flex';
+  if(iState.step===4) iUpdateSummary();
 }
 
 function iUpdateSummary(){
@@ -739,9 +801,11 @@ function iUpdateSummary(){
   const exp=document.getElementById('iExp').value;
   const market=document.getElementById('iMarket').value;
   const challenge=document.getElementById('iChallenge').value;
+  const when=(iState.day&&iState.time)?`${iState.day} — ${iState.time}`:'لم يُحدَّد';
   const sum=document.getElementById('iSummary');
-  if(sum)sum.textContent=`${name} يطلب "${iState.service||'استشارة تحليلية'}"، المستوى: ${exp}، السوق: ${market}، التحدي: ${challenge}.`;
+  if(sum)sum.textContent=`${name} يطلب "${iState.service||'استشارة تحليلية'}"، المستوى: ${exp}، السوق: ${market}، التحدي: ${challenge}. الموعد المبدئي: ${when}.`;
   document.getElementById('briefService').textContent=iState.service||'—';
+  document.getElementById('briefFocus').textContent=`الموعد المبدئي: ${when}`;
 }
 
 function iValidate(){
@@ -759,6 +823,9 @@ function iValidate(){
     if(!ok){document.getElementById('briefFit').textContent='يرجى تعبئة جميع الحقول المطلوبة';return false;}
   }
   if(iState.step===3){
+    if(!iState.day||!iState.time){document.getElementById('briefFit').textContent='يرجى اختيار اليوم والوقت';return false;}
+  }
+  if(iState.step===4){
     if(!document.getElementById('iConsent').checked){
       document.getElementById('briefFit').textContent='يرجى تأكيد فهم طبيعة الاستشارة';return false;
     }
@@ -768,7 +835,7 @@ function iValidate(){
 
 iNext.addEventListener('click',async()=>{
   if(!iValidate())return;
-  if(iState.step<3){iState.step++;iUpdateUI();return;}
+  if(iState.step<4){iState.step++;iUpdateUI();return;}
   // SEND
   iNext.disabled=true;iNext.innerHTML='<span class="spinner"></span>';
   const name=document.getElementById('iName').value.trim();
@@ -781,6 +848,7 @@ iNext.addEventListener('click',async()=>{
   const market=document.getElementById('iMarket').value;
   const challenge=document.getElementById('iChallenge').value;
   const goal=document.getElementById('iGoal').value.trim();
+  const when=`${iState.day} ${iState.time}`;
   const dateStr=new Date().toLocaleDateString('ar-EG');
 
   // Supabase
@@ -789,8 +857,8 @@ iNext.addEventListener('click',async()=>{
       await sbClient.from('bookings').insert({
         client_name:name,client_phone:phone,client_email:email,
         consultation_type:type,
-        message:`مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
-        date:null,time:null,status:'pending'
+        message:`الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
+        date:null,time:iState.time||null,status:'pending'
       });
     }
   }catch(e){console.warn('supabase:',e);}
@@ -801,8 +869,8 @@ iNext.addEventListener('click',async()=>{
       await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
         from_name:name,phone:phone,from_email:email,
         session:type,consultation_type:type,
-        message:`طلب استشارة جديد (${type}) — مستوى: ${exp}، سوق: ${market}، تحدي: ${challenge}${goal?' — '+goal:''}`,
-        date:dateStr,to_email:ADMIN_EMAIL,reply_to:email
+        message:`طلب استشارة جديد (${type}) — الموعد المبدئي: ${when} — مستوى: ${exp}، سوق: ${market}، تحدي: ${challenge}${goal?' — '+goal:''}`,
+        date:dateStr+' / '+when,to_email:ADMIN_EMAIL,reply_to:email
       });
     }
   }catch(e){console.warn('emailjs admin:',e);}
@@ -814,14 +882,14 @@ iNext.addEventListener('click',async()=>{
         to_name:name,name:name,client_name:name,
         to_email:email,email:email,
         consultation_type:type,session:type,type:type,
-        phone:phone,message:type,date:dateStr,
+        phone:phone,message:`${type} — الموعد المبدئي: ${when}`,date:when,
         reply_to:ADMIN_EMAIL
       });
     }
   }catch(e){console.warn('emailjs confirm:',e);}
 
   document.getElementById('iRequestCode').textContent=Math.floor(1000+Math.random()*9000);
-  iState.step=4;iUpdateUI();
+  iState.step=5;iUpdateUI();
   iNext.disabled=false;iNext.innerHTML='التالي';
 });
 
