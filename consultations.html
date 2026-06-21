@@ -722,6 +722,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
             <h3 class="success-title">تم استلام طلب الاستشارة</h3>
             <p class="success-text">شكراً لك. سيتم مراجعة المعلومات المرسلة وستصلك تفاصيل تأكيد الموعد قريباً على بريدك الإلكتروني.</p>
             <span class="vip-code">HN-REQUEST-<span id="iRequestCode">0000</span></span>
+            <div id="iDbgMsg" style="display:none;margin-top:14px;padding:10px 14px;background:rgba(220,80,80,.12);border:1px solid rgba(220,80,80,.35);border-radius:8px;font-size:.75rem;color:#e57373;direction:rtl;text-align:right;line-height:1.6;word-break:break-all;"></div>
           </div>
         </div>
 
@@ -903,27 +904,33 @@ iNext.addEventListener('click',async()=>{
   const reqCode='HN-REQUEST-'+reqNum;
 
   // Supabase
-  try{
-    if(sbClient){
+  const sbErrors=[];
+  if(!sbClient){sbErrors.push('sbClient=null (Supabase JS لم يُحمَّل)');}
+  else{
+    try{
       const {error:bkErr}=await sbClient.from('bookings').insert({
         client_name:name,client_phone:phone,client_email:email,
         consultation_type:type,
         message:`${reqCode} | الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
         date:null,time:iState.time||null,status:'pending'
       });
-      if(bkErr)console.error('❌ booking insert error:',bkErr);
+      if(bkErr){console.error('❌ booking insert error:',bkErr);sbErrors.push('bookings: '+(bkErr.message||bkErr.code||JSON.stringify(bkErr)));}
       else console.log('✅ booking inserted');
-    }
-  }catch(e){console.warn('supabase:',e);}
+    }catch(e){console.warn('supabase:',e);sbErrors.push('bookings exception: '+e.message);}
 
-  // قفل الموعد (جدول عام بدون بيانات شخصية) حتى يظهر "محجوز" للزبون التالي
-  try{
-    if(sbClient&&iState.day&&iState.time){
-      const {error:lockErr}=await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time});
-      if(lockErr)console.error('❌ slot_locks insert error:',lockErr);
-      else console.log('✅ slot_locks inserted:',iState.day,iState.time);
-    }
-  }catch(e){console.warn('slot_locks:',e);}
+    // قفل الموعد (جدول عام بدون بيانات شخصية) حتى يظهر "محجوز" للزبون التالي
+    try{
+      if(iState.day&&iState.time){
+        const {error:lockErr}=await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time});
+        if(lockErr){console.error('❌ slot_locks insert error:',lockErr);sbErrors.push('slot_locks: '+(lockErr.message||lockErr.code||JSON.stringify(lockErr)));}
+        else console.log('✅ slot_locks inserted:',iState.day,iState.time);
+      }
+    }catch(e){console.warn('slot_locks:',e);sbErrors.push('slot_locks exception: '+e.message);}
+  }
+  // Show visible diagnostic in success panel if errors occurred
+  const dbg=document.getElementById('iDbgMsg');
+  if(dbg){dbg.style.display=sbErrors.length?'block':'none';dbg.textContent=sbErrors.length?'⚠ تشخيص قاعدة البيانات: '+sbErrors.join(' | '):'';}
+
 
   // Admin email
   try{
