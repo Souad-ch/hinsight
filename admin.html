@@ -636,6 +636,22 @@
             <tbody id="bookingsBody"><tr><td colspan="9" class="empty-state">جارٍ التحميل...</td></tr></tbody>
           </table>
         </div>
+
+        <!-- المواعيد المقفلة -->
+        <div class="panel-title" style="font-size:1.15rem;margin-top:40px;">المواعيد المقفلة</div>
+        <div class="panel-sub" style="margin-bottom:18px;">المواعيد التي تظهر "محجوز" للزبائن في صفحة الاستشارات. احذفي أي موعد لإعادة إتاحته.</div>
+        <div class="section-card" style="margin-bottom:16px;">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button class="submit-btn" style="padding:10px 18px;font-size:0.82rem;background:rgba(120,144,124,0.15);color:var(--gold-bright);border:1px solid var(--ink-border);" onclick="loadSlotLocks()">🔄 تحديث</button>
+            <button class="submit-btn" style="padding:10px 18px;font-size:0.82rem;background:rgba(168,88,78,0.12);color:#d98b80;border:1px solid rgba(168,88,78,0.3);" onclick="clearAllSlotLocks()">🗑 إلغاء قفل الكل</button>
+          </div>
+        </div>
+        <div class="section-card">
+          <table class="data-table">
+            <thead><tr><th>اليوم</th><th>الوقت</th><th>تاريخ القفل</th><th></th></tr></thead>
+            <tbody id="slotLocksBody"><tr><td colspan="4" class="empty-state">جارٍ التحميل...</td></tr></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- PAGE BUILDER -->
@@ -843,7 +859,7 @@ document.querySelectorAll('.side-link[data-panel]').forEach(link=>{
 });
 function loadPanel(name){
   if(name==='articles')    loadArticles();
-  if(name==='bookings')    loadBookings();
+  if(name==='bookings')    { loadBookings(); loadSlotLocks(); }
   if(name==='subscribers') loadSubscribers();
   if(name==='overview')    loadOverview();
   if(name==='new-article') resetEditor();
@@ -1137,6 +1153,44 @@ async function updateBookingStatus(id,status){
   await sb.from('bookings').update({status}).eq('id',id);
   showToast('تم تحديث الحالة');
   loadBookings();
+}
+
+// ── المواعيد المقفلة (slot_locks) ──
+async function loadSlotLocks(){
+  const tbody=document.getElementById('slotLocksBody');
+  if(!tbody)return;
+  const {data,error}=await sb.from('slot_locks').select('*').order('created_at',{ascending:false});
+  if(error){
+    tbody.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">⚠</div>تعذّر تحميل المواعيد المقفلة. تأكدي من إنشاء جدول slot_locks في Supabase.</div></td></tr>';
+    return;
+  }
+  if(!data||!data.length){
+    tbody.innerHTML='<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">🔓</div>لا توجد مواعيد مقفلة حالياً.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML=data.map(s=>{
+    const when=s.created_at?new Date(s.created_at).toLocaleString('ar-EG'):'—';
+    return `<tr>
+      <td>${s.day||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.74rem;direction:ltr;">${s.time||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);">${when}</td>
+      <td><button class="submit-btn" style="padding:6px 14px;font-size:0.74rem;background:rgba(168,88,78,0.12);color:#d98b80;border:1px solid rgba(168,88,78,0.3);width:auto;" onclick="deleteSlotLock('${s.id}')">إلغاء القفل</button></td>
+    </tr>`;
+  }).join('');
+}
+async function deleteSlotLock(id){
+  if(!confirm('إلغاء قفل هذا الموعد وإعادة إتاحته للزبائن؟'))return;
+  const {error}=await sb.from('slot_locks').delete().eq('id',id);
+  if(error){showToast('تعذّر الحذف','error');return;}
+  showToast('تم إلغاء قفل الموعد');
+  loadSlotLocks();
+}
+async function clearAllSlotLocks(){
+  if(!confirm('إلغاء قفل جميع المواعيد؟ ستصبح كل الأوقات متاحة للزبائن.'))return;
+  const {error}=await sb.from('slot_locks').delete().neq('id',0);
+  if(error){showToast('تعذّر الحذف','error');return;}
+  showToast('تم إلغاء قفل جميع المواعيد');
+  loadSlotLocks();
 }
 function exportBookingsCSV(){
   if(!_allBookings.length){showToast('لا توجد بيانات للتصدير','error');return;}
