@@ -814,12 +814,9 @@ async function refreshSlotAvailability(){
   if(!sbClient||!iState.day){return;}
   if(hint)hint.textContent='جارٍ التحقق من المواعيد المتاحة ليوم '+iState.day+'…';
   try{
-    const {data}=await sbClient.from('bookings').select('time,message,status').in('status',['pending','confirmed']);
+    const {data}=await sbClient.from('slot_locks').select('time').eq('day',iState.day);
     const taken=new Set();
-    (data||[]).forEach(b=>{
-      const msg=b.message||'';
-      if(msg.includes(iState.day)&&b.time){taken.add((b.time||'').trim());}
-    });
+    (data||[]).forEach(b=>{ if(b.time)taken.add((b.time||'').trim()); });
     let any=false;
     document.querySelectorAll('.slot').forEach(s=>{
       if(taken.has(s.dataset.slot)){s.classList.add('taken');any=true;}
@@ -907,6 +904,13 @@ iNext.addEventListener('click',async()=>{
       });
     }
   }catch(e){console.warn('supabase:',e);}
+
+  // قفل الموعد (جدول عام بدون بيانات شخصية) حتى يظهر "محجوز" للزبون التالي
+  try{
+    if(sbClient&&iState.day&&iState.time){
+      await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time});
+    }
+  }catch(e){console.warn('slot_locks:',e);}
 
   // Admin email
   try{
