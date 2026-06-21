@@ -146,7 +146,7 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
 .ticker-wrap::before{right:0;background:linear-gradient(270deg,var(--card),transparent);}
 .ticker-wrap::after{left:0;background:linear-gradient(90deg,var(--card),transparent);}
-.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 40s linear infinite;will-change:transform;}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 18s linear infinite;will-change:transform;}
 .ticker-wrap:hover .ticker-inner{animation-play-state:paused;}
 @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 .ticker-item{font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);padding:0 32px;display:inline-flex;align-items:center;gap:12px;}
@@ -1997,8 +1997,8 @@ function buildTickerOnce(){
 const wrap=document.getElementById('ticker');
 if(!wrap)return;
 let html='';
-// two copies for seamless marquee loop; index each value cell for in-place updates
-for(let copy=0;copy<2;copy++){
+// four copies (2+2) for a denser, gap-free seamless marquee loop
+for(let copy=0;copy<4;copy++){
 TICKER_DATA.forEach((d,i)=>{
 const pct=((d.price-d.base)/d.base*100).toFixed(2);
 const up=d.price>=d.base;
