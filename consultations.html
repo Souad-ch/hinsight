@@ -918,7 +918,8 @@ iNext.addEventListener('click',async()=>{
       await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
         from_name:name,phone:phone,from_email:email,
         session:type,consultation_type:type,
-        message:`طلب استشارة جديد (${type}) — الموعد المبدئي: ${when} — مستوى: ${exp}، سوق: ${market}، تحدي: ${challenge}${goal?' — '+goal:''}`,
+        appointment:`${iState.day} — ${iState.time}`,
+        message:`مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
         date:iState.day,time:iState.time,day:iState.day,to_email:ADMIN_EMAIL,reply_to:email
       });
     }
