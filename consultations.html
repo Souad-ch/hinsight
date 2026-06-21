@@ -809,14 +809,37 @@ document.querySelectorAll('.slot').forEach(s=>{
   });
 });
 
+// يحسب تاريخ أقرب موعد قادم لليوم العربي المختار (السبت/الثلاثاء/الخميس)
+function nextDateForDay(arabicDay){
+  const map={'الأحد':0,'الاثنين':1,'الإثنين':1,'الثلاثاء':2,'الأربعاء':3,'الخميس':4,'الجمعة':5,'السبت':6};
+  const target=map[arabicDay];
+  if(target===undefined)return null;
+  const d=new Date();d.setHours(0,0,0,0);
+  const diff=(target-d.getDay()+7)%7;
+  d.setDate(d.getDate()+diff);
+  return d.toISOString().slice(0,10);
+}
+
 // Query Supabase for already-booked slots on the selected day
 async function refreshSlotAvailability(){
   document.querySelectorAll('.slot').forEach(s=>s.classList.remove('taken'));
   const hint=document.getElementById('iSlotHint');
   if(!sbClient||!iState.day){return;}
   if(hint)hint.textContent='جارٍ التحقق من المواعيد المتاحة ليوم '+iState.day+'…';
+  const targetDate=nextDateForDay(iState.day);
+  // تنظيف الأقفال المنتهية (مواعيد مضت) حتى تعود متاحة تلقائياً
+  try{ if(sbClient&&targetDate)await sbClient.from('slot_locks').delete().lt('slot_date',targetDate); }catch(e){}
   try{
-    const {data,error}=await sbClient.from('slot_locks').select('time').eq('day',iState.day);
+    let data,error;
+    if(targetDate){
+      ({data,error}=await sbClient.from('slot_locks').select('time,slot_date').eq('day',iState.day).eq('slot_date',targetDate));
+      // إذا عمود slot_date غير موجود بعد، ارجع لقراءة باليوم فقط
+      if(error&&/slot_date/.test(error.message||'')){
+        ({data,error}=await sbClient.from('slot_locks').select('time').eq('day',iState.day));
+      }
+    }else{
+      ({data,error}=await sbClient.from('slot_locks').select('time').eq('day',iState.day));
+    }
     if(error){
       console.error('slot_locks read error:',error);
       if(hint)hint.textContent='المواعيد المحجوزة تظهر باللون الرمادي ومكتوب عليها "محجوز".';
@@ -927,9 +950,16 @@ iNext.addEventListener('click',async()=>{
     // قفل الموعد (جدول عام بدون بيانات شخصية) حتى يظهر "محجوز" للزبون التالي
     try{
       if(iState.day&&iState.time){
-        const {error:lockErr}=await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time});
+        const lockDate=nextDateForDay(iState.day);
+        const lockRow={day:iState.day,time:iState.time,slot_date:lockDate};
+        let lockErr;
+        ({error:lockErr}=await sbClient.from('slot_locks').insert(lockRow));
+        // إذا عمود slot_date غير موجود بعد، أعد المحاولة بدونه
+        if(lockErr&&/slot_date/.test(lockErr.message||'')){
+          ({error:lockErr}=await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time}));
+        }
         if(lockErr){console.error('❌ slot_locks insert error:',lockErr);sbErrors.push('slot_locks: '+(lockErr.message||lockErr.code||JSON.stringify(lockErr)));}
-        else console.log('✅ slot_locks inserted:',iState.day,iState.time);
+        else console.log('✅ slot_locks inserted:',iState.day,iState.time,lockDate);
       }
     }catch(e){console.warn('slot_locks:',e);sbErrors.push('slot_locks exception: '+e.message);}
   }

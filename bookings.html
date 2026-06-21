@@ -433,8 +433,8 @@ async function loadSlots(){
   document.getElementById('navSlots').textContent=(data||[]).length;
   if(!data||!data.length){tbody.innerHTML='<tr><td colspan="4" class="empty">لا توجد مواعيد مقفلة.</td></tr>';return;}
   tbody.innerHTML=data.map(s=>{
-    const when=s.created_at?new Date(s.created_at).toLocaleString('ar-EG'):'—';
-    return `<tr><td>${esc(s.day||'—')}</td><td style="direction:ltr">${esc(s.time||'—')}</td><td style="color:var(--text-muted);font-size:.74rem">${esc(when)}</td>
+    const when=s.slot_date?s.slot_date:(s.created_at?new Date(s.created_at).toLocaleDateString('ar-EG'):'—');
+    return `<tr><td>${esc(s.day||'—')}</td><td style="direction:ltr">${esc(s.time||'—')}</td><td style="color:var(--text-muted);font-size:.74rem;direction:ltr">${esc(when)}</td>
       <td><button class="btn btn-danger" style="min-height:32px;padding:6px 14px;font-size:.74rem" onclick="delSlot('${s.id}')">إلغاء القفل</button></td></tr>`;
   }).join('');
 }
