@@ -814,18 +814,25 @@ async function refreshSlotAvailability(){
   if(!sbClient||!iState.day){return;}
   if(hint)hint.textContent='جارٍ التحقق من المواعيد المتاحة ليوم '+iState.day+'…';
   try{
-    const {data}=await sbClient.from('slot_locks').select('time').eq('day',iState.day);
+    const {data,error}=await sbClient.from('slot_locks').select('time').eq('day',iState.day);
+    if(error){
+      console.error('slot_locks read error:',error);
+      if(hint)hint.textContent='⚠ خطأ قراءة slot_locks: '+(error.message||error.code||'غير معروف');
+      return;
+    }
     const taken=new Set();
     (data||[]).forEach(b=>{ if(b.time)taken.add((b.time||'').trim()); });
+    console.log('[تشخيص] أقفال يوم '+iState.day+':',[...taken]);
     let any=false;
     document.querySelectorAll('.slot').forEach(s=>{
       if(taken.has(s.dataset.slot)){s.classList.add('taken');any=true;}
     });
     if(hint)hint.textContent=any
       ? 'المواعيد المعلَّمة "محجوز" غير متاحة ليوم '+iState.day+'. اختر وقتاً متاحاً.'
-      : 'كل أوقات يوم '+iState.day+' متاحة حالياً. الموعد مبدئي ويُثبَّت بعد تأكيد التوفر.';
+      : 'تشخيص: عدد الأقفال المقروءة ليوم '+iState.day+' = '+taken.size+' ('+([...taken].join('، ')||'لا شيء')+').';
   }catch(e){
-    if(hint)hint.textContent='تعذّر التحقق من التوفر الآن، الموعد سيُراجَع يدوياً بعد الإرسال.';
+    console.error('slot_locks exception:',e);
+    if(hint)hint.textContent='تعذّر التحقق من التوفر الآن: '+(e.message||e);
   }
 }
 
@@ -910,7 +917,9 @@ iNext.addEventListener('click',async()=>{
   // قفل الموعد (جدول عام بدون بيانات شخصية) حتى يظهر "محجوز" للزبون التالي
   try{
     if(sbClient&&iState.day&&iState.time){
-      await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time});
+      const {error:lockErr}=await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time});
+      if(lockErr)console.error('❌ slot_locks insert error:',lockErr);
+      else console.log('✅ slot_locks inserted:',iState.day,iState.time);
     }
   }catch(e){console.warn('slot_locks:',e);}
 
