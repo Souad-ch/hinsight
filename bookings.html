@@ -518,10 +518,10 @@ function renderDetail(){
   document.getElementById('dTags').innerHTML=`<span class="chip">${esc(b.client_phone||'')}</span>${created?`<span class="chip">${esc(created)}</span>`:''}`;
   // Activity Timeline مبني على حالة الطلب الفعلية
   const tl=['تم استلام الطلب من نموذج الموقع'];
-  const st=(b.status||'pending');
-  if(st==='pending')tl.push('بانتظار المراجعة والقرار');
-  if(st==='confirmed')tl.push('تمت مراجعة الطلب','تم تأكيد الحجز وتثبيت الموعد');
-  if(st==='cancelled')tl.push('تمت مراجعة الطلب','تم إلغاء الحجز وتحرير الموعد');
+  const stKey=(b.status||'pending');
+  if(stKey==='pending')tl.push('بانتظار المراجعة والقرار');
+  if(stKey==='confirmed')tl.push('تمت مراجعة الطلب','تم تأكيد الحجز وتثبيت الموعد');
+  if(stKey==='cancelled')tl.push('تمت مراجعة الطلب','تم إلغاء الحجز وتحرير الموعد');
   document.getElementById('dTimeline').innerHTML=tl.map((x,i)=>`<div class="tl-item"><div class="tl-dot">${i+1}</div><div>${esc(x)}</div></div>`).join('');
 }
 async function setStatus(status){
