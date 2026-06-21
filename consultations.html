@@ -242,10 +242,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .slot{border:1px solid var(--border);background:rgba(12,11,15,.45);border-radius:10px;padding:13px 6px;text-align:center;cursor:pointer;transition:var(--tr);font-family:var(--font-en);font-size:.9rem;color:var(--text);letter-spacing:.02em}
 .slot:hover,.slot.selected{border-color:var(--accent);background:rgba(120,144,124,.1);color:var(--accent-light);transform:translateY(-2px)}
-.slot.taken{opacity:.5;cursor:not-allowed;border-style:dashed;border-color:rgba(168,88,78,.4);color:var(--text-muted);pointer-events:none;background:rgba(168,88,78,.04)}
-.slot.taken:hover{transform:none}
+.slot.taken{cursor:not-allowed;border-color:rgba(120,120,130,.25);color:#7a7a82;pointer-events:none;background:rgba(90,90,100,.12)}
+.slot.taken:hover{transform:none;border-color:rgba(120,120,130,.25);background:rgba(90,90,100,.12);color:#7a7a82}
 .slot .slot-time{display:block}
-.slot.taken .slot-x{display:block;font-family:var(--font-ar);font-size:.58rem;color:var(--danger);margin-top:2px;letter-spacing:0}
+.slot.taken .slot-time{text-decoration:line-through;text-decoration-color:rgba(140,140,150,.6)}
+.slot.taken .slot-x{display:block;font-family:var(--font-ar);font-size:.6rem;color:#8a8a92;margin-top:3px;letter-spacing:0}
 .slot .slot-x{display:none}
 .dt-hint{font-size:.78rem;color:var(--text-muted);margin-top:14px;line-height:1.7;display:flex;gap:7px;align-items:flex-start}
 .dt-hint::before{content:'◷';color:var(--accent-light)}
@@ -818,22 +819,21 @@ async function refreshSlotAvailability(){
     const {data,error}=await sbClient.from('slot_locks').select('time').eq('day',iState.day);
     if(error){
       console.error('slot_locks read error:',error);
-      if(hint)hint.textContent='⚠ خطأ قراءة slot_locks: '+(error.message||error.code||'غير معروف');
+      if(hint)hint.textContent='المواعيد المحجوزة تظهر باللون الرمادي ومكتوب عليها "محجوز".';
       return;
     }
     const taken=new Set();
     (data||[]).forEach(b=>{ if(b.time)taken.add((b.time||'').trim()); });
-    console.log('[تشخيص] أقفال يوم '+iState.day+':',[...taken]);
     let any=false;
     document.querySelectorAll('.slot').forEach(s=>{
       if(taken.has(s.dataset.slot)){s.classList.add('taken');any=true;}
     });
     if(hint)hint.textContent=any
-      ? 'المواعيد المعلَّمة "محجوز" غير متاحة ليوم '+iState.day+'. اختر وقتاً متاحاً.'
-      : 'تشخيص: عدد الأقفال المقروءة ليوم '+iState.day+' = '+taken.size+' ('+([...taken].join('، ')||'لا شيء')+').';
+      ? 'المواعيد الرمادية ("محجوز") غير متاحة. اختر وقتاً متاحاً.'
+      : 'كل المواعيد متاحة ليوم '+iState.day+'. اختر الوقت المناسب لك.';
   }catch(e){
     console.error('slot_locks exception:',e);
-    if(hint)hint.textContent='تعذّر التحقق من التوفر الآن: '+(e.message||e);
+    if(hint)hint.textContent='المواعيد المحجوزة تظهر باللون الرمادي ومكتوب عليها "محجوز".';
   }
 }
 
