@@ -905,12 +905,14 @@ iNext.addEventListener('click',async()=>{
   // Supabase
   try{
     if(sbClient){
-      await sbClient.from('bookings').insert({
+      const {error:bkErr}=await sbClient.from('bookings').insert({
         client_name:name,client_phone:phone,client_email:email,
         consultation_type:type,
         message:`${reqCode} | الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
         date:null,time:iState.time||null,status:'pending'
       });
+      if(bkErr)console.error('❌ booking insert error:',bkErr);
+      else console.log('✅ booking inserted');
     }
   }catch(e){console.warn('supabase:',e);}
 
