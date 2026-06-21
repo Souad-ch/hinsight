@@ -913,18 +913,99 @@ a:hover>.hub-clickable{border-color:rgba(120,144,124,0.5);}
 <!-- QUICK INSIGHTS / Q&A -->
 <section class="section" id="notes">
 <div class="container">
-<div class="section-head reveal">
-<span class="section-label en">Questions</span>
-<h2 class="section-title" data-edit="notes_title">أسئلة قبل الاستشارة</h2>
-<div class="green-line"></div>
-<p class="section-subtitle" data-edit="notes_subtitle">إجابات مختصرة توضّح فلسفة المنصة وحدود ما تقدمه.</p>
+<div class="section-head reveal" style="text-align:center;margin-bottom:60px;">
+  <div style="font-family:var(--font-en);font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-light);margin-bottom:18px;">HANADI INSIGHTS</div>
+  <h2 style="font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.01em;line-height:1.1;color:var(--text);margin-bottom:20px;">أسئلة قبل الاستشارة</h2>
+  <div style="width:40px;height:1px;background:var(--gold);margin:0 auto 20px;opacity:.6"></div>
+  <p style="color:var(--text-dim);font-size:.95rem;max-width:440px;margin:0 auto;">إجابات مختصرة توضّح فلسفة المنصة وحدود ما تقدمه.</p>
 </div>
-<div class="qa-list">
-<div class="qa-item open reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span data-edit="notes_q1_question">هل تقدم هنادي توصيات بيع وشراء مباشرة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner" data-edit="notes_q1_answer">لا. المنصة تعليمية وتحليلية، وهدفها بناء فهم أعمق للسوق وإدارة المخاطر، لا بيع إشارات دخول وخروج.</div></div></div>
-<div class="qa-item reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span data-edit="notes_q2_question">ما الفرق بين التحليل والاستشارة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner" data-edit="notes_q2_answer">التحليل يشرح المشهد العام، أما الاستشارة فتساعد المتداول أو المستثمر على فهم أخطائه ومنهجيته وحدود مخاطره ضمن سياق شخصي.</div></div></div>
-<div class="qa-item reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span data-edit="notes_q3_question">هل المحتوى مناسب للمبتدئين؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner" data-edit="notes_q3_answer">نعم، لكن ليس بروح التبسيط السطحي. المحتوى يساعد المبتدئ على بناء أساس صحيح قبل الدخول العشوائي في السوق.</div></div></div>
-<div class="qa-item reveal"><button class="qa-question"><span class="qa-q-icon">س</span><span data-edit="notes_q4_question">لماذا التركيز على السياسة والاقتصاد؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner" data-edit="notes_q4_answer">لأن السعر لا يتحرك وحده. خلف كل حركة توجد توقعات وسيولة وخوف وثقة وقرارات بنوك مركزية ومصالح كبرى.</div></div></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;max-width:1000px;margin:0 auto;">
+  <!-- answer card (left) -->
+  <div style="position:sticky;top:100px;" id="faqAnswerWrap" class="reveal">
+    <div id="faqCard" style="background:linear-gradient(145deg,rgba(22,20,14,.95),rgba(14,13,10,.98));border:1px solid rgba(201,178,123,.22);border-radius:20px;padding:40px 36px;min-height:280px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(201,178,123,.07),transparent 60%);pointer-events:none;"></div>
+      <div style="text-align:center;margin-bottom:28px;position:relative;">
+        <div style="width:56px;height:56px;border-radius:50%;border:1px solid rgba(201,178,123,.35);background:rgba(201,178,123,.07);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:var(--font-en);font-size:1.5rem;color:var(--gold);">?</div>
+        <div style="font-family:var(--font-en);letter-spacing:.18em;text-transform:uppercase;font-size:.62rem;color:var(--gold);">الإجابة</div>
+        <div style="width:32px;height:1px;background:var(--gold);margin:10px auto 0;opacity:.5;"></div>
+      </div>
+      <p id="faqAnswerText" style="color:var(--text-dim);font-size:1rem;line-height:2;text-align:center;position:relative;">لا. هنادي إنسايتس تقدم تحليلاً معمقاً ورؤى تعليمية مبنية على البحث والفهم للسياق السياسي والاقتصادي، ولا تقدم توصيات مباشرة بالشراء أو البيع.</p>
+    </div>
+  </div>
+
+  <!-- questions list (right) -->
+  <div style="display:grid;gap:0;" class="reveal delay-1" id="faqList">
+    <div class="faq-row active" data-q="0" style="border-bottom:1px solid rgba(201,178,123,.12);padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text);">هل تقدم هنادي توصيات بيع وشراء مباشرة؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--gold);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(201,178,123,.35);background:rgba(201,178,123,.08);display:flex;align-items:center;justify-content:center;">01</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar0"></div>
+
+    <div class="faq-row" data-q="1" style="border-bottom:1px solid rgba(201,178,123,.12);padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text-dim);">ما الفرق بين التحليل والاستشارة؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--text-muted);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(120,144,124,.18);background:rgba(120,144,124,.05);display:flex;align-items:center;justify-content:center;">02</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar1"></div>
+
+    <div class="faq-row" data-q="2" style="border-bottom:1px solid rgba(201,178,123,.12);padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text-dim);">هل المحتوى مناسب للمبتدئين؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--text-muted);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(120,144,124,.18);background:rgba(120,144,124,.05);display:flex;align-items:center;justify-content:center;">03</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar2"></div>
+
+    <div class="faq-row" data-q="3" style="padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text-dim);">لماذا التركيز على السياسة والاقتصاد؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--text-muted);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(120,144,124,.18);background:rgba(120,144,124,.05);display:flex;align-items:center;justify-content:center;">04</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar3"></div>
+  </div>
 </div>
+
+<!-- bottom badge -->
+<div style="text-align:center;margin-top:52px;" class="reveal">
+  <span style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(201,178,123,.2);border-radius:999px;padding:8px 20px;font-size:.78rem;color:var(--text-muted);">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    المحتوى لأغراض تعليمية وتثقيفية فقط
+  </span>
+</div>
+
+<script>
+(function(){
+  const answers=[
+    'لا. هنادي إنسايتس تقدم تحليلاً معمقاً ورؤى تعليمية مبنية على البحث والفهم للسياق السياسي والاقتصادي، ولا تقدم توصيات مباشرة بالشراء أو البيع.',
+    'التحليل يشرح المشهد العام، أما الاستشارة فتساعد المتداول أو المستثمر على فهم أخطائه ومنهجيته وحدود مخاطره ضمن سياق شخصي.',
+    'نعم، لكن ليس بروح التبسيط السطحي. المحتوى يساعد المبتدئ على بناء أساس صحيح قبل الدخول العشوائي في السوق.',
+    'لأن السعر لا يتحرك وحده. خلف كل حركة توجد توقعات وسيولة وخوف وثقة وقرارات بنوك مركزية ومصالح كبرى.'
+  ];
+  let cur=0;
+  function setFaq(i){
+    document.querySelectorAll('.faq-row').forEach((r,idx)=>{
+      const active=idx===i;
+      r.querySelector('span:first-child').style.color=active?'var(--text)':'var(--text-dim)';
+      const num=r.querySelector('span:last-child');
+      num.style.color=active?'var(--gold)':'var(--text-muted)';
+      num.style.borderColor=active?'rgba(201,178,123,.35)':'rgba(120,144,124,.18)';
+      num.style.background=active?'rgba(201,178,123,.08)':'rgba(120,144,124,.05)';
+      const bar=document.getElementById('faqBar'+idx);
+      if(bar)bar.style.opacity=active?'1':'0';
+    });
+    const card=document.getElementById('faqCard');
+    card.style.opacity='0';card.style.transform='translateY(8px)';
+    setTimeout(()=>{
+      document.getElementById('faqAnswerText').textContent=answers[i];
+      card.style.transition='opacity .3s,transform .3s';
+      card.style.opacity='1';card.style.transform='translateY(0)';
+    },180);
+    cur=i;
+  }
+  document.querySelectorAll('.faq-row').forEach((r,idx)=>{
+    r.addEventListener('click',()=>setFaq(idx));
+  });
+  // activate first bar
+  const b=document.getElementById('faqBar0');if(b)b.style.opacity='1';
+})();
+</script>
 </div>
 </section>
 
