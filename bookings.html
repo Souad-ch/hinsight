@@ -430,8 +430,17 @@ document.getElementById('loginBtn').addEventListener('click',async()=>{
   const email=document.getElementById('emailInput').value.trim();
   const pw=document.getElementById('pwInput').value;
   const err=document.getElementById('loginError');err.style.display='none';
+  if(!email||!pw){err.textContent='⚠ الرجاء إدخال البريد وكلمة السر.';err.style.display='block';return;}
+  const btn=document.getElementById('loginBtn');btn.disabled=true;btn.textContent='جارٍ الدخول...';
   const {error}=await sb.auth.signInWithPassword({email,password:pw});
-  if(error){err.style.display='block';return;}
+  btn.disabled=false;btn.textContent='دخول';
+  if(error){
+    console.error('login error:',error);
+    let m=error.message||'خطأ غير معروف';
+    if(/Invalid login/i.test(m))m='البريد أو كلمة السر غير صحيحة، أو الحساب غير موجود.';
+    else if(/Email not confirmed/i.test(m))m='الحساب غير مؤكَّد. افتحي بريدك وأكّدي الحساب، أو عطّلي تأكيد البريد من إعدادات Supabase.';
+    err.textContent='⚠ '+m;err.style.display='block';return;
+  }
   showApp();
 });
 document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('loginBtn').click();});
