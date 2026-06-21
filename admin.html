@@ -1151,6 +1151,18 @@ function filterBookings(){
 async function updateBookingStatus(id,status){
   if(!status)return;
   await sb.from('bookings').update({status}).eq('id',id);
+  // عند الإلغاء: حرّر الموعد تلقائياً (احذف القفل المطابق)
+  if(status==='cancelled'){
+    const bk=(_allBookings||[]).find(x=>String(x.id)===String(id));
+    if(bk){
+      const raw=(bk.time||'');const parts=raw.split('—').map(x=>x.trim());
+      let day,time;
+      if(parts.length>=2){day=parts[0];time=parts.slice(1).join(' ').trim();}else{time=raw.trim();}
+      let q=sb.from('slot_locks').delete();
+      if(day)q=q.eq('day',day);if(time)q=q.eq('time',time);
+      try{await q;loadSlotLocks&&loadSlotLocks();}catch(e){}
+    }
+  }
   showToast('تم تحديث الحالة');
   loadBookings();
 }

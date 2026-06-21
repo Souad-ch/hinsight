@@ -394,7 +394,24 @@ async function setStatus(status){
   const {error}=await sb.from('bookings').update({status}).eq('id',b.id);
   if(error){toast('تعذّر التحديث');return;}
   b.status=status;renderList();renderDetail();updateMetrics();
+  // عند الإلغاء: حرّر الموعد تلقائياً (احذف القفل) ليصبح متاحاً للزبون التالي
+  if(status==='cancelled'){ await unlockBookingSlot(b); }
   toast('تم تحديث الحالة: '+stOf(status)[0]);
+}
+// يستخرج اليوم والوقت من حقل الموعد المخزّن ("اليوم — الوقت") ويحذف القفل المطابق
+async function unlockBookingSlot(b){
+  try{
+    const raw=(b.time||'');
+    const parts=raw.split('—').map(x=>x.trim());
+    let day,time;
+    if(parts.length>=2){day=parts[0];time=parts.slice(1).join(' ').trim();}
+    else{time=raw.trim();}
+    let q=sb.from('slot_locks').delete();
+    if(day)q=q.eq('day',day);
+    if(time)q=q.eq('time',time);
+    const {error}=await q;
+    if(!error){loadSlots();toast('تم تحرير الموعد وإعادة إتاحته');}
+  }catch(e){console.warn('unlock slot:',e);}
 }
 document.querySelectorAll('[data-act]').forEach(btn=>btn.addEventListener('click',()=>{
   const a=btn.dataset.act;
