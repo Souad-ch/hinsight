@@ -908,12 +908,18 @@ iNext.addEventListener('click',async()=>{
   if(!sbClient){sbErrors.push('sbClient=null (Supabase JS لم يُحمَّل)');}
   else{
     try{
-      const {error:bkErr}=await sbClient.from('bookings').insert({
-        client_name:name,client_phone:phone,client_email:email,
+      const row={
+        client_name:name,client_email:email,
         consultation_type:type,
-        message:`${reqCode} | الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
+        message:`${reqCode} | الهاتف: ${phone} | الموعد: ${when} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
         date:null,time:iState.time||null,status:'pending'
-      });
+      };
+      // إدخال أولي يحاول مع عمود الهاتف، وإذا غير موجود يعيد المحاولة بدونه
+      let bkErr;
+      ({error:bkErr}=await sbClient.from('bookings').insert({...row,client_phone:phone}));
+      if(bkErr&&/client_phone/.test(bkErr.message||'')){
+        ({error:bkErr}=await sbClient.from('bookings').insert(row));
+      }
       if(bkErr){console.error('❌ booking insert error:',bkErr);sbErrors.push('bookings: '+(bkErr.message||bkErr.code||JSON.stringify(bkErr)));}
       else console.log('✅ booking inserted');
     }catch(e){console.warn('supabase:',e);sbErrors.push('bookings exception: '+e.message);}
