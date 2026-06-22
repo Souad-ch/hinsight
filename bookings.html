@@ -370,6 +370,19 @@ a{text-decoration:none;color:inherit}
               <button class="btn btn-green" id="sendMsgBtn" style="width:100%;margin-top:10px">✉ إرسال رسالة للزبون</button>
             </div>
             <div>
+              <div class="msg-label">إرسال رابط الدفع</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <select class="select" id="payAmount" style="flex:1;min-width:120px">
+                  <option value="250">250$ — جلسة عامة</option>
+                  <option value="400">400$ — جلسة متقدمة</option>
+                  <option value="600">600$ — إدارة مخاطر</option>
+                  <option value="1000">1000$ — عضوية VIP</option>
+                </select>
+                <button class="btn btn-green" id="sendPayBtn" style="flex:1;min-width:140px">💳 إرسال رابط الدفع</button>
+              </div>
+              <div id="payStatus" style="font-size:.78rem;margin-top:8px;display:none"></div>
+            </div>
+            <div>
               <div class="msg-label">Activity Timeline</div>
               <div class="timeline" id="dTimeline"></div>
             </div>
@@ -733,6 +746,48 @@ document.getElementById('emailMessage').addEventListener('click',async()=>{
     console.error('email send error:',e);
     showS('⚠ تعذّر الإرسال: '+((e&&(e.text||e.message))||'تأكدي من إنشاء القالب template_manual في EmailJS'),false);
   }finally{btn.disabled=false;btn.textContent='✉ إرسال عبر الإيميل';}
+});
+
+// ── إرسال رابط الدفع ──
+function reqCodeOf(b){
+  const m=(b&&b.message||'').match(/HN-REQUEST-\d+/);
+  return m?m[0]:'';
+}
+document.getElementById('sendPayBtn').addEventListener('click',async()=>{
+  const b=selBooking();
+  const status=document.getElementById('payStatus');
+  const showS=(t,ok)=>{status.style.display='block';status.style.color=ok?'#a7d0b1':'#e0ada7';status.textContent=t;};
+  if(!b)return toast('اختاري طلباً أولاً');
+  if(!b.client_email){showS('⚠ لا يوجد بريد لهذا الطلب.',false);return;}
+  const amount=document.getElementById('payAmount').value;
+  const code=reqCodeOf(b)||('HN-REQUEST-'+(b.id||''));
+  const link=location.origin+location.pathname.replace(/bookings\.html$/,'')+'payment.html?code='+encodeURIComponent(code)+'&amount='+amount;
+  if(!window.emailjs){showS('⚠ خدمة الإيميل غير محمّلة.',false);return;}
+  const btn=document.getElementById('sendPayBtn');btn.disabled=true;btn.textContent='جارٍ الإرسال...';
+  const body=`مرحباً ${b.client_name||''}،
+
+تمت مراجعة طلب استشارتك (${b.consultation_type||''}) وتأكيد مبدئيته. لإتمام الحجز وتثبيت موعدك، يرجى إكمال الدفع (${amount}$) عبر الرابط التالي:
+
+${link}
+
+تتوفر طرق دفع متعددة: USDT (TRC20)، شام كاش، أو التواصل مع الدعم.
+رمز طلبك: ${code}
+
+بعد إتمام الدفع سيتم تثبيت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.`;
+  try{
+    await emailjs.send(EJS_SERVICE_ID,EJS_MANUAL_TEMPLATE_ID,{
+      to_email:b.client_email,email:b.client_email,
+      to_name:b.client_name||'',name:b.client_name||'',
+      subject:'إتمام دفع استشارتك — Hanadi Insights ('+amount+'$)',
+      message:body,reply_to:''
+    });
+    // علّمي الطلب كبانتظار الدفع
+    try{await sb.from('bookings').update({status:'pending'}).eq('id',b.id);}catch(e){}
+    showS('✅ تم إرسال رابط الدفع ('+amount+'$) إلى '+b.client_email,true);
+  }catch(e){
+    console.error('pay link error:',e);
+    showS('⚠ تعذّر الإرسال: '+((e&&(e.text||e.message))||'تأكدي من قالب template_manual'),false);
+  }finally{btn.disabled=false;btn.textContent='💳 إرسال رابط الدفع';}
 });
 
 // ── DAILY REPORT ──
