@@ -1264,7 +1264,7 @@ document.getElementById('refreshSupport').addEventListener('click',loadSupportSe
 
 // ── VIP MEMBERSHIPS ──
 // عميل منفصل لإنشاء الحساب دون التأثير على جلسة الأدمن الحالية
-const sbSignup=supabase.createClient('https://ozxwyyeyxmpkhsygntoy.supabase.co','sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG',{auth:{persistSession:false,autoRefreshToken:false}});
+const sbSignup=supabase.createClient('https://ozxwyyeyxmpkhsygntoy.supabase.co','sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG',{auth:{persistSession:false,autoRefreshToken:false,storageKey:'hn-signup-only'}});
 const VIP_PORTAL=location.origin+location.pathname.replace(/bookings\.html$/,'')+'vip.html';
 
 function genPass(){const c='abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKMNPQRSTUVWXYZ';let p='';for(let i=0;i<10;i++)p+=c[Math.floor(Math.random()*c.length)];return p;}
