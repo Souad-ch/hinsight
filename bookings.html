@@ -669,7 +669,12 @@ function renderDetail(){
   document.getElementById('dTime').textContent=b.time||'—';
   document.getElementById('dMessage').textContent=b.message||'—';
   const created=b.created_at?new Date(b.created_at).toLocaleString('ar-EG'):'';
-  document.getElementById('dTags').innerHTML=`<span class="chip">${esc(b.client_phone||'')}</span>${created?`<span class="chip">${esc(created)}</span>`:''}`;
+  // تحقّق إذا زبون VIP وأضف شارة
+  sb.from('vip_subscriptions').select('status,sessions_used,sessions_total').ilike('client_email',b.client_email||'').eq('status','active').limit(1).then(({data})=>{
+    const vip=data&&data.length?data[0]:null;
+    const vipChip=vip?`<span class="chip" style="background:rgba(201,178,123,.12);border-color:rgba(201,178,123,.35);color:var(--gold)">👑 VIP — ${vip.sessions_used||0}/${vip.sessions_total||4} جلسات</span>`:'';
+    document.getElementById('dTags').innerHTML=`<span class="chip">${esc(b.client_phone||'')}</span>${created?`<span class="chip">${esc(created)}</span>`:''}`+vipChip;
+  });
   // Activity Timeline مبني على حالة الطلب الفعلية
   const tl=['تم استلام الطلب من نموذج الموقع'];
   const stKey=(b.status||'pending');
@@ -684,9 +689,21 @@ async function setStatus(status){
   const {error}=await sb.from('bookings').update({status}).eq('id',b.id);
   if(error){toast('تعذّر التحديث');return;}
   b.status=status;renderList();renderDetail();updateMetrics();
-  // عند الإلغاء: حرّر الموعد تلقائياً (احذف القفل) ليصبح متاحاً للزبون التالي
   if(status==='cancelled'){ await unlockBookingSlot(b); }
+  // إذا تأكيد: تحقّق إذا الزبون VIP وزِد عداد جلساته
+  if(status==='confirmed'&&b.client_email){ await incrementVipSession(b.client_email); }
   toast('تم تحديث الحالة: '+stOf(status)[0]);
+}
+// يزيد sessions_used للزبون VIP بمقدار 1 عند تأكيد حجزه
+async function incrementVipSession(email){
+  try{
+    const{data}=await sb.from('vip_subscriptions').select('id,sessions_used,sessions_total').ilike('client_email',email).eq('status','active').limit(1);
+    if(!data||!data.length)return; // ليس زبون VIP
+    const v=data[0];
+    const newUsed=Math.min((v.sessions_used||0)+1, v.sessions_total||4);
+    await sb.from('vip_subscriptions').update({sessions_used:newUsed}).eq('id',v.id);
+    toast('👑 جلسة VIP مسجّلة — '+newUsed+' / '+(v.sessions_total||4));
+  }catch(e){console.warn('vip increment:',e);}
 }
 // يستخرج اليوم والوقت من حقل الموعد المخزّن ("اليوم — الوقت") ويحذف القفل المطابق
 async function unlockBookingSlot(b){
