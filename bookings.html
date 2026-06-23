@@ -223,6 +223,7 @@ a{text-decoration:none;color:inherit}
         <div class="nav-item" data-scroll="settingsPanel"><span><i>04</i> الإعدادات</span></div>
         <div class="nav-item" data-view="slots"><span><i>05</i> المواعيد المقفلة</span><span class="nav-count" id="navSlots">0</span></div>
         <div class="nav-item" data-view="support"><span><i>06</i> الدعم</span><span class="nav-count" id="navSupport">0</span></div>
+        <div class="nav-item" data-view="vip"><span><i>07</i> عضويات VIP</span><span class="nav-count" id="navVip">0</span></div>
       </nav>
     </div>
     <div class="side-card">
@@ -457,6 +458,80 @@ a{text-decoration:none;color:inherit}
         </aside>
       </div>
     </div>
+    <!-- VIP VIEW -->
+    <div id="viewVip" style="display:none">
+      <div class="dashboard-grid">
+        <div class="left-col">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">إضافة عضوية VIP جديدة</h2>
+                <p class="panel-sub">أنشئي حساب الزبون واشتراكه دفعة واحدة — بدون فتح Supabase.</p>
+              </div>
+            </div>
+            <div style="padding:20px 22px 24px;display:grid;gap:14px">
+              <div>
+                <div class="msg-label">بريد الزبون</div>
+                <input class="input" id="vipEmail" type="email" dir="ltr" placeholder="client@gmail.com" style="width:100%"/>
+              </div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap">
+                <div style="flex:1;min-width:160px">
+                  <div class="msg-label">كلمة سر مؤقتة</div>
+                  <div style="display:flex;gap:8px">
+                    <input class="input" id="vipPass" dir="ltr" placeholder="كلمة السر" style="flex:1;min-width:0"/>
+                    <button class="btn btn-ghost" id="vipGenPass" style="width:auto" title="توليد">🎲</button>
+                  </div>
+                </div>
+                <div style="flex:1;min-width:140px">
+                  <div class="msg-label">عدد الجلسات</div>
+                  <input class="input" id="vipSessions" type="number" value="4" min="1" style="width:100%"/>
+                </div>
+              </div>
+              <div>
+                <div class="msg-label">تاريخ بدء الاشتراك</div>
+                <input class="input" id="vipStart" type="date" style="width:100%"/>
+              </div>
+              <button class="btn btn-green" id="vipCreateBtn" style="width:100%">👑 إنشاء العضوية</button>
+              <div id="vipResult" style="font-size:.82rem;display:none;line-height:1.9;border-radius:12px;padding:14px"></div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">أعضاء VIP الحاليون</h2>
+                <p class="panel-sub">جميع الاشتراكات المسجّلة.</p>
+              </div>
+              <button class="btn btn-ghost" id="refreshVip" style="width:auto">🔄</button>
+            </div>
+            <table class="data-table">
+              <thead><tr><th>البريد</th><th>البدء</th><th>الجلسات</th><th>الحالة</th><th></th></tr></thead>
+              <tbody id="vipBody"><tr><td colspan="5" class="empty">جارٍ التحميل...</td></tr></tbody>
+            </table>
+          </section>
+        </div>
+        <aside>
+          <section class="panel detail-panel">
+            <div class="panel-head"><h2 class="panel-title">كيف تعمل عضوية VIP؟</h2></div>
+            <div class="detail-body">
+              <div class="msg-card">
+                <div class="msg-text">① أدخلي بريد الزبون وكلمة سر مؤقتة، ثم اضغطي «إنشاء العضوية».
+
+② يُنشأ حساب الزبون واشتراكه تلقائياً (لا حاجة لفتح Supabase).
+
+③ انسخي بيانات الدخول من الصندوق الأخضر وأرسليها للزبون مع رابط لوحته.
+
+④ يدخل الزبون على لوحته الخاصة ويشاهد اشتراكه وجلساته.</div>
+              </div>
+              <div class="info-box">
+                <div class="info-label">رابط لوحة الزبون</div>
+                <div class="info-value" id="vipPortalLink" style="direction:ltr;font-size:.78rem">—</div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
   </main>
 </div>
 </div>
@@ -675,7 +750,9 @@ document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.addEventListener(
   document.getElementById('viewRequests').style.display=v==='requests'?'grid':'none';
   document.getElementById('viewSlots').style.display=v==='slots'?'block':'none';
   document.getElementById('viewSupport').style.display=v==='support'?'block':'none';
+  document.getElementById('viewVip').style.display=v==='vip'?'block':'none';
   if(v==='slots')loadSlots();
+  if(v==='vip')loadVip();
 }));
 
 // ── MISC ──
@@ -967,6 +1044,73 @@ document.getElementById('opChatSend').addEventListener('click',async()=>{
 });
 document.getElementById('opChatInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('opChatSend').click();});
 document.getElementById('refreshSupport').addEventListener('click',loadSupportSessions);
+
+// ── VIP MEMBERSHIPS ──
+// عميل منفصل لإنشاء الحساب دون التأثير على جلسة الأدمن الحالية
+const sbSignup=supabase.createClient('https://ozxwyyeyxmpkhsygntoy.supabase.co','sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG',{auth:{persistSession:false,autoRefreshToken:false}});
+const VIP_PORTAL=location.origin+location.pathname.replace(/bookings\.html$/,'')+'vip.html';
+
+function genPass(){const c='abcdefghjkmnpqrstuvwxyz23456789ABCDEFGHJKMNPQRSTUVWXYZ';let p='';for(let i=0;i<10;i++)p+=c[Math.floor(Math.random()*c.length)];return p;}
+document.getElementById('vipGenPass').addEventListener('click',()=>{document.getElementById('vipPass').value=genPass();});
+// قيمة افتراضية لتاريخ البدء = اليوم
+(function(){const d=new Date();document.getElementById('vipStart').value=d.toISOString().slice(0,10);document.getElementById('vipPortalLink').textContent=VIP_PORTAL;})();
+
+async function loadVip(){
+  const tbody=document.getElementById('vipBody');
+  const{data,error}=await sb.from('vip_subscriptions').select('*').order('created_at',{ascending:false});
+  if(error){tbody.innerHTML='<tr><td colspan="5" class="empty">تعذّر التحميل. تأكدي من إنشاء جدول vip_subscriptions.</td></tr>';return;}
+  document.getElementById('navVip').textContent=(data||[]).length;
+  if(!data||!data.length){tbody.innerHTML='<tr><td colspan="5" class="empty">لا يوجد أعضاء VIP بعد.</td></tr>';return;}
+  tbody.innerHTML=data.map(v=>{
+    const st=v.status==='active'?'<span class="status scheduled">نشط</span>':v.status==='expired'?'<span class="status rejected">منتهٍ</span>':'<span class="status rejected">ملغى</span>';
+    return `<tr>
+      <td style="direction:ltr">${esc(v.client_email||'—')}</td>
+      <td style="direction:ltr">${esc(v.start_date||'—')}</td>
+      <td>${esc((v.sessions_used||0)+' / '+(v.sessions_total||4))}</td>
+      <td>${st}</td>
+      <td><button class="btn btn-danger" style="min-height:32px;padding:6px 12px;font-size:.72rem" onclick="delVip('${v.id}')">حذف</button></td>
+    </tr>`;
+  }).join('');
+}
+async function delVip(id){
+  if(!confirm('حذف اشتراك هذا العضو؟ (لن يُحذف حساب الدخول الخاص به)'))return;
+  const{error}=await sb.from('vip_subscriptions').delete().eq('id',id);
+  if(error){toast('تعذّر الحذف');return;}
+  toast('تم حذف الاشتراك');loadVip();
+}
+document.getElementById('refreshVip').addEventListener('click',loadVip);
+
+document.getElementById('vipCreateBtn').addEventListener('click',async()=>{
+  const email=document.getElementById('vipEmail').value.trim();
+  const pass=document.getElementById('vipPass').value.trim();
+  const sessions=parseInt(document.getElementById('vipSessions').value)||4;
+  const start=document.getElementById('vipStart').value||new Date().toISOString().slice(0,10);
+  const res=document.getElementById('vipResult');
+  const show=(html,ok)=>{res.style.display='block';res.style.background=ok?'rgba(136,174,148,.12)':'rgba(168,88,78,.12)';res.style.border='1px solid '+(ok?'rgba(136,174,148,.35)':'rgba(168,88,78,.35)');res.style.color=ok?'#a7d0b1':'#e0ada7';res.innerHTML=html;};
+  if(!email||!pass){show('⚠ الرجاء إدخال البريد وكلمة السر.',false);return;}
+  if(pass.length<6){show('⚠ كلمة السر يجب أن تكون 6 أحرف على الأقل.',false);return;}
+  const btn=document.getElementById('vipCreateBtn');btn.disabled=true;btn.textContent='جارٍ الإنشاء...';
+  try{
+    // 1) إنشاء حساب الدخول (عبر العميل المنفصل حتى لا تتأثر جلسة الأدمن)
+    const{error:authErr}=await sbSignup.auth.signUp({email,password:pass});
+    let accountNote='تم إنشاء حساب الدخول.';
+    if(authErr){
+      if(/already registered|already been registered|User already/i.test(authErr.message||'')){
+        accountNote='⚠ الحساب موجود مسبقاً — تم تحديث الاشتراك فقط (لم تتغيّر كلمة السر).';
+      }else{ throw authErr; }
+    }
+    // 2) إضافة سجل الاشتراك
+    const{error:subErr}=await sb.from('vip_subscriptions').insert({client_email:email,start_date:start,sessions_total:sessions,sessions_used:0,status:'active'});
+    if(subErr)throw subErr;
+    show(`✅ تم إنشاء العضوية بنجاح.<br><br>${accountNote}<br><br><b>أرسلي للزبون:</b><br>الرابط: <span style="direction:ltr">${esc(VIP_PORTAL)}</span><br>البريد: <span style="direction:ltr">${esc(email)}</span><br>كلمة السر: <span style="direction:ltr">${esc(pass)}</span>`,true);
+    toast('👑 تم إنشاء عضوية VIP');
+    document.getElementById('vipEmail').value='';document.getElementById('vipPass').value='';
+    loadVip();
+  }catch(e){
+    console.error('vip create:',e);
+    show('⚠ تعذّر الإنشاء: '+((e&&(e.message||e.error_description))||'حاولي مجدداً')+'<br><span style="font-size:.74rem">إذا كان الخطأ متعلقاً بتأكيد البريد، عطّلي «Confirm email» من إعدادات Supabase Auth.</span>',false);
+  }finally{btn.disabled=false;btn.textContent='👑 إنشاء العضوية';}
+});
 
 // ── NAV SCROLL ──
 document.querySelectorAll('.nav-item[data-scroll]').forEach(n=>n.addEventListener('click',()=>{
