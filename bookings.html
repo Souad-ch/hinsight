@@ -136,9 +136,9 @@ a{text-decoration:none;color:inherit}
 .notif-btn:hover{border-color:rgba(159,187,164,.32);color:var(--accent-light)}
 .notif-badge{position:absolute;top:-6px;left:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--danger);color:#fff;font-size:.66rem;font-weight:800;display:none;align-items:center;justify-content:center;font-family:'DIN Nums',var(--font-ar)}
 .notif-badge.show{display:inline-flex}
-.notif-panel{position:absolute;top:52px;left:0;width:min(380px,90vw);max-height:460px;overflow:auto;background:linear-gradient(145deg,rgba(22,24,24,.99),rgba(12,11,15,.99));border:1px solid var(--border-strong);border-radius:18px;box-shadow:0 40px 100px rgba(0,0,0,.7);display:none;z-index:300}
+.notif-panel{position:absolute;top:52px;left:0;width:min(380px,90vw);max-height:460px;overflow:auto;background:#15181a;border:1px solid var(--border-strong);border-radius:18px;box-shadow:0 40px 100px rgba(0,0,0,.85);display:none;z-index:600}
 .notif-panel.open{display:block}
-.notif-panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(18,19,18,.98);backdrop-filter:blur(10px)}
+.notif-panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#15181a;z-index:2}
 .notif-panel-title{font-size:.95rem;color:var(--text)}
 .notif-clear{font-size:.72rem;color:var(--text-muted);background:none;border:none;cursor:pointer}
 .notif-clear:hover{color:var(--accent-light)}
@@ -658,6 +658,8 @@ const statusMap={pending:['قيد المراجعة','review'],confirmed:['مؤك
 function stOf(s){return statusMap[s]||statusMap.pending;}
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function initial(n){return (n||'H').trim()[0]||'H';}
+// هل أرسل الزبون تحضيراً للجلسة؟ (محفوظ بحقل notes)
+function hasPrep(b){if(!b||!b.notes)return false;try{const p=JSON.parse(b.notes);return !!(p.goal||p.questions||p.concerns);}catch(e){return !!String(b.notes).trim();}}
 
 // ── LOAD ──
 async function loadBookings(){
@@ -694,6 +696,7 @@ function renderList(){
         <div class="client-line">
           <h3 class="client-name">${esc(b.client_name||'—')}</h3>
           <span class="status ${st[1]}">${st[0]}</span>
+          ${hasPrep(b)?'<span class="chip" style="background:rgba(201,178,123,.12);border-color:rgba(201,178,123,.35);color:var(--gold)">📝 تحضير</span>':''}
         </div>
         <p class="request-desc">${esc(b.message||'—')}</p>
         <div class="request-meta">
@@ -897,7 +900,11 @@ function renderNotifs(){
     const v=n.meta&&n.meta.view;
     if(v){const nav=document.querySelector('.nav-item[data-view="'+v+'"]');if(nav)nav.click();}
     if(n.meta&&n.meta.session_code){_selSession=n.meta.session_code;_unread.delete(_selSession);renderSessions&&renderSessions();renderOpChat&&renderOpChat(_selSession);}
-    if(n.meta&&n.meta.booking_id){_selId=n.meta.booking_id;renderList();renderDetail();}
+    if(n.meta&&n.meta.booking_id){
+      _selId=n.meta.booking_id;renderList();renderDetail();
+      // مرّري للأسفل حتى تظهر بطاقة التحضير إن وُجدت
+      setTimeout(()=>{const pc=document.getElementById('dPrepCard');const tgt=(pc&&pc.style.display!=='none')?pc:document.getElementById('detailPanel');tgt&&tgt.scrollIntoView({behavior:'smooth',block:'center'});},150);
+    }
     document.getElementById('notifPanel').classList.remove('open');
   }));
 }
