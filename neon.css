@@ -1,0 +1,240 @@
+/* ═══════════════════════════════════════
+   NEON GLOW — Hanadi Insights
+   تأثيرات النيون لتحسين قراءة النصوص
+   ═══════════════════════════════════════ */
+
+:root {
+  --neon-green: rgba(159, 187, 164, 0.9);
+  --neon-glow-sm: 0 0 8px rgba(159, 187, 164, 0.55), 0 0 20px rgba(159, 187, 164, 0.25);
+  --neon-glow-md: 0 0 12px rgba(159, 187, 164, 0.65), 0 0 30px rgba(159, 187, 164, 0.3), 0 0 60px rgba(159, 187, 164, 0.12);
+  --neon-glow-lg: 0 0 16px rgba(159, 187, 164, 0.8), 0 0 40px rgba(159, 187, 164, 0.4), 0 0 80px rgba(159, 187, 164, 0.15);
+}
+
+/* ── الشعار والعناوين الرئيسية ── */
+.logo-main,
+.hero-tagline,
+.hero-title .en {
+  text-shadow: var(--neon-glow-sm);
+}
+
+.hero-title,
+.section-title {
+  text-shadow: var(--neon-glow-md);
+}
+
+/* ── Labels وعناوين الأقسام ── */
+.section-label,
+.side-label,
+.top-label,
+.upcoming-label,
+.slot-label {
+  text-shadow: 0 0 10px rgba(159, 187, 164, 0.7), 0 0 20px rgba(159, 187, 164, 0.35);
+  color: #b8d4bd;
+}
+
+/* ── لوحة التحكم ── */
+.top-title,
+.panel-title {
+  text-shadow: var(--neon-glow-sm);
+}
+
+.login-title {
+  text-shadow: var(--neon-glow-md);
+}
+
+/* ── أرقام المقاييس ── */
+.metric-value,
+.metric-label,
+.num,
+.countdown-val {
+  text-shadow: 0 0 14px rgba(159, 187, 164, 0.7), 0 0 28px rgba(159, 187, 164, 0.35);
+}
+
+.countdown-val {
+  text-shadow: var(--neon-glow-lg);
+}
+
+/* ── Nav / Sidebar ── */
+.nav-item.active,
+.nav-item:hover {
+  text-shadow: 0 0 8px rgba(159, 187, 164, 0.5);
+}
+
+.nav-item.active i,
+.nav-item:hover i {
+  box-shadow: 0 0 10px rgba(159, 187, 164, 0.45), inset 0 0 6px rgba(159, 187, 164, 0.15);
+}
+
+/* ── VIP Nav ── */
+.vip-nav-item.active,
+.vip-nav-item:hover {
+  text-shadow: 0 0 8px rgba(159, 187, 164, 0.5);
+}
+
+/* ── Status chips ── */
+.status.review  { text-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
+.status.ok      { text-shadow: 0 0 8px rgba(52, 211, 153, 0.6); }
+.status.no      { text-shadow: 0 0 8px rgba(248, 113, 113, 0.5); }
+
+/* ── Metric cards ── */
+.metric-card {
+  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.12),
+              0 4px 24px rgba(0, 0, 0, 0.3),
+              0 0 30px rgba(159, 187, 164, 0.05);
+}
+
+.metric-card:hover {
+  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.25),
+              0 8px 32px rgba(0, 0, 0, 0.35),
+              0 0 50px rgba(159, 187, 164, 0.1);
+}
+
+/* ── Buttons ── */
+.btn-green:hover,
+.nav-cta:hover {
+  text-shadow: 0 0 12px rgba(12, 11, 15, 0.8);
+  box-shadow: 0 12px 32px rgba(120, 144, 124, 0.45),
+              0 0 60px rgba(159, 187, 164, 0.2) !important;
+}
+
+.btn-outline:hover {
+  text-shadow: 0 0 8px rgba(159, 187, 164, 0.6);
+  box-shadow: 0 8px 24px rgba(120, 144, 124, 0.2),
+              0 0 30px rgba(159, 187, 164, 0.1) !important;
+}
+
+/* ── Cards ── */
+.insight-card:hover,
+.cons-card:hover,
+.lib-card:hover,
+.report-card:hover,
+.testi-card:hover {
+  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.2),
+              0 12px 40px rgba(0, 0, 0, 0.4),
+              0 0 60px rgba(159, 187, 164, 0.08) !important;
+}
+
+/* ── Payment page ── */
+.payment-title,
+.payment-sub,
+.section-head,
+.req-num {
+  text-shadow: var(--neon-glow-sm);
+}
+
+.req-num {
+  text-shadow: var(--neon-glow-md);
+  color: #b8d4bd;
+}
+
+/* ── pipe steps (مسار) ── */
+.pipe-num {
+  text-shadow: 0 0 10px rgba(159, 187, 164, 0.6);
+}
+
+.pipe-title {
+  text-shadow: 0 0 8px rgba(159, 187, 164, 0.35);
+}
+
+/* ── Form labels ── */
+.form-label,
+.info-label {
+  text-shadow: 0 0 6px rgba(159, 187, 164, 0.35);
+  color: #9FBBA4;
+}
+
+/* ── Info values ── */
+.info-value {
+  color: #d4e8d6;
+  text-shadow: 0 0 8px rgba(159, 187, 164, 0.3);
+}
+
+/* ── Consultation cards ── */
+.cons-title,
+.template-title,
+.side-card-title {
+  text-shadow: 0 0 8px rgba(159, 187, 164, 0.35);
+}
+
+/* ── Section green line ── */
+.green-line {
+  box-shadow: 0 0 12px rgba(120, 144, 124, 0.6),
+              0 0 24px rgba(120, 144, 124, 0.3);
+}
+
+/* ── Notification badge ── */
+.notif-badge {
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.8),
+              0 0 16px rgba(248, 113, 113, 0.4);
+}
+
+.notif-btn {
+  filter: drop-shadow(0 0 6px rgba(159, 187, 164, 0.5));
+}
+
+/* ── VIP session slots ── */
+.session-slot.completed {
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.25),
+              0 0 20px rgba(52, 211, 153, 0.08);
+}
+
+.session-slot.scheduled {
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.25),
+              0 0 20px rgba(251, 191, 36, 0.08);
+}
+
+/* ── Input focus glow ── */
+.input:focus,
+.select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.5),
+              0 0 16px rgba(159, 187, 164, 0.15) !important;
+  outline: none;
+}
+
+/* ── Pipe step dots / borders ── */
+.pipe-step::before {
+  box-shadow: 0 0 10px rgba(120, 144, 124, 0.5);
+}
+
+/* ── Hero stat numbers ── */
+.hero-stat-num,
+.stat-num {
+  text-shadow: var(--neon-glow-md);
+}
+
+/* ── Pulse animation for active metric dot ── */
+.metric-dot {
+  box-shadow: 0 0 6px rgba(120, 144, 124, 0.8);
+  animation: neonDotPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes neonDotPulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(120, 144, 124, 0.6); }
+  50%       { box-shadow: 0 0 10px rgba(120, 144, 124, 1), 0 0 20px rgba(159, 187, 164, 0.5); }
+}
+
+/* ── نيون للرأس في لوحة التحكم ── */
+.topbar-left .top-title {
+  text-shadow: var(--neon-glow-sm);
+}
+
+/* ── Neon border on booking detail panel ── */
+#dPanel {
+  border-color: rgba(120, 144, 124, 0.2);
+  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.08),
+              0 8px 32px rgba(0, 0, 0, 0.4),
+              0 0 60px rgba(159, 187, 164, 0.04);
+}
+
+/* ── Support / chat ── */
+.chat-bubble.operator .bubble-text {
+  text-shadow: 0 0 6px rgba(159, 187, 164, 0.35);
+}
+
+/* ── prep chip ── */
+.prep-chip {
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5),
+              0 0 20px rgba(251, 191, 36, 0.2);
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+}
