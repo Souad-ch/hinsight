@@ -1143,6 +1143,10 @@ function renderVsBody(){
         </select>
       </div>
       <div style="margin-bottom:12px">
+        <div class="msg-label">📅 تاريخ الجلسة</div>
+        <input type="date" class="input" id="vs-date-${n}" style="width:100%" value="${esc(r.session_date||'')}"/>
+      </div>
+      <div style="margin-bottom:12px">
         <div class="msg-label">📋 ملخص هذه الجلسة (الفائتة)</div>
         <textarea class="input" id="vs-summary-${n}" style="width:100%;min-height:80px;line-height:1.7" placeholder="ما تم تناوله في الجلسة ${n}، أهم النقاط، التوصيات...">${esc(r.summary||'')}</textarea>
       </div>
@@ -1159,7 +1163,8 @@ async function saveVipSession(n){
   const status=document.getElementById('vs-status-'+n).value;
   const summary=document.getElementById('vs-summary-'+n).value.trim();
   const next_summary=document.getElementById('vs-next-'+n).value.trim();
-  const row={client_email:_vsEmail,session_number:n,status,summary,next_summary,updated_at:new Date().toISOString()};
+  const session_date=document.getElementById('vs-date-'+n).value||null;
+  const row={client_email:_vsEmail,session_number:n,status,summary,next_summary,session_date,updated_at:new Date().toISOString()};
   const{error}=await sb.from('vip_sessions').upsert(row,{onConflict:'client_email,session_number'});
   if(error){toast('تعذّر الحفظ: '+(error.message||''));console.warn(error);return;}
   _vsRows[n]={..._vsRows[n],...row};

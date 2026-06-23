@@ -554,7 +554,7 @@ function renderAllSessions(){
         <h3 style="font-size:1.1rem;color:var(--text)">الجلسة ${n}</h3>
         ${badge}
       </div>
-      ${s&&s.session_date?`<div style="font-size:.78rem;color:var(--text-dim);margin-bottom:12px;direction:ltr">📅 ${esc(s.session_date)}</div>`:''}
+      ${s&&s.session_date?`<div style="font-size:.8rem;color:var(--gold);margin-bottom:12px">📅 ${esc(fmt(s.session_date))}</div>`:''}
       ${summary?`<div style="background:var(--success-bg);border:1px solid rgba(136,174,148,.25);border-radius:12px;padding:14px 16px;margin-bottom:${next?'12px':'0'}">
         <div style="font-size:.72rem;color:var(--success);margin-bottom:6px">📋 ملخص الجلسة</div>
         <div style="font-size:.86rem;color:var(--text);line-height:1.8;white-space:pre-line">${esc(summary)}</div>
