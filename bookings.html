@@ -47,7 +47,7 @@ a{text-decoration:none;color:inherit}
 #app{display:none}
 .app{min-height:100vh;display:grid;grid-template-columns:280px 1fr;position:relative}
 .app::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 12%,rgba(120,144,124,.12),transparent 32%),radial-gradient(circle at 86% 36%,rgba(159,187,164,.08),transparent 38%),linear-gradient(rgba(120,144,124,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(120,144,124,.025) 1px,transparent 1px);background-size:auto,auto,64px 64px,64px 64px}
-.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;border-left:1px solid var(--line);background:rgba(12,11,15,.84);backdrop-filter:blur(26px);padding:26px 22px;z-index:10;display:flex;flex-direction:column;gap:26px}
+.sidebar{position:sticky;top:0;height:100vh;overflow:hidden;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;border-left:1px solid var(--line);background:rgba(12,11,15,.84);backdrop-filter:blur(26px);padding:26px 22px;z-index:10;display:flex;flex-direction:column;gap:26px}
 .logo{padding-bottom:24px;border-bottom:1px solid var(--line)}
 .logo-main{font-family:var(--font-en);color:var(--accent-light);font-size:1.36rem;line-height:1}
 .logo-sub{color:var(--text-muted);font-family:var(--font-en);letter-spacing:.18em;text-transform:uppercase;font-size:.62rem;margin-top:7px}
@@ -58,7 +58,7 @@ a{text-decoration:none;color:inherit}
 .nav-item i{width:26px;height:26px;border-radius:50%;border:1px solid rgba(120,144,124,.18);display:inline-flex;align-items:center;justify-content:center;color:var(--accent-light);font-style:normal;font-size:.72rem;font-family:var(--font-en)}
 .nav-item.active,.nav-item:hover{color:var(--text);background:rgba(120,144,124,.07);border-color:var(--border)}
 .nav-count{font-size:.68rem;color:var(--accent-light);border:1px solid rgba(159,187,164,.24);border-radius:999px;padding:1px 7px}
-.side-card{margin-top:auto;border:1px solid var(--border);background:linear-gradient(145deg,rgba(22,24,24,.82),rgba(13,14,16,.88));border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.side-card{flex-shrink:0;border:1px solid var(--border);background:linear-gradient(145deg,rgba(22,24,24,.82),rgba(13,14,16,.88));border-radius:16px;padding:18px;position:relative;overflow:hidden}
 .side-card-title{font-size:.95rem;color:var(--text);margin-bottom:7px}
 .side-card-text{color:var(--text-muted);font-size:.78rem;line-height:1.75;margin-bottom:14px}
 .logout-btn{width:100%;background:rgba(168,88,78,.1);border:1px solid rgba(168,88,78,.28);color:#e0ada7;border-radius:10px;padding:9px;font-size:.82rem;font-weight:700}
@@ -236,7 +236,7 @@ a{text-decoration:none;color:inherit}
       <div class="logo-main en">Hanadi</div>
       <div class="logo-sub">Bookings Ops</div>
     </div>
-    <div>
+    <div style="flex:1 1 auto;min-height:0;overflow-y:auto">
       <div class="side-label">Workspace</div>
       <nav class="nav">
         <div class="nav-item active" data-view="requests"><span><i>01</i> الطلبات</span><span class="nav-count" id="navReq">0</span></div>
@@ -968,7 +968,11 @@ function initNotifications(){
   renderNotifs();
   try{ if(window.Notification&&Notification.permission==='default')Notification.requestPermission(); }catch(e){}
   pollNewBookings(); // تسجيل أولي
-  if(!_bookingsPoll)_bookingsPoll=setInterval(pollNewBookings,20000);
+  if(!_bookingsPoll)_bookingsPoll=setInterval(pollNewBookings,15000);
+  // فحص فوري عند العودة للتبويب
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollNewBookings();});
+  window.addEventListener('focus',pollNewBookings);
+  console.log('🔔 نظام الإشعارات يعمل — build 2026-06-23b');
 }
 document.getElementById('searchInput').addEventListener('input',renderList);
 document.getElementById('statusFilter').addEventListener('change',renderList);
