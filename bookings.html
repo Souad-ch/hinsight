@@ -913,22 +913,44 @@ document.addEventListener('click',e=>{
   if(p&&p.classList.contains('open')&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
 });
 
-// اشتراك لحظي على الحجوزات الجديدة (طلب/تسجيل زبون)
+// ── اكتشاف الطلبات الجديدة (Realtime + فحص دوري احتياطي) ──
+let _seenBookingIds=new Set();
+let _bookingsInited=false;
+function notifyNewBooking(b){
+  const id=String(b.id);
+  if(_seenBookingIds.has(id))return;
+  _seenBookingIds.add(id);
+  if(!_bookingsInited)return; // أول تحميل: لا نُشعر عن الطلبات القديمة
+  addNotif('booking','طلب استشارة جديد',
+    (b.client_name||'زبون')+' — '+(b.consultation_type||'استشارة')+(b.time?(' — '+b.time):''),
+    {view:'requests',booking_id:b.id});
+  loadBookings();
+}
+// 1) محاولة لحظية (تعمل إذا أُضيف الجدول لـ Realtime)
 let _bookingsCh=null;
 function initBookingsRealtime(){
   if(_bookingsCh)return;
   _bookingsCh=sb.channel('bookings-new')
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'bookings'},p=>{
-      const b=p.new;
-      addNotif('booking','طلب استشارة جديد',
-        (b.client_name||'زبون')+' — '+(b.consultation_type||'استشارة')+(b.time?(' — '+b.time):''),
-        {view:'requests',booking_id:b.id});
-      loadBookings();
-    }).subscribe();
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'bookings'},p=>notifyNewBooking(p.new))
+    .subscribe();
 }
+// 2) فحص دوري احتياطي كل 20 ثانية (يعمل دائماً)
+async function pollNewBookings(){
+  try{
+    const{data}=await sb.from('bookings').select('id,client_name,consultation_type,time,created_at').order('created_at',{ascending:false}).limit(30);
+    if(!data)return;
+    // أول مرة: سجّل الموجود بدون إشعار
+    if(!_bookingsInited){ data.forEach(b=>_seenBookingIds.add(String(b.id))); _bookingsInited=true; return; }
+    // الأقدم أولاً حتى تظهر الإشعارات بالترتيب الصحيح
+    data.slice().reverse().forEach(notifyNewBooking);
+  }catch(e){console.warn('poll bookings:',e);}
+}
+let _bookingsPoll=null;
 function initNotifications(){
   renderNotifs();
   try{ if(window.Notification&&Notification.permission==='default')Notification.requestPermission(); }catch(e){}
+  pollNewBookings(); // تسجيل أولي
+  if(!_bookingsPoll)_bookingsPoll=setInterval(pollNewBookings,20000);
 }
 document.getElementById('searchInput').addEventListener('input',renderList);
 document.getElementById('statusFilter').addEventListener('change',renderList);
