@@ -47,7 +47,7 @@ a{text-decoration:none;color:inherit}
 #app{display:none}
 .app{min-height:100vh;display:grid;grid-template-columns:280px 1fr;position:relative}
 .app::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 15% 12%,rgba(120,144,124,.12),transparent 32%),radial-gradient(circle at 86% 36%,rgba(159,187,164,.08),transparent 38%),linear-gradient(rgba(120,144,124,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(120,144,124,.025) 1px,transparent 1px);background-size:auto,auto,64px 64px,64px 64px}
-.sidebar{position:sticky;top:0;height:100vh;border-left:1px solid var(--line);background:rgba(12,11,15,.84);backdrop-filter:blur(26px);padding:26px 22px;z-index:10;display:flex;flex-direction:column;gap:26px}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;border-left:1px solid var(--line);background:rgba(12,11,15,.84);backdrop-filter:blur(26px);padding:26px 22px;z-index:10;display:flex;flex-direction:column;gap:26px}
 .logo{padding-bottom:24px;border-bottom:1px solid var(--line)}
 .logo-main{font-family:var(--font-en);color:var(--accent-light);font-size:1.36rem;line-height:1}
 .logo-sub{color:var(--text-muted);font-family:var(--font-en);letter-spacing:.18em;text-transform:uppercase;font-size:.62rem;margin-top:7px}
@@ -913,13 +913,15 @@ document.addEventListener('click',e=>{
   if(p&&p.classList.contains('open')&&!e.target.closest('.notif-wrap'))p.classList.remove('open');
 });
 
-// ── اكتشاف الطلبات الجديدة (Realtime + فحص دوري احتياطي) ──
+// ── اكتشاف الطلبات الجديدة + تحضير الزبائن (Realtime + فحص دوري احتياطي) ──
 let _seenBookingIds=new Set();
+let _bookingNotes={}; // id -> notes (لاكتشاف إرسال التحضير)
 let _bookingsInited=false;
 function notifyNewBooking(b){
   const id=String(b.id);
   if(_seenBookingIds.has(id))return;
   _seenBookingIds.add(id);
+  _bookingNotes[id]=b.notes||'';
   if(!_bookingsInited)return; // أول تحميل: لا نُشعر عن الطلبات القديمة
   addNotif('booking','طلب استشارة جديد',
     (b.client_name||'زبون')+' — '+(b.consultation_type||'استشارة')+(b.time?(' — '+b.time):''),
@@ -934,15 +936,31 @@ function initBookingsRealtime(){
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'bookings'},p=>notifyNewBooking(p.new))
     .subscribe();
 }
-// 2) فحص دوري احتياطي كل 20 ثانية (يعمل دائماً)
+// 2) فحص دوري احتياطي كل 20 ثانية (يعمل دائماً) — يكتشف الطلبات الجديدة وإرسال التحضير
 async function pollNewBookings(){
   try{
-    const{data}=await sb.from('bookings').select('id,client_name,consultation_type,time,created_at').order('created_at',{ascending:false}).limit(30);
+    const{data}=await sb.from('bookings').select('id,client_name,consultation_type,time,created_at,notes').order('created_at',{ascending:false}).limit(40);
     if(!data)return;
     // أول مرة: سجّل الموجود بدون إشعار
-    if(!_bookingsInited){ data.forEach(b=>_seenBookingIds.add(String(b.id))); _bookingsInited=true; return; }
+    if(!_bookingsInited){
+      data.forEach(b=>{const id=String(b.id);_seenBookingIds.add(id);_bookingNotes[id]=b.notes||'';});
+      _bookingsInited=true;return;
+    }
     // الأقدم أولاً حتى تظهر الإشعارات بالترتيب الصحيح
-    data.slice().reverse().forEach(notifyNewBooking);
+    data.slice().reverse().forEach(b=>{
+      const id=String(b.id);
+      if(!_seenBookingIds.has(id)){ notifyNewBooking(b); return; }
+      // اكتشاف إرسال التحضير: تغيّر حقل notes إلى محتوى جديد
+      const prev=_bookingNotes[id]||'';const cur=b.notes||'';
+      if(cur&&cur!==prev){
+        _bookingNotes[id]=cur;
+        let goal='';try{goal=JSON.parse(cur).goal||'';}catch(e){}
+        addNotif('booking','📝 تحضير جلسة جديد من الزبون',
+          (b.client_name||'زبون')+(goal?(' — '+goal):' — أرسل تحضيره للجلسة'),
+          {view:'requests',booking_id:b.id});
+        loadBookings();
+      }else{_bookingNotes[id]=cur;}
+    });
   }catch(e){console.warn('poll bookings:',e);}
 }
 let _bookingsPoll=null;
