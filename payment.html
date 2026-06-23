@@ -179,7 +179,7 @@ document.getElementById('reqCode').textContent=REQ_CODE;
 document.getElementById('amtUsd').textContent=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
 document.getElementById('amtUsdt2').textContent=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
 document.getElementById('qrImg').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data='+encodeURIComponent(USDT_ADDR);
-document.getElementById('supportBtn').href=SUPPORT_URL;
+{const _sb=document.getElementById('supportBtn');if(_sb)_sb.href=SUPPORT_URL;}
 
 // ── جلب بيانات الحجز عبر رمز الطلب ──
 (async function loadBooking(){
