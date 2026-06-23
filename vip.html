@@ -370,6 +370,8 @@ function fmt(d){try{return new Date(d).toLocaleDateString('ar-EG',{weekday:'long
 let _user=null;
 let _bookings=[];
 let _sub=null; // vip_subscriptions row
+let _vipSessions=[]; // vip_sessions rows (الجلسة 1..N مع الملخصات)
+function vsByNum(n){return _vipSessions.find(s=>s.session_number===n)||null;}
 
 function showLogin(){
   document.getElementById('loginScreen').style.display='flex';
@@ -427,6 +429,11 @@ async function loadData(){
     .order('created_at',{ascending:false})
     .limit(1);
   _sub=(sv&&sv.length)?sv[0]:null;
+  // Load named VIP sessions with summaries
+  const{data:vs}=await sb.from('vip_sessions').select('*')
+    .ilike('client_email',_user.email)
+    .order('session_number',{ascending:true});
+  _vipSessions=vs||[];
   renderAll();
 }
 document.getElementById('refreshBtn').addEventListener('click',loadData);
@@ -462,26 +469,26 @@ function renderSubCard(){
     <div class="sub-meta-item"><b style="color:var(--success)">${total-used}</b>جلسات متبقية</div>`;
 }
 
-// ── SESSIONS GRID ──
+// ── SESSIONS GRID (الجلسة 1..N) ──
 function renderSessionsGrid(){
   const total=(_sub&&_sub.sessions_total)||4;
-  const confirmed=_bookings.filter(b=>b.status==='confirmed');
-  const pending=_bookings.filter(b=>b.status==='pending');
-  document.getElementById('sessionsProgress').textContent=`${confirmed.length} مكتملة أو مؤكدة من ${total}`;
+  let done=0;
   let html='';
-  for(let i=0;i<total;i++){
-    const b=confirmed[i]||pending[i-confirmed.length]||null;
-    const isDone=!!confirmed[i];
-    const isPending=!isDone&&!!(pending[i-confirmed.length]);
-    const isEmpty=!b;
-    const cls=isDone?'done':isPending?'next':'empty';
+  for(let n=1;n<=total;n++){
+    const s=vsByNum(n);
+    const status=s?s.status:'available';
+    const isDone=status==='completed';
+    const isNext=status==='scheduled';
+    if(isDone)done++;
+    const cls=isDone?'done':isNext?'next':'empty';
     html+=`<div class="session-slot ${cls}">
-      <div class="slot-num">${String(i+1).padStart(2,'0')}</div>
-      <div class="slot-label">${isDone?'مكتملة / مؤكدة':isPending?'قادمة':'متاحة'}</div>
-      ${b?`<div class="slot-date">${esc(b.time||b.date||'')}</div>`:''}
-      ${isDone?'<span class="slot-badge done">✓</span>':isPending?'<span class="slot-badge next">قريباً</span>':''}
+      <div class="slot-num">${String(n).padStart(2,'0')}</div>
+      <div class="slot-label">الجلسة ${n}</div>
+      ${s&&s.session_date?`<div class="slot-date">${esc(s.session_date)}</div>`:''}
+      ${isDone?'<span class="slot-badge done">✓ مكتملة</span>':isNext?'<span class="slot-badge next">قادمة</span>':''}
     </div>`;
   }
+  document.getElementById('sessionsProgress').textContent=`${done} مكتملة من ${total}`;
   document.getElementById('sessionsGrid').innerHTML=html;
 }
 
@@ -489,8 +496,14 @@ function renderSessionsGrid(){
 function renderUpcoming(){
   const el=document.getElementById('upcomingPanel');
   const upcoming=_bookings.find(b=>b.status==='confirmed'||b.status==='pending');
+  // تحضير الجلسة القادمة من جدول الجلسات (إن وُجد)
+  const nextSession=_vipSessions.find(s=>s.status==='scheduled'&&s.next_summary);
+  const prepNote=nextSession?`<div style="background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:14px;padding:14px 16px;margin-top:16px">
+    <div style="font-size:.72rem;color:var(--gold);margin-bottom:6px">🎯 تحضير الجلسة ${nextSession.session_number}</div>
+    <div style="font-size:.85rem;color:var(--text);line-height:1.8;white-space:pre-line">${esc(nextSession.next_summary)}</div>
+  </div>`:'';
   if(!upcoming){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">لا توجد جلسة مجدولة</div><div class="empty-text">سيظهر هنا موعدك بعد تأكيد الجلسة من المستشار.</div></div>`;
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">لا توجد جلسة مجدولة</div><div class="empty-text">سيظهر هنا موعدك بعد تأكيد الجلسة من المستشار.</div></div>`+prepNote;
     return;
   }
   const dateStr=upcoming.time||upcoming.date||'—';
@@ -502,7 +515,7 @@ function renderUpcoming(){
       <div style="margin-top:12px"><span class="sub-status-badge ${upcoming.status==='confirmed'?'active':'expired'}">${upcoming.status==='confirmed'?'● مؤكدة':'● بانتظار التأكيد'}</span></div>
     </div>
     <div class="countdown" id="countdownBox"></div>
-  </div>`;
+  </div>`+prepNote;
   // countdown if we have a parseable date
   buildCountdown(upcoming);
 }
@@ -523,24 +536,38 @@ function buildCountdown(b){
   tick();setInterval(tick,30000);
 }
 
-// ── ALL SESSIONS LIST ──
+// ── ALL SESSIONS LIST (الجلسة 1..N + الملخصات) ──
 function renderAllSessions(){
   const el=document.getElementById('allSessionsList');
-  if(!_bookings.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">لا توجد جلسات مسجلة</div><div class="empty-text">جلساتك ستظهر هنا بعد تأكيدها.</div></div>`;
-    return;
-  }
-  el.innerHTML=_bookings.map((b,i)=>{
-    const st=b.status==='confirmed'?'<span class="sub-status-badge active" style="font-size:.7rem">● مؤكدة</span>':
-              b.status==='pending'?'<span class="sub-status-badge" style="font-size:.7rem;color:var(--gold);background:var(--gold-dim);border-color:var(--gold-border)">● بانتظار</span>':
-              '<span class="sub-status-badge expired" style="font-size:.7rem">● ملغاة</span>';
-    return `<div class="info-grid" style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)">
-      <div class="info-box"><div class="info-label">الجلسة #${i+1}</div><div class="info-value">${esc(b.consultation_type||'استشارة')}</div></div>
-      <div class="info-box"><div class="info-label">الموعد</div><div class="info-value">${esc(b.time||b.date||'—')}</div></div>
-      <div class="info-box"><div class="info-label">الحالة</div><div class="info-value">${st}</div></div>
-      <div class="info-box"><div class="info-label">تاريخ الطلب</div><div class="info-value" style="direction:ltr">${fmt(b.created_at)}</div></div>
+  const total=(_sub&&_sub.sessions_total)||4;
+  let html='';
+  for(let n=1;n<=total;n++){
+    const s=vsByNum(n);
+    const status=s?s.status:'available';
+    const badge=status==='completed'?'<span class="sub-status-badge active" style="font-size:.7rem">● مكتملة</span>':
+                status==='scheduled'?'<span class="sub-status-badge" style="font-size:.7rem;color:var(--gold);background:var(--gold-dim);border-color:var(--gold-border)">● قادمة</span>':
+                '<span class="sub-status-badge expired" style="font-size:.7rem;color:var(--text-muted);background:rgba(120,144,124,.06);border-color:var(--border)">● لم تُحجز بعد</span>';
+    const summary=s&&s.summary?s.summary:'';
+    const next=s&&s.next_summary?s.next_summary:'';
+    html+=`<div style="border:1px solid var(--border);border-radius:18px;padding:20px 22px;margin-bottom:16px;background:rgba(12,11,15,.4)">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:${(summary||next)?'14px':'0'}">
+        <h3 style="font-size:1.1rem;color:var(--text)">الجلسة ${n}</h3>
+        ${badge}
+      </div>
+      ${s&&s.session_date?`<div style="font-size:.78rem;color:var(--text-dim);margin-bottom:12px;direction:ltr">📅 ${esc(s.session_date)}</div>`:''}
+      ${summary?`<div style="background:var(--success-bg);border:1px solid rgba(136,174,148,.25);border-radius:12px;padding:14px 16px;margin-bottom:${next?'12px':'0'}">
+        <div style="font-size:.72rem;color:var(--success);margin-bottom:6px">📋 ملخص الجلسة</div>
+        <div style="font-size:.86rem;color:var(--text);line-height:1.8;white-space:pre-line">${esc(summary)}</div>
+      </div>`:''}
+      ${next?`<div style="background:var(--gold-dim);border:1px solid var(--gold-border);border-radius:12px;padding:14px 16px">
+        <div style="font-size:.72rem;color:var(--gold);margin-bottom:6px">🎯 تحضير الجلسة القادمة</div>
+        <div style="font-size:.86rem;color:var(--text);line-height:1.8;white-space:pre-line">${esc(next)}</div>
+      </div>`:''}
+      ${(!summary&&!next&&status==='available')?`<div style="font-size:.8rem;color:var(--text-muted)">ستظهر تفاصيل هذه الجلسة وملخصها هنا بعد حجزها وإجرائها.</div>`:''}
+      ${(!summary&&!next&&status!=='available')?`<div style="font-size:.8rem;color:var(--text-muted)">سيُضاف ملخص هذه الجلسة بعد إتمامها.</div>`:''}
     </div>`;
-  }).join('');
+  }
+  el.innerHTML=html;
 }
 
 // ── PRE-SESSION FORM ──

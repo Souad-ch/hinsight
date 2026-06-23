@@ -562,6 +562,22 @@ a{text-decoration:none;color:inherit}
   </div>
 </div>
 
+<!-- VIP SESSIONS MODAL -->
+<div class="modal-overlay" id="vipSessionsModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 class="modal-title">إدارة جلسات العضو</h3>
+        <p class="panel-sub" id="vsEmail" style="direction:ltr;margin-top:3px"></p>
+      </div>
+      <button class="btn btn-ghost" id="vsClose" style="width:auto">إغلاق</button>
+    </div>
+    <div class="modal-body" id="vsBody">
+      <div class="loading" style="text-align:center;color:var(--text-muted);padding:30px">جارٍ التحميل...</div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">تم</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1085,7 +1101,10 @@ async function loadVip(){
       <td style="direction:ltr">${esc(v.start_date||'—')}</td>
       <td>${esc((v.sessions_used||0)+' / '+(v.sessions_total||4))}</td>
       <td>${st}</td>
-      <td><button class="btn btn-danger" style="min-height:32px;padding:6px 12px;font-size:.72rem" onclick="delVip('${v.id}')">حذف</button></td>
+      <td><div style="display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn btn-outline" style="min-height:32px;padding:6px 12px;font-size:.72rem" onclick="openVipSessions('${esc(v.client_email)}',${v.sessions_total||4})">📝 الجلسات</button>
+        <button class="btn btn-danger" style="min-height:32px;padding:6px 12px;font-size:.72rem" onclick="delVip('${v.id}')">حذف</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
@@ -1096,6 +1115,58 @@ async function delVip(id){
   toast('تم حذف الاشتراك');loadVip();
 }
 document.getElementById('refreshVip').addEventListener('click',loadVip);
+
+// ── إدارة جلسات العضو (ملخصات الجلسة الفائتة والقادمة) ──
+const vipModal=document.getElementById('vipSessionsModal');
+let _vsEmail=null,_vsTotal=4,_vsRows={};
+async function openVipSessions(email,total){
+  _vsEmail=email;_vsTotal=total||4;
+  document.getElementById('vsEmail').textContent=email;
+  vipModal.classList.add('open');
+  document.getElementById('vsBody').innerHTML='<div class="loading" style="text-align:center;color:var(--text-muted);padding:30px">جارٍ التحميل...</div>';
+  const{data}=await sb.from('vip_sessions').select('*').ilike('client_email',email).order('session_number');
+  _vsRows={};(data||[]).forEach(r=>{_vsRows[r.session_number]=r;});
+  renderVsBody();
+}
+function renderVsBody(){
+  let html='';
+  for(let n=1;n<=_vsTotal;n++){
+    const r=_vsRows[n]||{};
+    const status=r.status||'available';
+    html+=`<div style="border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;background:rgba(12,11,15,.4)">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px">
+        <h4 style="font-size:1rem;color:var(--text)">الجلسة ${n}</h4>
+        <select class="select" id="vs-status-${n}" style="width:auto;min-width:140px">
+          <option value="available"${status==='available'?' selected':''}>لم تُحجز بعد</option>
+          <option value="scheduled"${status==='scheduled'?' selected':''}>قادمة / محجوزة</option>
+          <option value="completed"${status==='completed'?' selected':''}>مكتملة</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px">
+        <div class="msg-label">📋 ملخص هذه الجلسة (الفائتة)</div>
+        <textarea class="input" id="vs-summary-${n}" style="width:100%;min-height:80px;line-height:1.7" placeholder="ما تم تناوله في الجلسة ${n}، أهم النقاط، التوصيات...">${esc(r.summary||'')}</textarea>
+      </div>
+      <div style="margin-bottom:12px">
+        <div class="msg-label">🎯 تحضير الجلسة القادمة</div>
+        <textarea class="input" id="vs-next-${n}" style="width:100%;min-height:70px;line-height:1.7" placeholder="ما سيتم التركيز عليه في الجلسة القادمة، مهام أو تحضير للزبون...">${esc(r.next_summary||'')}</textarea>
+      </div>
+      <button class="btn btn-green" style="width:100%" onclick="saveVipSession(${n})">💾 حفظ الجلسة ${n}</button>
+    </div>`;
+  }
+  document.getElementById('vsBody').innerHTML=html;
+}
+async function saveVipSession(n){
+  const status=document.getElementById('vs-status-'+n).value;
+  const summary=document.getElementById('vs-summary-'+n).value.trim();
+  const next_summary=document.getElementById('vs-next-'+n).value.trim();
+  const row={client_email:_vsEmail,session_number:n,status,summary,next_summary,updated_at:new Date().toISOString()};
+  const{error}=await sb.from('vip_sessions').upsert(row,{onConflict:'client_email,session_number'});
+  if(error){toast('تعذّر الحفظ: '+(error.message||''));console.warn(error);return;}
+  _vsRows[n]={..._vsRows[n],...row};
+  toast('✅ تم حفظ الجلسة '+n);
+}
+document.getElementById('vsClose').addEventListener('click',()=>vipModal.classList.remove('open'));
+vipModal.addEventListener('click',e=>{if(e.target===vipModal)vipModal.classList.remove('open');});
 
 document.getElementById('vipCreateBtn').addEventListener('click',async()=>{
   const email=document.getElementById('vipEmail').value.trim();
