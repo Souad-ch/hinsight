@@ -403,6 +403,10 @@ a{text-decoration:none;color:inherit}
               <div class="msg-label">رسالة العميل / التفاصيل</div>
               <p class="msg-text" id="dMessage">—</p>
             </div>
+            <div class="msg-card" id="dPrepCard" style="display:none;border-color:rgba(201,178,123,.3);background:linear-gradient(145deg,rgba(201,178,123,.08),rgba(12,11,15,.34))">
+              <div class="msg-label" style="color:var(--gold)">📝 تحضير الزبون للجلسة (VIP)</div>
+              <div id="dPrep"></div>
+            </div>
             <div>
               <div class="msg-label">Quick Actions</div>
               <div class="actions-grid">
@@ -716,6 +720,14 @@ function renderDetail(){
   document.getElementById('dDate').textContent=b.date||'—';
   document.getElementById('dTime').textContent=b.time||'—';
   document.getElementById('dMessage').textContent=b.message||'—';
+  // تحضير الزبون للجلسة (محفوظ بحقل notes كـ JSON)
+  const prepCard=document.getElementById('dPrepCard');const prepEl=document.getElementById('dPrep');
+  let prep=null;if(b.notes){try{prep=JSON.parse(b.notes);}catch(e){}}
+  if(prep&&(prep.goal||prep.questions||prep.concerns)){
+    const block=(label,val)=>val?`<div style="margin-bottom:10px"><div style="font-size:.72rem;color:var(--accent-light);margin-bottom:3px">${label}</div><div style="font-size:.84rem;color:var(--text);line-height:1.8;white-space:pre-line">${esc(val)}</div></div>`:'';
+    prepEl.innerHTML=block('🎯 الهدف من الجلسة',prep.goal)+block('❓ أسئلة الزبون',prep.questions)+block('⚠ تحديات يواجهها',prep.concerns);
+    prepCard.style.display='block';
+  }else{prepCard.style.display='none';}
   const created=b.created_at?new Date(b.created_at).toLocaleString('ar-EG'):'';
   // تحقّق إذا زبون VIP وأضف شارة
   sb.from('vip_subscriptions').select('status,sessions_used,sessions_total').ilike('client_email',b.client_email||'').eq('status','active').limit(1).then(({data})=>{
