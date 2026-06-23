@@ -17,13 +17,32 @@
 
 /* ══ تباين أعلى للنصوص حتى تصير مقروءة ══ */
 :root {
-  --text: #E6E8E6;
-  --text-dim: #a3b6a5;
-  --text-muted: #6b7d6d;
-  --accent-light: #b8d4bd;
+  --text: #EDEFED;
+  --text-dim: #c2d2c4;
+  --text-muted: #93a695;
+  --accent-light: #c5e0c9;
 }
 
-body { color: #E6E8E6; }
+body { color: #EDEFED; }
+
+/* نصوص المحتوى — أوضح وأفتح، بدون توهج ضبابي حتى تبقى القراءة حادة */
+p, span, a, li,
+.section-subtitle, .card-desc, .cons-desc, .note-text,
+.about-text, .method-desc, .hero-text, .template-desc,
+.pipe-sub, .empty-text, .lib-desc, .report-desc, .testi-text,
+.faq-answer, .qa-text, .feature-desc {
+  color: #d8e2d9;
+  text-shadow: none;
+}
+
+.section-subtitle, .hero-text {
+  color: #dde6de;
+  font-weight: 600;
+}
+
+/* الروابط بالقوائم/الفوتر أوضح */
+.nav-links a { color: #c2d2c4; }
+.footer-link, .footer-col a { color: #c2d2c4; }
 
 /* ── الشعار والعناوين الرئيسية ── */
 .logo-main { text-shadow: var(--ntext-md); color: #c5e0c9; }
