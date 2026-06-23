@@ -150,6 +150,16 @@ a{text-decoration:none;color:inherit}
 .tl-item{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;color:var(--text-dim);font-size:.78rem}
 .tl-dot{width:22px;height:22px;border-radius:50%;border:1px solid rgba(159,187,164,.28);background:rgba(120,144,124,.08);display:flex;align-items:center;justify-content:center;font-family:'DIN Nums',var(--font-ar);color:var(--accent-light);font-size:.7rem}
 
+/* CHAT (operator) */
+.chat-op-box{height:360px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;border-bottom:1px solid var(--line)}
+.op-bubble{max-width:86%;border-radius:12px;padding:10px 13px;font-size:.84rem;line-height:1.6;word-break:break-word}
+.op-bubble.operator{align-self:flex-end;background:rgba(120,144,124,.12);border:1px solid rgba(120,144,124,.25);color:var(--text)}
+.op-bubble.customer{align-self:flex-start;background:rgba(201,178,123,.08);border:1px solid rgba(201,178,123,.2);color:var(--text)}
+.op-sender{font-size:.67rem;color:var(--gold);display:block;margin-bottom:3px}
+.op-time{font-size:.64rem;color:var(--text-muted);margin-top:3px;direction:ltr}
+.session-card{display:grid;grid-template-columns:1fr auto;gap:12px;padding:16px 22px;border-bottom:1px solid rgba(120,144,124,.1);cursor:pointer;transition:var(--tr)}
+.session-card:hover,.session-card.active{background:rgba(120,144,124,.065)}
+.unread-badge{width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(201,178,123,.6);flex-shrink:0;margin-top:6px}
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;z-index:800;background:rgba(5,5,8,.78);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:22px}
 .modal-overlay.open{display:flex}
@@ -212,6 +222,7 @@ a{text-decoration:none;color:inherit}
         <div class="nav-item" data-scroll="templatesPanel"><span><i>03</i> الرسائل</span></div>
         <div class="nav-item" data-scroll="settingsPanel"><span><i>04</i> الإعدادات</span></div>
         <div class="nav-item" data-view="slots"><span><i>05</i> المواعيد المقفلة</span><span class="nav-count" id="navSlots">0</span></div>
+        <div class="nav-item" data-view="support"><span><i>06</i> الدعم</span><span class="nav-count" id="navSupport">0</span></div>
       </nav>
     </div>
     <div class="side-card">
@@ -410,6 +421,42 @@ a{text-decoration:none;color:inherit}
         </table>
       </section>
     </div>
+    <!-- SUPPORT VIEW -->
+    <div id="viewSupport" style="display:none">
+      <div class="dashboard-grid">
+        <div class="left-col">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title">محادثات الدعم المباشر</h2>
+                <p class="panel-sub">رسائل الزبائن من صفحة الدفع — يصلك رد فور إرسالهم.</p>
+              </div>
+              <button class="btn btn-ghost" id="refreshSupport" style="width:auto">🔄</button>
+            </div>
+            <div id="supportSessions" style="max-height:600px;overflow:auto">
+              <div class="empty">لا توجد محادثات بعد.</div>
+            </div>
+          </section>
+        </div>
+        <aside>
+          <section class="panel detail-panel" id="chatDetailPanel">
+            <div class="panel-head">
+              <div>
+                <h2 class="panel-title" id="chatDetailCode" style="font-family:var(--font-en);font-size:.9rem;direction:ltr">اختر محادثة</h2>
+                <p class="panel-sub" id="chatDetailMeta"></p>
+              </div>
+            </div>
+            <div class="chat-op-box" id="opChatBox">
+              <div style="text-align:center;color:var(--text-muted);font-size:.82rem;margin:auto">اختر محادثة من القائمة لتبدأ الرد</div>
+            </div>
+            <div style="padding:14px 16px;display:flex;gap:10px">
+              <input class="input" id="opChatInput" placeholder="رد على الزبون..." style="flex:1;min-width:0;margin:0"/>
+              <button class="btn btn-green" id="opChatSend" style="width:auto;flex-shrink:0">إرسال</button>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
   </main>
 </div>
 </div>
@@ -456,7 +503,7 @@ if(window.emailjs)emailjs.init(EJS_PUBLIC_KEY);
 
 // ── AUTH ──
 function showLogin(){document.getElementById('loginScreen').style.display='flex';document.getElementById('app').style.display='none';}
-function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block';loadBookings();loadSlots();}
+function showApp(){document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='block';loadBookings();loadSlots();loadSupportSessions();initSupportRealtime();}
 sb.auth.getSession().then(({data})=>{ if(data.session) showApp(); else showLogin(); });
 document.getElementById('loginBtn').addEventListener('click',async()=>{
   const email=document.getElementById('emailInput').value.trim();
@@ -627,6 +674,7 @@ document.querySelectorAll('.nav-item[data-view]').forEach(n=>n.addEventListener(
   const v=n.dataset.view;
   document.getElementById('viewRequests').style.display=v==='requests'?'grid':'none';
   document.getElementById('viewSlots').style.display=v==='slots'?'block':'none';
+  document.getElementById('viewSupport').style.display=v==='support'?'block':'none';
   if(v==='slots')loadSlots();
 }));
 
@@ -721,11 +769,7 @@ document.getElementById('copyMessage').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(document.getElementById('messagePreview').textContent);toast('تم نسخ النص');}
   catch(e){toast('انسخي النص يدوياً');}
 });
-document.getElementById('waMessage').addEventListener('click',()=>{
-  const b=selBooking();const txt=document.getElementById('messagePreview').textContent;
-  const ph=(b&&b.client_phone||'').replace(/[^0-9]/g,'');
-  window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(txt),'_blank');
-});
+// (واتساب أُزيل من الواجهة — no waMessage button)
 document.getElementById('emailMessage').addEventListener('click',async()=>{
   const b=selBooking();
   const status=document.getElementById('emailStatus');
@@ -802,6 +846,127 @@ document.getElementById('dailyBtn').addEventListener('click',()=>{
 
 الأولوية المقترحة: مراجعة الطلبات قيد الانتظار وتأكيد المواعيد المناسبة.`);
 });
+
+// ── LIVE SUPPORT CHAT (operator side) ──
+let _sessions={};      // {code:[messages]}
+let _selSession=null;
+let _unread=new Set();
+let _supportCh=null;
+
+function escOp(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function opBubble(m){
+  const isOp=m.sender==='operator';
+  const d=document.createElement('div');
+  d.className='op-bubble '+(isOp?'operator':'customer');
+  const t=new Date(m.created_at).toLocaleString('ar-EG');
+  d.innerHTML=(!isOp?`<span class="op-sender">الزبون</span>`:'')+escOp(m.text)+`<div class="op-time">${t}</div>`;
+  return d;
+}
+
+async function loadSupportSessions(){
+  const{data}=await sb.from('support_messages').select('*').order('created_at',{ascending:true});
+  if(!data)return;
+  _sessions={};
+  data.forEach(m=>{
+    if(!_sessions[m.session_code])_sessions[m.session_code]=[];
+    _sessions[m.session_code].push(m);
+  });
+  renderSessions();
+  if(_selSession)renderOpChat(_selSession);
+  syncSupportBadge();
+}
+
+function renderSessions(){
+  const el=document.getElementById('supportSessions');
+  const codes=Object.keys(_sessions);
+  if(!codes.length){el.innerHTML='<div class="empty">لا توجد محادثات بعد. ستظهر هنا فور رسالة الزبون.</div>';return;}
+  codes.sort((a,b)=>{
+    const la=_sessions[a].slice(-1)[0]?.created_at||'';
+    const lb=_sessions[b].slice(-1)[0]?.created_at||'';
+    return lb.localeCompare(la);
+  });
+  el.innerHTML=codes.map(code=>{
+    const msgs=_sessions[code];
+    const last=msgs[msgs.length-1];
+    const unread=_unread.has(code);
+    const lastTime=last?new Date(last.created_at).toLocaleString('ar-EG'):'';
+    return `<div class="session-card${code===_selSession?' active':''}" data-session="${escOp(code)}">
+      <div>
+        <div class="client-line" style="margin-bottom:5px">
+          <h3 class="client-name" style="font-family:var(--font-en);direction:ltr">${escOp(code)}</h3>
+          ${unread?'<span class="status review" style="font-size:.62rem">رسالة جديدة</span>':''}
+        </div>
+        <p class="request-desc">${escOp((last?.text||'').slice(0,70))}</p>
+        <div class="request-meta">
+          <span class="chip">${msgs.length} رسالة</span>
+          <span class="chip" style="direction:ltr">${escOp(lastTime)}</span>
+        </div>
+      </div>
+      ${unread?'<div class="unread-badge"></div>':''}
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-session]').forEach(c=>c.addEventListener('click',()=>{
+    _selSession=c.dataset.session;
+    _unread.delete(_selSession);
+    renderSessions();
+    renderOpChat(_selSession);
+    syncSupportBadge();
+  }));
+}
+
+function renderOpChat(code){
+  const box=document.getElementById('opChatBox');
+  document.getElementById('chatDetailCode').textContent=code||'اختر محادثة';
+  const msgs=_sessions[code]||[];
+  const booking_link=code?`<a href="bookings.html" style="color:var(--accent-light);font-size:.72rem" target="_blank">الطلب ذو الصلة</a>`:'';
+  document.getElementById('chatDetailMeta').innerHTML=msgs.length?`${msgs.length} رسائل — ${booking_link}`:'';
+  if(!msgs.length){box.innerHTML='<div style="text-align:center;color:var(--text-muted);font-size:.82rem;margin:auto">لا توجد رسائل بعد</div>';return;}
+  box.innerHTML='';
+  msgs.forEach(m=>box.appendChild(opBubble(m)));
+  box.scrollTop=box.scrollHeight;
+}
+
+function syncSupportBadge(){
+  const el=document.getElementById('navSupport');
+  if(el)el.textContent=_unread.size||Object.keys(_sessions).length;
+}
+
+function initSupportRealtime(){
+  if(_supportCh)return;
+  _supportCh=sb.channel('support-operator-all')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'support_messages'},p=>{
+      const m=p.new;
+      if(!_sessions[m.session_code])_sessions[m.session_code]=[];
+      _sessions[m.session_code].push(m);
+      if(m.sender==='customer'&&m.session_code!==_selSession){
+        _unread.add(m.session_code);
+        toast('💬 رسالة دعم جديدة من '+m.session_code);
+      }
+      renderSessions();
+      if(m.session_code===_selSession){
+        const box=document.getElementById('opChatBox');
+        if(box.querySelector('[style*="margin:auto"]'))box.innerHTML='';
+        box.appendChild(opBubble(m));
+        box.scrollTop=box.scrollHeight;
+      }
+      syncSupportBadge();
+    }).subscribe();
+}
+
+document.getElementById('opChatSend').addEventListener('click',async()=>{
+  const inp=document.getElementById('opChatInput');
+  const text=inp.value.trim();
+  if(!text){toast('اكتبي رسالة أولاً');return;}
+  if(!_selSession){toast('اختاري محادثة أولاً');return;}
+  inp.value='';
+  const btn=document.getElementById('opChatSend');btn.disabled=true;
+  try{await sb.from('support_messages').insert({session_code:_selSession,sender:'operator',text});}
+  catch(e){toast('تعذّر الإرسال');console.warn(e);}
+  finally{btn.disabled=false;inp.focus();}
+});
+document.getElementById('opChatInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('opChatSend').click();});
+document.getElementById('refreshSupport').addEventListener('click',loadSupportSessions);
 
 // ── NAV SCROLL ──
 document.querySelectorAll('.nav-item[data-scroll]').forEach(n=>n.addEventListener('click',()=>{
