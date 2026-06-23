@@ -1,240 +1,187 @@
 /* ═══════════════════════════════════════
    NEON GLOW — Hanadi Insights
-   تأثيرات النيون لتحسين قراءة النصوص
+   توهج أخضر على كل العناصر — مع إبقاء النص مقروءاً
    ═══════════════════════════════════════ */
 
 :root {
-  --neon-green: rgba(159, 187, 164, 0.9);
-  --neon-glow-sm: 0 0 8px rgba(159, 187, 164, 0.55), 0 0 20px rgba(159, 187, 164, 0.25);
-  --neon-glow-md: 0 0 12px rgba(159, 187, 164, 0.65), 0 0 30px rgba(159, 187, 164, 0.3), 0 0 60px rgba(159, 187, 164, 0.12);
-  --neon-glow-lg: 0 0 16px rgba(159, 187, 164, 0.8), 0 0 40px rgba(159, 187, 164, 0.4), 0 0 80px rgba(159, 187, 164, 0.15);
+  --neon: rgba(159, 187, 164, 1);
+  /* توهج النص: محكم وقريب حتى يبقى الحرف حاد ومقروء */
+  --ntext-sm: 0 0 6px rgba(159, 187, 164, 0.45);
+  --ntext-md: 0 0 8px rgba(159, 187, 164, 0.55), 0 0 18px rgba(159, 187, 164, 0.22);
+  --ntext-lg: 0 0 10px rgba(159, 187, 164, 0.6), 0 0 26px rgba(159, 187, 164, 0.28);
+  /* توهج الصناديق: واسع وناعم */
+  --nbox-sm: 0 0 18px rgba(159, 187, 164, 0.10);
+  --nbox-md: 0 0 30px rgba(159, 187, 164, 0.16);
+  --nbox-lg: 0 0 50px rgba(159, 187, 164, 0.22);
 }
+
+/* ══ تباين أعلى للنصوص حتى تصير مقروءة ══ */
+:root {
+  --text: #E6E8E6;
+  --text-dim: #a3b6a5;
+  --text-muted: #6b7d6d;
+  --accent-light: #b8d4bd;
+}
+
+body { color: #E6E8E6; }
 
 /* ── الشعار والعناوين الرئيسية ── */
-.logo-main,
-.hero-tagline,
-.hero-title .en {
-  text-shadow: var(--neon-glow-sm);
-}
-
-.hero-title,
-.section-title {
-  text-shadow: var(--neon-glow-md);
-}
+.logo-main { text-shadow: var(--ntext-md); color: #c5e0c9; }
+.hero-tagline, .hero-title .en { text-shadow: var(--ntext-sm); }
+.hero-title, .section-title { text-shadow: var(--ntext-md); color: #EEF2EE; }
 
 /* ── Labels وعناوين الأقسام ── */
-.section-label,
-.side-label,
-.top-label,
-.upcoming-label,
-.slot-label {
-  text-shadow: 0 0 10px rgba(159, 187, 164, 0.7), 0 0 20px rgba(159, 187, 164, 0.35);
-  color: #b8d4bd;
+.section-label, .side-label, .top-label,
+.upcoming-label, .slot-label {
+  text-shadow: var(--ntext-sm);
+  color: #c5e0c9;
 }
 
 /* ── لوحة التحكم ── */
-.top-title,
-.panel-title {
-  text-shadow: var(--neon-glow-sm);
-}
-
-.login-title {
-  text-shadow: var(--neon-glow-md);
-}
+.top-title, .panel-title { text-shadow: var(--ntext-sm); color: #EEF2EE; }
+.login-title { text-shadow: var(--ntext-md); color: #EEF2EE; }
 
 /* ── أرقام المقاييس ── */
-.metric-value,
-.metric-label,
-.num,
-.countdown-val {
-  text-shadow: 0 0 14px rgba(159, 187, 164, 0.7), 0 0 28px rgba(159, 187, 164, 0.35);
+.metric-value, .num, .countdown-val,
+.hero-stat-num, .stat-num {
+  text-shadow: var(--ntext-md);
+  color: #d9ecdc;
 }
+.metric-label { color: #a3b6a5; }
+.countdown-val { text-shadow: var(--ntext-lg); }
 
-.countdown-val {
-  text-shadow: var(--neon-glow-lg);
+/* ── Nav / Sidebar — توهج على العنصر النشط (متل الصورة) ── */
+.nav-item.active {
+  text-shadow: var(--ntext-sm);
+  box-shadow: inset 0 0 24px rgba(159, 187, 164, 0.10),
+              0 0 18px rgba(159, 187, 164, 0.08);
 }
-
-/* ── Nav / Sidebar ── */
-.nav-item.active,
-.nav-item:hover {
-  text-shadow: 0 0 8px rgba(159, 187, 164, 0.5);
-}
-
-.nav-item.active i,
-.nav-item:hover i {
-  box-shadow: 0 0 10px rgba(159, 187, 164, 0.45), inset 0 0 6px rgba(159, 187, 164, 0.15);
+.nav-item:hover { text-shadow: var(--ntext-sm); }
+.nav-item.active i, .nav-item:hover i {
+  box-shadow: 0 0 12px rgba(159, 187, 164, 0.5),
+              inset 0 0 8px rgba(159, 187, 164, 0.2);
 }
 
 /* ── VIP Nav ── */
-.vip-nav-item.active,
-.vip-nav-item:hover {
-  text-shadow: 0 0 8px rgba(159, 187, 164, 0.5);
+.vip-nav-item.active {
+  text-shadow: var(--ntext-sm);
+  box-shadow: inset 0 0 24px rgba(159, 187, 164, 0.10);
 }
+.vip-nav-item:hover { text-shadow: var(--ntext-sm); }
 
 /* ── Status chips ── */
-.status.review  { text-shadow: 0 0 8px rgba(251, 191, 36, 0.6); }
-.status.ok      { text-shadow: 0 0 8px rgba(52, 211, 153, 0.6); }
-.status.no      { text-shadow: 0 0 8px rgba(248, 113, 113, 0.5); }
+.status.review  { text-shadow: 0 0 7px rgba(251, 191, 36, 0.55); }
+.status.ok      { text-shadow: 0 0 7px rgba(52, 211, 153, 0.55); }
+.status.no      { text-shadow: 0 0 7px rgba(248, 113, 113, 0.45); }
 
-/* ── Metric cards ── */
-.metric-card {
+/* ══ توهج على الصناديق — على كلشي ══ */
+.metric-card, .insight-card, .cons-card, .lib-card,
+.report-card, .testi-card, .panel, .side-card,
+.info-box, .template-card, .qa-item, .pipe-step {
   box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.12),
-              0 4px 24px rgba(0, 0, 0, 0.3),
-              0 0 30px rgba(159, 187, 164, 0.05);
+              0 4px 22px rgba(0, 0, 0, 0.3),
+              var(--nbox-sm);
 }
 
-.metric-card:hover {
-  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.25),
-              0 8px 32px rgba(0, 0, 0, 0.35),
-              0 0 50px rgba(159, 187, 164, 0.1);
+.metric-card:hover, .insight-card:hover, .cons-card:hover,
+.lib-card:hover, .report-card:hover, .testi-card:hover {
+  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.28),
+              0 10px 36px rgba(0, 0, 0, 0.4),
+              var(--nbox-md) !important;
 }
 
 /* ── Buttons ── */
-.btn-green:hover,
-.nav-cta:hover {
-  text-shadow: 0 0 12px rgba(12, 11, 15, 0.8);
-  box-shadow: 0 12px 32px rgba(120, 144, 124, 0.45),
-              0 0 60px rgba(159, 187, 164, 0.2) !important;
+.btn-green, .nav-cta {
+  box-shadow: 0 0 22px rgba(159, 187, 164, 0.18);
 }
-
+.btn-green:hover, .nav-cta:hover {
+  box-shadow: 0 12px 30px rgba(120, 144, 124, 0.4),
+              0 0 50px rgba(159, 187, 164, 0.25) !important;
+}
 .btn-outline:hover {
-  text-shadow: 0 0 8px rgba(159, 187, 164, 0.6);
-  box-shadow: 0 8px 24px rgba(120, 144, 124, 0.2),
-              0 0 30px rgba(159, 187, 164, 0.1) !important;
-}
-
-/* ── Cards ── */
-.insight-card:hover,
-.cons-card:hover,
-.lib-card:hover,
-.report-card:hover,
-.testi-card:hover {
-  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.2),
-              0 12px 40px rgba(0, 0, 0, 0.4),
-              0 0 60px rgba(159, 187, 164, 0.08) !important;
+  text-shadow: var(--ntext-sm);
+  box-shadow: 0 8px 22px rgba(120, 144, 124, 0.18),
+              var(--nbox-md) !important;
 }
 
 /* ── Payment page ── */
-.payment-title,
-.payment-sub,
-.section-head,
-.req-num {
-  text-shadow: var(--neon-glow-sm);
-}
-
-.req-num {
-  text-shadow: var(--neon-glow-md);
-  color: #b8d4bd;
-}
+.payment-title, .payment-sub, .section-head { text-shadow: var(--ntext-sm); color:#EEF2EE; }
+.req-num { text-shadow: var(--ntext-md); color: #c5e0c9; }
 
 /* ── pipe steps (مسار) ── */
-.pipe-num {
-  text-shadow: 0 0 10px rgba(159, 187, 164, 0.6);
-}
+.pipe-num { text-shadow: var(--ntext-sm); color:#c5e0c9; }
+.pipe-title { text-shadow: var(--ntext-sm); }
 
-.pipe-title {
-  text-shadow: 0 0 8px rgba(159, 187, 164, 0.35);
-}
+/* ── Form labels / info ── */
+.form-label, .info-label { color: #b8d4bd; text-shadow: var(--ntext-sm); }
+.info-value { color: #dcefdf; }
 
-/* ── Form labels ── */
-.form-label,
-.info-label {
-  text-shadow: 0 0 6px rgba(159, 187, 164, 0.35);
-  color: #9FBBA4;
-}
+/* ── Consultation / template titles ── */
+.cons-title, .template-title, .side-card-title { text-shadow: var(--ntext-sm); color:#EEF2EE; }
 
-/* ── Info values ── */
-.info-value {
-  color: #d4e8d6;
-  text-shadow: 0 0 8px rgba(159, 187, 164, 0.3);
-}
-
-/* ── Consultation cards ── */
-.cons-title,
-.template-title,
-.side-card-title {
-  text-shadow: 0 0 8px rgba(159, 187, 164, 0.35);
-}
-
-/* ── Section green line ── */
+/* ── الخطوط الخضرا ── */
 .green-line {
-  box-shadow: 0 0 12px rgba(120, 144, 124, 0.6),
-              0 0 24px rgba(120, 144, 124, 0.3);
+  box-shadow: 0 0 14px rgba(120, 144, 124, 0.7),
+              0 0 28px rgba(120, 144, 124, 0.35);
 }
 
-/* ── Notification badge ── */
+/* ── Notification ── */
 .notif-badge {
-  box-shadow: 0 0 8px rgba(248, 113, 113, 0.8),
-              0 0 16px rgba(248, 113, 113, 0.4);
+  box-shadow: 0 0 9px rgba(248, 113, 113, 0.85),
+              0 0 18px rgba(248, 113, 113, 0.4);
 }
-
-.notif-btn {
-  filter: drop-shadow(0 0 6px rgba(159, 187, 164, 0.5));
-}
+.notif-btn { filter: drop-shadow(0 0 6px rgba(159, 187, 164, 0.5)); }
 
 /* ── VIP session slots ── */
 .session-slot.completed {
-  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.25),
-              0 0 20px rgba(52, 211, 153, 0.08);
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.3),
+              0 0 22px rgba(52, 211, 153, 0.1);
 }
-
 .session-slot.scheduled {
-  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.25),
-              0 0 20px rgba(251, 191, 36, 0.08);
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.3),
+              0 0 22px rgba(251, 191, 36, 0.1);
 }
 
 /* ── Input focus glow ── */
-.input:focus,
-.select:focus,
-textarea:focus {
+.input:focus, .select:focus, textarea:focus {
   box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.5),
-              0 0 16px rgba(159, 187, 164, 0.15) !important;
+              var(--nbox-sm) !important;
   outline: none;
 }
 
-/* ── Pipe step dots / borders ── */
-.pipe-step::before {
-  box-shadow: 0 0 10px rgba(120, 144, 124, 0.5);
-}
-
-/* ── Hero stat numbers ── */
-.hero-stat-num,
-.stat-num {
-  text-shadow: var(--neon-glow-md);
-}
-
-/* ── Pulse animation for active metric dot ── */
+/* ── نقطة pulse تنبض ── */
 .metric-dot {
   box-shadow: 0 0 6px rgba(120, 144, 124, 0.8);
   animation: neonDotPulse 2.5s ease-in-out infinite;
 }
-
 @keyframes neonDotPulse {
   0%, 100% { box-shadow: 0 0 4px rgba(120, 144, 124, 0.6); }
-  50%       { box-shadow: 0 0 10px rgba(120, 144, 124, 1), 0 0 20px rgba(159, 187, 164, 0.5); }
+  50%       { box-shadow: 0 0 11px rgba(120, 144, 124, 1), 0 0 22px rgba(159, 187, 164, 0.5); }
 }
 
-/* ── نيون للرأس في لوحة التحكم ── */
-.topbar-left .top-title {
-  text-shadow: var(--neon-glow-sm);
-}
-
-/* ── Neon border on booking detail panel ── */
+/* ── Booking detail panel ── */
 #dPanel {
   border-color: rgba(120, 144, 124, 0.2);
-  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.08),
-              0 8px 32px rgba(0, 0, 0, 0.4),
-              0 0 60px rgba(159, 187, 164, 0.04);
+  box-shadow: 0 0 0 1px rgba(120, 144, 124, 0.1),
+              0 8px 30px rgba(0, 0, 0, 0.4),
+              var(--nbox-sm);
 }
 
-/* ── Support / chat ── */
-.chat-bubble.operator .bubble-text {
-  text-shadow: 0 0 6px rgba(159, 187, 164, 0.35);
-}
-
-/* ── prep chip ── */
+/* ── chat / prep ── */
+.chat-bubble.operator .bubble-text { text-shadow: var(--ntext-sm); }
 .prep-chip {
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5),
+  box-shadow: 0 0 9px rgba(251, 191, 36, 0.5),
               0 0 20px rgba(251, 191, 36, 0.2);
-  text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.55);
+}
+
+/* ══ توهج خلفي ناعم للسكشنات (متل الصورة) ══ */
+.metrics::before {
+  content: '';
+  position: absolute;
+  inset: -20% 10% auto 10%;
+  height: 200px;
+  background: radial-gradient(ellipse at center, rgba(159,187,164,0.06), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
