@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hanadi Insights — منصة هنادي لتحليل الأسواق</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230C0B0F'/%3E%3Crect x='3' y='3' width='94' height='94' rx='20' fill='none' stroke='%2378907C' stroke-width='3'/%3E%3Ctext x='50' y='70' font-family='Georgia,serif' font-size='62' font-weight='600' fill='%239FBBA4' text-anchor='middle'%3EH%3C/text%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* DIN Next LT Arabic — كل الأوزان */
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Light.woff2') format('woff2'),url('fonts/DINNextLTArabic-Light.woff') format('woff');font-weight:300;font-style:normal;font-display:swap;}
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2'),url('fonts/DINNextLTArabic-Regular.woff') format('woff');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Medium.woff2') format('woff2'),url('fonts/DINNextLTArabic-Medium.woff') format('woff');font-weight:500 600;font-style:normal;font-display:swap;}
+@font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Bold.woff2') format('woff2'),url('fonts/DINNextLTArabic-Bold.woff') format('woff');font-weight:700 900;font-style:normal;font-display:swap;}
+/* DIN Nums: يطبّق DIN Next LT Arabic على الأرقام والعلامات في أي عنصر */
+@font-face{font-family:'DIN Nums';src:url('fonts/DINNextLTArabic-Light.woff2') format('woff2'),url('fonts/DINNextLTArabic-Light.woff') format('woff');font-weight:100 350;font-display:swap;unicode-range:U+0030-0039,U+0660-0669,U+06F0-06F9,U+002E,U+002C,U+0025,U+002B,U+002D,U+0020;}
+@font-face{font-family:'DIN Nums';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2'),url('fonts/DINNextLTArabic-Regular.woff') format('woff');font-weight:351 550;font-display:swap;unicode-range:U+0030-0039,U+0660-0669,U+06F0-06F9,U+002E,U+002C,U+0025,U+002B,U+002D,U+0020;}
+@font-face{font-family:'DIN Nums';src:url('fonts/DINNextLTArabic-Medium.woff2') format('woff2'),url('fonts/DINNextLTArabic-Medium.woff') format('woff');font-weight:551 650;font-display:swap;unicode-range:U+0030-0039,U+0660-0669,U+06F0-06F9,U+002E,U+002C,U+0025,U+002B,U+002D,U+0020;}
+@font-face{font-family:'DIN Nums';src:url('fonts/DINNextLTArabic-Bold.woff2') format('woff2'),url('fonts/DINNextLTArabic-Bold.woff') format('woff');font-weight:651 900;font-display:swap;unicode-range:U+0030-0039,U+0660-0669,U+06F0-06F9,U+002E,U+002C,U+0025,U+002B,U+002D,U+0020;}
+:root{
+--bg:#0C0B0F;--bg-mid:#111014;--card:#161818;--card-hover:#1c1f1f;
+--border:rgba(120,144,124,0.15);--accent:#78907C;--accent-light:#9FBBA4;
+--accent-dim:#506155;--glow:rgba(159,187,164,0.12);--text:#DDDEDD;
+--text-dim:#8a9a8c;--text-muted:#4a5a4c;--line:rgba(120,144,124,0.18);
+--font-ar:'DIN Nums','DIN Next LT Arabic','Noto Naskh Arabic',sans-serif;--font-en:'DIN Nums','Cormorant Garamond',serif;
+--font-num:'DIN Nums','DIN Next LT Arabic',sans-serif;
+--font-heading:var(--font-ar);--font-body:var(--font-ar);--font-btn:var(--font-ar);
+--radius:8px;--tr:0.4s cubic-bezier(0.4,0,0.2,1);
+}
+/* ══ DESIGN SKINS — أنماط التصميم (تتغيّر من لوحة التحكم) ══ */
+/* ناعم: زوايا دائرية + أزرار حبّة + ظلال */
+html[data-style="soft"]{--radius:20px;}
+html[data-style="soft"] .insight-card,html[data-style="soft"] .cons-card,html[data-style="soft"] .lib-card,html[data-style="soft"] .report-card,html[data-style="soft"] .testi-card,html[data-style="soft"] .qa-item{box-shadow:0 12px 40px rgba(0,0,0,0.22);}
+html[data-style="soft"] .btn,html[data-style="soft"] .nav-cta{border-radius:999px!important;}
+/* حادّ: زوايا قائمة + تباعد حروف (طابع تحريري) */
+html[data-style="sharp"]{--radius:0px;}
+html[data-style="sharp"] .section-title,html[data-style="sharp"] .hero-title{letter-spacing:0.03em;}
+html[data-style="sharp"] .btn,html[data-style="sharp"] .nav-cta{border-radius:0!important;letter-spacing:0.06em;}
+/* زجاجي: شفافية + تمويه خلفي */
+html[data-style="glass"]{--radius:16px;}
+html[data-style="glass"] .insight-card,html[data-style="glass"] .cons-card,html[data-style="glass"] .lib-card,html[data-style="glass"] .report-card,html[data-style="glass"] .testi-card{background:color-mix(in srgb,var(--card) 65%,transparent)!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 32px rgba(0,0,0,0.28);}
+/* جريء: حدود سميكة + ظل صلب */
+html[data-style="bold"]{--radius:6px;}
+html[data-style="bold"] .insight-card,html[data-style="bold"] .cons-card,html[data-style="bold"] .lib-card,html[data-style="bold"] .report-card,html[data-style="bold"] .testi-card{border-width:2px;box-shadow:6px 6px 0 var(--border);}
+html[data-style="bold"] .btn,html[data-style="bold"] .nav-cta{border-radius:6px!important;font-weight:800!important;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:600;line-height:1.75;overflow-x:hidden;direction:rtl;}
+p,span,a,li,.card-desc,.cons-desc,.note-text,.about-text,.section-subtitle,.method-desc,.art-modal-body p,.hero-text{font-weight:600;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5;}
+a{text-decoration:none;color:inherit;}img{display:block;max-width:100%;}ul{list-style:none;}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+
+/* TYPOGRAPHY */
+.en{font-family:var(--font-en);letter-spacing:0.04em;}
+h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weight:700;line-height:1.3;}
+.section-label{font-family:var(--font-en);font-size:0.68rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent-light);display:inline-flex;align-items:center;gap:10px;margin-bottom:14px;}
+.section-label::before{content:'';display:block;width:24px;height:1px;background:var(--accent-light);}
+.section-title{font-size:clamp(1.8rem,3vw,2.6rem);color:var(--text);margin-bottom:16px;}
+.section-subtitle{color:var(--text-dim);font-size:1.05rem;max-width:520px;line-height:1.85;}
+.green-line{width:60px;height:2px;background:linear-gradient(270deg,var(--accent),transparent);margin-bottom:32px;animation:lineExpand 0.8s ease forwards;}
+
+/* LUXURY ANIMATIONS */
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-30px) scale(1.08);}66%{transform:translate(-30px,20px) scale(0.94);}}
+@keyframes heroReveal{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
+@keyframes lineExpand{from{width:0;}to{width:60px;}}
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(159,187,164,0.08);}50%{box-shadow:0 0 50px rgba(159,187,164,0.22);}}
+@keyframes borderShimmer{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
+@keyframes modalIn{from{opacity:0;transform:translateY(40px) scale(0.96);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes overlayIn{from{opacity:0;}to{opacity:1;}}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:var(--radius);font-family:var(--font-btn);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--tr);border:none;outline:none;position:relative;overflow:hidden;}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 60%);opacity:0;transition:var(--tr);}
+.btn:hover::after{opacity:1;}
+.btn-green{background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:var(--bg);}
+.btn-green:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(120,144,124,0.4);}
+.btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);}
+.btn-outline:hover{background:var(--glow);transform:translateY(-3px);box-shadow:0 8px 24px rgba(120,144,124,0.15);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);font-size:0.88rem;padding:9px 20px;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent-light);transform:translateY(-2px);}
+
+/* HEADER */
+#header{position:fixed;top:0;right:0;left:0;z-index:1000;background:rgba(12,11,15,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--line);transition:var(--tr);}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+.logo{display:flex;flex-direction:column;line-height:1.1;}
+.logo-main{font-family:var(--font-en);font-size:1.25rem;font-weight:600;color:var(--accent-light);letter-spacing:0.06em;}
+.logo-sub{font-size:0.62rem;color:var(--text-muted);letter-spacing:0.14em;font-family:var(--font-en);text-transform:uppercase;}
+.nav-links{display:flex;align-items:center;gap:2px;}
+.nav-links a{font-size:0.85rem;color:#aaba96;padding:7px 13px;border-radius:6px;transition:var(--tr);}
+.nav-links a:hover{color:var(--accent-light);background:rgba(120,144,124,0.08);}
+.nav-cta{padding:9px 22px!important;background:linear-gradient(135deg,var(--accent),var(--accent-dim))!important;color:var(--bg)!important;font-weight:700!important;border-radius:var(--radius)!important;}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(120,144,124,0.4)!important;}
+.menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;}
+.menu-toggle span{display:block;width:24px;height:2px;background:var(--accent);transition:var(--tr);border-radius:2px;}
+.mobile-nav{display:none;position:fixed;inset:72px 0 0 0;background:var(--card);z-index:999;padding:32px 24px;flex-direction:column;gap:8px;border-top:1px solid var(--line);overflow-y:auto;}
+.mobile-nav.open{display:flex;}
+.mobile-nav a{padding:14px 0;font-size:1.05rem;color:var(--text-dim);border-bottom:1px solid var(--line);transition:var(--tr);}
+.mobile-nav a:hover{color:var(--accent-light);padding-right:10px;}
+.mobile-nav .btn{margin-top:16px;justify-content:center;}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;padding:120px 0 80px;position:relative;overflow:hidden;}
+.hero-orbs{position:absolute;inset:0;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);}
+.orb-1{width:700px;height:700px;background:radial-gradient(circle,rgba(120,144,124,0.07) 0%,transparent 70%);top:-200px;left:-150px;animation:orbFloat 12s ease-in-out infinite;}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(159,187,164,0.05) 0%,transparent 70%);bottom:-100px;right:5%;animation:orbFloat 16s ease-in-out infinite reverse;animation-delay:-5s;}
+.orb-3{width:300px;height:300px;background:radial-gradient(circle,rgba(80,97,85,0.1) 0%,transparent 70%);top:40%;right:30%;animation:orbFloat 10s ease-in-out infinite;animation-delay:-8s;}
+.hero-grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(120,144,124,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(120,144,124,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+#hero::after{content:'INSIGHTS';position:absolute;bottom:-30px;left:-10px;font-family:var(--font-en);font-size:clamp(6rem,14vw,20rem);font-weight:600;color:rgba(120,144,124,0.03);letter-spacing:0.1em;pointer-events:none;line-height:1;}
+.hero-inner{display:grid;grid-template-columns:1fr 400px;gap:80px;align-items:center;position:relative;z-index:1;}
+.hero-label{font-family:var(--font-en);font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent-light);display:flex;align-items:center;gap:16px;margin-bottom:28px;opacity:0;animation:heroReveal 0.8s ease 0.2s forwards;}
+.hero-label::before{content:'';display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--accent));}
+.hero-title{font-size:clamp(2.6rem,5vw,4.2rem);color:var(--text);line-height:1.15;margin-bottom:28px;opacity:0;animation:heroReveal 0.9s ease 0.4s forwards;}
+.hero-title span{background:linear-gradient(135deg,var(--accent-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-text{font-size:1.08rem;color:var(--text-dim);max-width:520px;margin-bottom:44px;line-height:1.9;opacity:0;animation:heroReveal 0.9s ease 0.6s forwards;}
+.hero-buttons{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:60px;opacity:0;animation:heroReveal 0.9s ease 0.8s forwards;}
+.trust-badges{display:flex;gap:44px;flex-wrap:wrap;opacity:0;animation:heroReveal 0.9s ease 1s forwards;}
+.trust-badge{display:flex;flex-direction:column;position:relative;}
+.trust-badge::after{content:'';position:absolute;bottom:-8px;right:0;left:0;height:1px;background:linear-gradient(270deg,var(--accent-dim),transparent);}
+.trust-badge .num{font-family:var(--font-en);font-size:1.1rem;font-weight:600;color:var(--accent-light);line-height:1;margin-bottom:5px;}
+.trust-badge .lbl{font-size:0.78rem;color:var(--text-muted);}
+.hero-image-wrap{position:relative;opacity:0;animation:heroReveal 1s ease 0.5s forwards;}
+.hero-image-frame{width:100%;aspect-ratio:3/4;max-height:540px;background:linear-gradient(135deg,var(--card) 0%,var(--bg-mid) 100%);border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.hero-image-frame::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(12,11,15,0.7) 100%),linear-gradient(135deg,rgba(120,144,124,0.06) 0%,transparent 50%);}
+.hero-image-frame::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(159,187,164,0.04) 0%,transparent 50%,rgba(120,144,124,0.04) 100%);animation:float 6s ease-in-out infinite;}
+.hero-ph{color:var(--accent-dim);font-size:2.5rem;position:relative;z-index:1;}
+.hero-image-wrap::after{content:'';position:absolute;bottom:-16px;right:-16px;width:90px;height:90px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent);border-radius:0 0 4px 0;}
+.hero-image-wrap::before{content:'';position:absolute;top:-16px;left:-16px;width:90px;height:90px;border-top:2px solid var(--accent);border-left:2px solid var(--accent);border-radius:4px 0 0 0;z-index:1;}
+.hero-badge{position:absolute;bottom:28px;right:-20px;background:var(--card);border:1px solid rgba(120,144,124,0.3);border-radius:8px;padding:14px 18px;backdrop-filter:blur(10px);animation:glowPulse 3s ease-in-out infinite;z-index:2;}
+.hero-badge .badge-num{font-family:var(--font-en);font-size:1.4rem;font-weight:600;color:var(--accent-light);display:block;line-height:1;}
+.hero-badge .badge-lbl{font-size:0.72rem;color:var(--text-muted);margin-top:3px;}
+
+/* SECTIONS */
+.section{padding:110px 0;position:relative;}
+.section-head{margin-bottom:60px;}
+
+/* TICKER */
+.ticker-wrap{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:12px 0;position:relative;}
+.ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
+.ticker-wrap::before{right:0;background:linear-gradient(270deg,var(--card),transparent);}
+.ticker-wrap::after{left:0;background:linear-gradient(90deg,var(--card),transparent);}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 9s linear infinite;will-change:transform;}
+@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-25%);}}
+.ticker-item{font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);padding:0 32px;display:inline-flex;align-items:center;gap:12px;}
+.ticker-item .ti-val{transition:color 0.3s,background 0.3s;border-radius:4px;padding:1px 4px;}
+.ticker-item .ti-up{color:#4caf88;}.ticker-item .ti-down{color:#c0392b;}
+@keyframes flashUp{0%{background:rgba(76,175,136,0.28);}100%{background:transparent;}}
+@keyframes flashDown{0%{background:rgba(192,57,43,0.28);}100%{background:transparent;}}
+.ti-val.flash-up{animation:flashUp 0.7s ease;}
+.ti-val.flash-down{animation:flashDown 0.7s ease;}
+.ticker-sep{color:var(--accent-dim);}
+
+/* INSIGHTS */
+#insights{background:var(--card);}
+.insights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.insight-card{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius);padding:36px;transition:var(--tr);cursor:pointer;position:relative;overflow:hidden;}
+.insight-card::before{content:'';position:absolute;bottom:0;right:0;left:0;height:2px;background:linear-gradient(270deg,var(--accent),transparent);transform:scaleX(0);transform-origin:right;transition:var(--tr);}
+.insight-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(120,144,124,0.05) 0%,transparent 70%);opacity:0;transition:var(--tr);}
+.insight-card:hover{border-color:rgba(120,144,124,0.4);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 60px rgba(120,144,124,0.06);}
+.insight-card:hover::before{transform:scaleX(1);}
+.insight-card:hover::after{opacity:1;}
+.card-tag{font-family:var(--font-en);font-size:0.63rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-light);background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.22);padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:18px;}
+.card-title{font-size:1.12rem;color:var(--text);margin-bottom:14px;line-height:1.5;}
+.card-desc{font-size:0.88rem;color:var(--text-muted);line-height:1.8;margin-bottom:28px;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;}
+.card-date{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
+.read-more-btn{display:inline-flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--accent-light);background:transparent;border:none;cursor:pointer;font-family:var(--font-ar);padding:0;transition:var(--tr);}
+.read-more-btn:hover{color:var(--text);gap:10px;}
+.read-more-btn .arr{transition:var(--tr);}
+
+/* METHOD */
+#method{background:var(--bg);overflow:hidden;}
+.method-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(120,144,124,0.04) 0%,transparent 70%);pointer-events:none;}
+.method-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+.method-grid::before{content:'';position:absolute;top:68px;right:12.5%;left:12.5%;height:1px;background:linear-gradient(90deg,transparent,var(--accent-dim),var(--accent-dim),transparent);}
+.method-card{padding:44px 28px;text-align:center;position:relative;border-top:1px solid var(--line);transition:var(--tr);}
+.method-card:not(:last-child){border-left:1px solid var(--line);}
+.method-card:hover{background:rgba(120,144,124,0.03);}
+.method-num{font-family:var(--font-en);font-size:0.63rem;letter-spacing:0.22em;color:var(--accent-dim);display:block;margin-bottom:18px;}
+.method-icon{width:64px;height:64px;background:rgba(120,144,124,0.06);border:1px solid rgba(120,144,124,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;transition:var(--tr);}
+.method-card:hover .method-icon{background:rgba(120,144,124,0.14);border-color:var(--accent);box-shadow:0 0 30px rgba(159,187,164,0.18);transform:scale(1.08);}
+.method-name{font-size:1.05rem;color:var(--text);margin-bottom:10px;}
+.method-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.75;}
+
+/* NOTES / Q&A */
+#notes{background:var(--card);}
+.qa-list{display:flex;flex-direction:column;gap:14px;max-width:900px;margin:0 auto;}
+.qa-item{position:relative;background:linear-gradient(155deg,rgba(22,24,24,0.9),rgba(13,13,17,0.96));border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr);}
+.qa-item::before{content:'';position:absolute;top:0;bottom:0;right:0;width:3px;background:linear-gradient(180deg,var(--accent),var(--accent-dim));transform:scaleY(0);transform-origin:top;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);}
+.qa-item:hover{border-color:rgba(120,144,124,0.32);transform:translateX(-3px);}
+.qa-item.open{border-color:rgba(159,187,164,0.4);box-shadow:0 22px 50px rgba(0,0,0,0.4),0 0 40px rgba(120,144,124,0.05);}
+.qa-item.open::before{transform:scaleY(1);}
+.qa-question{width:100%;background:transparent;border:none;outline:none;cursor:pointer;display:flex;align-items:center;gap:18px;padding:24px 30px;font-family:var(--font-ar);font-size:1.04rem;color:var(--text);font-weight:700;text-align:right;transition:color var(--tr);}
+.qa-question>span:nth-child(2){flex:1;line-height:1.6;}
+.qa-question:hover{color:var(--accent-light);}
+.qa-q-icon{width:38px;height:38px;background:rgba(120,144,124,0.08);border:1px solid rgba(120,144,124,0.22);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:0.92rem;color:var(--accent-light);flex-shrink:0;font-family:var(--font-en);font-weight:700;transition:var(--tr);}
+.qa-item.open .qa-q-icon{background:linear-gradient(135deg,var(--accent),var(--accent-dim));border-color:transparent;color:#0b0b0e;box-shadow:0 6px 18px rgba(120,144,124,0.28);}
+.qa-arrow{position:relative;width:26px;height:26px;flex-shrink:0;font-size:0;}
+.qa-arrow::before,.qa-arrow::after{content:'';position:absolute;top:50%;left:50%;width:13px;height:2px;border-radius:2px;background:var(--accent-dim);transform:translate(-50%,-50%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1),background var(--tr);}
+.qa-arrow::after{transform:translate(-50%,-50%) rotate(90deg);}
+.qa-question:hover .qa-arrow::before,.qa-question:hover .qa-arrow::after{background:var(--accent-light);}
+.qa-item.open .qa-arrow::before{background:var(--accent-light);}
+.qa-item.open .qa-arrow::after{transform:translate(-50%,-50%) rotate(0deg);background:var(--accent-light);}
+.qa-answer{max-height:0;overflow:hidden;transition:max-height 0.45s cubic-bezier(0.4,0,0.2,1);}
+.qa-item.open .qa-answer{max-height:320px;}
+.qa-answer-inner{margin:0 30px 24px 30px;padding:18px 0 0;font-size:0.96rem;color:var(--text-dim);line-height:1.95;border-top:1px solid var(--line);}
+
+/* CONSULTATIONS */
+#consultations{background:var(--bg);}
+.cons-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.cons-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:44px 36px;display:flex;flex-direction:column;gap:22px;transition:var(--tr);position:relative;overflow:hidden;}
+.cons-card::after{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(270deg,var(--accent),var(--accent-dim));transform:scaleX(0);transform-origin:right;transition:var(--tr);}
+.cons-card:hover{transform:translateY(-6px);box-shadow:0 28px 60px rgba(0,0,0,0.5),0 0 40px rgba(120,144,124,0.07);}
+.cons-card:hover::after{transform:scaleX(1);}
+.cons-card.featured{border-color:rgba(120,144,124,0.3);}
+.cons-card.featured::after{transform:scaleX(1);}
+.cons-icon{font-size:2rem;}
+.cons-name{font-size:1.25rem;color:var(--text);}
+.cons-desc{font-size:0.88rem;color:var(--text-muted);line-height:1.8;flex:1;}
+.cons-duration{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--accent-dim);font-family:var(--font-en);}
+.cons-duration::before{content:'◷';}
+
+/* BOOKING - LUXURY CALENDAR */
+#booking{background:var(--card);}
+.booking-wrapper{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:560px;margin:0 auto;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);}
+.cal-title{font-size:0.95rem;color:var(--text);font-family:var(--font-ar);letter-spacing:0.02em;}
+.cal-nav{display:flex;gap:6px;}
+.cal-btn{width:30px;height:30px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:0.95rem;}
+.cal-btn:hover{border-color:var(--accent);color:var(--accent-light);background:rgba(120,144,124,0.08);}
+.cal-btn:disabled{opacity:0.25;cursor:not-allowed;}
+.cal-grid-wrap{padding:14px 20px 0;}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px;}
+.cal-wd{text-align:center;font-size:0.62rem;color:var(--text-muted);font-family:var(--font-ar);padding:4px 0;letter-spacing:0.03em;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;transition:var(--tr);position:relative;border:1px solid transparent;min-height:32px;}
+.cal-day:empty{cursor:default;}
+.cal-day:not(:empty):hover{background:rgba(120,144,124,0.08);border-color:rgba(120,144,124,0.2);}
+.cal-day.past{opacity:0.28;cursor:not-allowed;pointer-events:none;}
+.cal-day.today .day-n{color:var(--accent-light);font-weight:700;}
+.cal-day.selected{background:rgba(120,144,124,0.14);border-color:var(--accent)!important;}
+.cal-day.selected .day-n{color:var(--accent-light);}
+.cal-day.fully-booked{opacity:0.35;}
+.day-n{font-family:var(--font-en);font-size:0.78rem;color:var(--text);line-height:1;}
+.day-dot{width:3px;height:3px;border-radius:50%;margin-top:3px;}
+.has-slots .day-dot{background:var(--accent);box-shadow:0 0 5px rgba(120,144,124,0.6);}
+.fully-booked .day-dot{background:var(--text-muted);}
+.no-slots .day-dot{background:transparent;}
+.slots-panel{padding:16px 20px 20px;border-top:1px solid var(--line);margin-top:10px;}
+.slots-date-title{font-size:0.82rem;color:var(--text-muted);margin-bottom:14px;}
+.slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.slot{border:1px solid var(--border);border-radius:8px;padding:14px 10px;text-align:center;cursor:pointer;transition:var(--tr);position:relative;background:var(--card);}
+.slot:hover:not(.booked){border-color:var(--accent);background:rgba(120,144,124,0.07);box-shadow:0 0 20px rgba(159,187,164,0.1);transform:translateY(-2px);}
+.slot .slot-time{font-family:var(--font-en);font-size:1.1rem;font-weight:300;color:var(--text);display:block;margin-bottom:4px;}
+.slot .slot-label{font-size:0.78rem;color:var(--text-dim);}
+.slot.booked{cursor:not-allowed;border-color:rgba(100,100,100,0.15);background:rgba(20,20,20,0.5);opacity:0.6;}
+.slot.booked .slot-time{color:var(--text-muted);text-decoration:line-through;}
+.slot.booked::after{content:'محجوز';position:absolute;bottom:8px;right:50%;transform:translateX(50%);font-size:0.6rem;color:#c0392b;font-family:var(--font-ar);}
+.slots-placeholder{text-align:center;padding:32px 0;color:var(--text-muted);font-size:0.9rem;}
+
+/* BOOKING MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(8,8,12,0.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px;animation:overlayIn 0.3s ease forwards;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid rgba(120,144,124,0.2);border-radius:16px;padding:44px;max-width:480px;width:100%;position:relative;box-shadow:0 60px 120px rgba(0,0,0,0.8),0 0 80px rgba(120,144,124,0.08);animation:modalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards;}
+.modal-close{position:absolute;top:18px;left:18px;width:34px;height:34px;background:var(--bg);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:var(--tr);}
+.modal-close:hover{border-color:var(--accent);color:var(--accent-light);transform:rotate(90deg);}
+.modal h3{font-size:1.35rem;color:var(--text);margin-bottom:8px;}
+.modal-slot-info{font-size:0.88rem;color:var(--accent-light);margin-bottom:30px;font-family:var(--font-en);direction:ltr;text-align:left;}
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:0.85rem;color:var(--text-dim);margin-bottom:8px;}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;font-family:var(--font-ar);font-size:0.95rem;color:var(--text);outline:none;transition:var(--tr);direction:rtl;}
+.form-input::placeholder{color:var(--text-muted);}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(120,144,124,0.12);}
+.modal-actions{display:flex;gap:12px;margin-top:28px;}
+.modal-actions .btn{flex:1;justify-content:center;}
+.success-msg{text-align:center;padding:20px 0;display:none;}
+.success-msg .success-icon{font-size:3.5rem;margin-bottom:18px;}
+.success-msg h4{font-size:1.25rem;color:var(--text);margin-bottom:8px;}
+.success-msg p{font-size:0.88rem;color:var(--text-dim);}
+
+/* ARTICLE MODAL */
+#articleModal .modal{max-width:760px;max-height:88vh;overflow-y:auto;padding:0;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;}
+#articleModal .modal::-webkit-scrollbar{width:4px;}
+#articleModal .modal::-webkit-scrollbar-thumb{background:var(--accent-dim);border-radius:4px;}
+.art-modal-head{padding:44px 48px 32px;border-bottom:1px solid var(--line);}
+.art-modal-tag{font-family:var(--font-en);font-size:0.63rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent-light);background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.22);padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:16px;}
+.art-modal-title{font-size:clamp(1.4rem,3vw,2rem);color:var(--text);line-height:1.35;margin-bottom:16px;}
+.art-modal-meta{display:flex;gap:20px;align-items:center;font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);}
+.art-modal-meta span{display:flex;align-items:center;gap:6px;}
+.art-modal-body{padding:36px 48px 48px;}
+.art-modal-body p{font-size:1.02rem;color:var(--text-dim);line-height:2;margin-bottom:24px;}
+.art-modal-body h4{font-size:1.1rem;color:var(--text);margin:32px 0 14px;}
+.art-modal-body blockquote{border-right:3px solid var(--accent);padding:16px 20px;background:rgba(120,144,124,0.05);border-radius:0 8px 8px 0;margin:28px 0;font-style:italic;color:var(--text-dim);}
+.art-close-btn{position:sticky;top:16px;float:left;margin:16px 16px 0 0;width:36px;height:36px;background:var(--bg);border:1px solid var(--border);border-radius:50%;cursor:pointer;color:var(--text-dim);display:flex;align-items:center;justify-content:center;transition:var(--tr);z-index:10;}
+.art-close-btn:hover{border-color:var(--accent);color:var(--accent-light);transform:rotate(90deg);}
+
+/* ABOUT */
+#about{background:var(--bg-mid);}
+.about-inner{display:grid;grid-template-columns:1fr 360px;gap:80px;align-items:start;}
+.about-text{font-size:1.05rem;color:var(--text-dim);line-height:1.95;margin-bottom:40px;}
+.timeline{border-right:2px solid var(--line);padding-right:32px;}
+.timeline-item{position:relative;margin-bottom:36px;}
+.timeline-item::before{content:'';position:absolute;top:8px;right:-39px;width:14px;height:14px;border-radius:50%;background:var(--bg-mid);border:2px solid var(--accent-dim);transition:var(--tr);}
+.timeline-item:first-child::before{border-color:var(--accent);background:var(--accent);box-shadow:0 0 16px rgba(120,144,124,0.5);}
+.timeline-item:hover::before{border-color:var(--accent);}
+.timeline-year{font-family:var(--font-en);font-size:0.75rem;letter-spacing:0.12em;color:var(--accent-light);display:block;margin-bottom:6px;}
+.timeline-title{font-size:0.97rem;color:var(--text);}
+.about-photo{aspect-ratio:4/5;background:linear-gradient(135deg,var(--card) 0%,var(--bg) 100%);border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.about-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(12,11,15,0.6) 100%);}
+
+/* LIBRARY */
+#library{background:var(--bg);}
+.library-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.lib-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;display:flex;gap:16px;align-items:center;transition:var(--tr);cursor:pointer;}
+.lib-card:hover{border-color:rgba(120,144,124,0.35);transform:translateX(-5px);box-shadow:4px 0 24px rgba(0,0,0,0.3);}
+.lib-index{font-family:var(--font-en);font-size:1.8rem;font-weight:300;color:rgba(120,144,124,0.2);line-height:1;flex-shrink:0;transition:var(--tr);}
+.lib-card:hover .lib-index{color:rgba(120,144,124,0.5);}
+.lib-name{font-size:0.95rem;color:var(--text);}
+
+/* REPORTS */
+#reports{background:var(--card);}
+.reports-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.report-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;transition:var(--tr);}
+.report-card:hover{border-color:rgba(120,144,124,0.35);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.report-icon{width:48px;height:60px;background:rgba(120,144,124,0.07);border:1px solid rgba(120,144,124,0.18);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;position:relative;}
+.report-icon::after{content:'PDF';position:absolute;bottom:-1px;right:-1px;background:var(--accent);color:var(--bg);font-family:var(--font-en);font-size:0.48rem;font-weight:700;padding:2px 4px;border-radius:2px;letter-spacing:0.05em;}
+.report-name{font-size:1.05rem;color:var(--text);margin-bottom:8px;}
+.report-date{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);margin-bottom:24px;}
+
+/* TESTIMONIALS */
+#testimonials{background:var(--bg-mid);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.testi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;position:relative;transition:var(--tr);display:flex;flex-direction:column;}
+.testi-card::before{content:'\201D';position:absolute;top:14px;left:24px;font-family:var(--font-en);font-size:4rem;line-height:1;color:rgba(120,144,124,0.16);}
+.testi-card:hover{border-color:rgba(120,144,124,0.4);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.testi-stars{color:var(--accent-light);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;}
+.testi-text{font-size:0.95rem;color:var(--text-dim);line-height:1.95;margin-bottom:24px;flex:1;}
+.testi-person{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:20px;}
+.testi-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dim));display:flex;align-items:center;justify-content:center;color:var(--bg);font-weight:700;font-size:1.1rem;flex-shrink:0;font-family:var(--font-en);}
+.testi-name{font-size:0.95rem;color:var(--text);margin-bottom:2px;}
+.testi-role{font-size:0.78rem;color:var(--text-muted);}
+
+/* ARTICLES CTA */
+#articles-cta{background:var(--bg-mid);padding:80px 0;}
+.articles-cta-inner{display:flex;align-items:center;justify-content:space-between;gap:40px;padding:48px 56px;border:1px solid rgba(120,144,124,0.2);border-radius:12px;background:linear-gradient(135deg,rgba(120,144,124,0.04) 0%,transparent 60%);animation:glowPulse 4s ease-in-out infinite;}
+
+/* NEWSLETTER */
+#newsletter{background:var(--bg);padding:110px 0;}
+.nl-inner{max-width:600px;margin:0 auto;text-align:center;}
+.nl-inner .section-subtitle{max-width:100%;margin:0 auto 44px;}
+.nl-form{display:flex;gap:12px;max-width:480px;margin:0 auto;}
+.nl-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;font-family:var(--font-ar);font-size:0.95rem;color:var(--text);outline:none;transition:var(--tr);direction:ltr;text-align:left;}
+.nl-input::placeholder{color:var(--text-muted);}
+.nl-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(120,144,124,0.1);}
+
+/* FOOTER */
+#footer{background:var(--card);border-top:1px solid var(--line);padding:72px 0 36px;}
+.footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:56px;margin-bottom:56px;}
+.footer-brand .logo-main{font-size:1.1rem;margin-bottom:4px;}
+.footer-brand p{font-size:0.85rem;color:var(--text-muted);line-height:1.8;margin-top:14px;max-width:280px;}
+.footer-col h4{font-size:0.72rem;font-family:var(--font-en);letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-light);margin-bottom:22px;}
+.footer-col ul li{margin-bottom:12px;}
+.footer-col ul a{font-size:0.88rem;color:var(--text-muted);transition:var(--tr);display:inline-flex;align-items:center;gap:6px;}
+.footer-col ul a::before{content:'';width:0;height:1px;background:var(--accent-light);transition:var(--tr);}
+.footer-col ul a:hover{color:var(--accent-light);}
+.footer-col ul a:hover::before{width:12px;}
+.social-links{display:flex;gap:10px;margin-top:24px;}
+.social-link{width:38px;height:38px;background:var(--bg);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:var(--tr);}
+.social-link svg{width:16px;height:16px;fill:currentColor;}
+.social-link:hover{border-color:var(--accent);color:var(--accent-light);transform:translateY(-3px);}
+.footer-bottom{border-top:1px solid var(--line);padding-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.footer-copy{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
+.footer-legal{font-size:0.78rem;color:var(--text-muted);max-width:500px;text-align:center;}
+
+/* SCROLL TOP */
+#scrollTop{position:fixed;bottom:36px;left:36px;width:46px;height:46px;background:var(--card);border:1px solid rgba(120,144,124,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:var(--tr);color:var(--accent);font-size:1rem;z-index:500;}
+#scrollTop.visible{opacity:1;pointer-events:all;}
+#scrollTop:hover{background:rgba(120,144,124,0.1);border-color:var(--accent);transform:translateY(-4px);box-shadow:0 8px 24px rgba(120,144,124,0.2);}
+
+/* REVEAL — only hides when JS is active; otherwise content always shows */
+.reveal{transition:opacity 0.7s ease,transform 0.7s ease;}
+.js .reveal{opacity:0;transform:translateY(28px);}
+.js .reveal.visible{opacity:1;transform:translateY(0);}
+.delay-1{transition-delay:0.1s;}.delay-2{transition-delay:0.2s;}.delay-3{transition-delay:0.3s;}.delay-4{transition-delay:0.4s;}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+.hero-inner{grid-template-columns:1fr;text-align:center;}
+.hero-image-wrap{max-width:340px;margin:0 auto;}
+.hero-label{justify-content:center;}
+.hero-buttons{justify-content:center;}
+.trust-badges{justify-content:center;}
+.green-line{margin-right:auto;margin-left:auto;}
+.section-subtitle{margin-right:auto;margin-left:auto;text-align:center;}
+.about-inner{grid-template-columns:1fr;}
+.about-photo{max-width:300px;}
+.insights-grid{grid-template-columns:1fr;}
+.method-grid{grid-template-columns:repeat(2,1fr);}
+.cons-grid{grid-template-columns:1fr;}
+.library-grid{grid-template-columns:repeat(2,1fr);}
+.reports-grid{grid-template-columns:1fr;}
+.testi-grid{grid-template-columns:1fr;}
+.footer-top{grid-template-columns:1fr 1fr;gap:32px;}
+.footer-brand{grid-column:1/-1;}
+.articles-cta-inner{flex-direction:column;text-align:center;}
+}
+@media(max-width:768px){
+.nav-links{display:none;}.menu-toggle{display:flex;}
+.notes-grid{grid-template-columns:1fr;}
+.library-grid{grid-template-columns:1fr;}
+.nl-form{flex-direction:column;}
+.footer-bottom{flex-direction:column;text-align:center;}
+.slots-grid{grid-template-columns:1fr;}
+.art-modal-head{padding:36px 28px 24px;}
+.art-modal-body{padding:28px 28px 36px;}
+}
+@media(max-width:480px){
+.method-grid{grid-template-columns:1fr;}
+.method-grid::before{display:none;}
+.method-card:not(:last-child){border-left:none;}
+.trust-badges{flex-direction:column;align-items:center;}
+.hero-badge{display:none;}
+}
+
+/* ── EXTRA ANIMATIONS ── */
+@keyframes titleShine{0%{background-position:200% center;}100%{background-position:-200% center;}}
+.hero-title span{background:linear-gradient(110deg,var(--accent) 20%,var(--accent-light) 40%,#cfe3d3 50%,var(--accent-light) 60%,var(--accent) 80%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:titleShine 6s linear infinite;}
+@keyframes badgePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+@keyframes iconFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.method-card:hover .method-icon{animation:iconFloat 1.6s ease-in-out infinite;}
+@keyframes arrowNudge{0%,100%{transform:translateX(0);}50%{transform:translateX(-4px);}}
+.insight-card:hover .read-more-btn .arr{animation:arrowNudge 0.9s ease-in-out infinite;}
+/* magnetic lift already on cards; add subtle scale to library/report icons */
+.lib-card:hover .lib-index{transform:scale(1.12);}
+.report-card:hover .report-icon{transform:translateY(-4px) rotate(-3deg);transition:var(--tr);}
+/* scroll progress bar */
+#scrollProgress{position:fixed;top:0;right:0;height:2px;background:linear-gradient(270deg,var(--accent-light),var(--accent));width:0;z-index:1100;transition:width 0.1s linear;box-shadow:0 0 10px rgba(159,187,164,0.5);}
+
+/* ── TABLET (iPad) ── */
+@media(max-width:1024px){
+.section{padding:80px 0;}
+.hero-inner{gap:48px;}
+.ticker-item{font-size:0.72rem;padding:0 24px;}
+.cons-grid{grid-template-columns:repeat(2,1fr);}
+.booking-wrapper{max-width:100%;}
+}
+@media(min-width:769px) and (max-width:1024px){
+.cons-card.featured{grid-column:1/-1;}
+}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+html{font-size:15px;}
+.section{padding:64px 0;}
+.section-head{margin-bottom:40px;}
+.container{padding:0 18px;}
+#hero{padding:100px 0 60px;min-height:auto;}
+.hero-title{font-size:clamp(2rem,8vw,2.8rem);}
+.hero-buttons{flex-direction:column;width:100%;}
+.hero-buttons .btn{width:100%;justify-content:center;}
+.cons-grid{grid-template-columns:1fr;}
+.ticker-wrap::before,.ticker-wrap::after{width:40px;}
+.ticker-item{font-size:0.7rem;padding:0 18px;}
+.cal-grid-wrap{padding:12px 14px 0;}
+.cal-header{padding:12px 16px;}
+.qa-question{padding:18px 20px;font-size:0.92rem;gap:14px;}
+.qa-q-icon{width:32px;height:32px;font-size:0.82rem;}
+.qa-answer-inner{margin:0 20px 18px 20px;padding-top:14px;}
+#scrollTop{bottom:20px;left:20px;width:42px;height:42px;}
+.reveal{transform:translateY(20px);}
+}
+@media(max-width:480px){
+.hero-title{font-size:1.85rem;}
+.section-title{font-size:1.5rem;}
+.trust-badges{gap:24px;}
+.qa-question span{font-size:0.86rem;}
+.qa-q-icon{width:24px;height:24px;font-size:0.68rem;}
+.cal-day{min-height:30px;}
+.day-n{font-size:0.72rem;}
+.btn{padding:12px 24px;font-size:0.9rem;}
+}
+
+/* ── LOADING SCREEN ── */
+#page-loader{position:fixed;inset:0;z-index:9999;background:var(--bg,#0C0B0F);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;transition:opacity 0.6s ease,visibility 0.6s ease;}
+#page-loader.hide{opacity:0;visibility:hidden;}
+.loader-logo{display:flex;flex-direction:column;align-items:center;gap:14px;}
+.loader-logo-mark{width:64px;height:64px;border-radius:16px;background:#0C0B0F;border:1.5px solid rgba(120,144,124,0.6);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:#9FBBA4;letter-spacing:0.05em;}
+.loader-logo-text{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;letter-spacing:0.22em;color:rgba(159,187,164,0.7);text-transform:uppercase;}
+.loader-bar-wrap{width:120px;height:1px;background:rgba(120,144,124,0.15);border-radius:1px;overflow:hidden;}
+.loader-bar{height:100%;width:0;background:linear-gradient(90deg,rgba(120,144,124,0.4),#9FBBA4);border-radius:1px;animation:loaderFill 1.7s cubic-bezier(0.4,0,0.2,1) forwards;}
+@keyframes loaderFill{0%{width:0}60%{width:75%}85%{width:92%}100%{width:100%}}
+
+.carousel-wrap{position:relative;overflow:hidden;}
+.carousel-track{display:flex;gap:24px;transition:transform 0.45s cubic-bezier(0.16,1,0.3,1);will-change:transform;}
+.carousel-track>*{flex:0 0 calc(33.333% - 16px);min-width:0;}
+.carousel-nav{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:28px;}
+.carousel-btn{width:42px;height:42px;border-radius:50%;background:transparent;border:1px solid var(--border);cursor:pointer;color:var(--accent-light);font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:var(--tr);}
+.carousel-btn:hover{border-color:var(--accent-light);background:rgba(120,144,124,0.08);}
+.carousel-btn:disabled{opacity:0.2;cursor:not-allowed;}
+.carousel-dots{display:flex;gap:7px;}
+.carousel-dot{width:7px;height:7px;border-radius:50%;background:var(--border);cursor:pointer;transition:all 0.3s;border:none;}
+.carousel-dot.active{background:var(--accent-light);width:20px;border-radius:4px;}
+@media(max-width:900px){.carousel-track>*{flex:0 0 calc(50% - 12px);}}
+@media(max-width:600px){.carousel-track>*{flex:0 0 100%;}}
+/* QA CAROUSEL */
+.qa-carousel-wrap{position:relative;overflow:hidden;}
+.qa-carousel-track{display:flex;gap:24px;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);will-change:transform;}
+.qa-card{flex:0 0 calc(33.333% - 16px);min-width:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px;display:flex;flex-direction:column;gap:16px;box-sizing:border-box;}
+.qa-card-icon{width:40px;height:40px;border-radius:50%;background:rgba(120,144,124,0.1);border:1px solid rgba(120,144,124,0.25);display:flex;align-items:center;justify-content:center;font-family:var(--font-en);font-size:1rem;font-weight:700;color:var(--accent-light);flex-shrink:0;}
+.qa-card-q{font-size:1rem;color:var(--text);font-weight:700;line-height:1.5;}
+.qa-card-a{font-size:0.9rem;color:var(--text-dim);line-height:1.85;flex:1;}
+.qa-carousel-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:28px;}
+.qa-dots{display:flex;gap:8px;}
+.qa-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-dim);transition:all 0.3s;cursor:pointer;}
+.qa-dot.active{width:20px;border-radius:3px;background:var(--accent-light);}
+@media(max-width:768px){.qa-card{flex:0 0 100%;}}
+@media(max-width:1024px) and (min-width:769px){.qa-card{flex:0 0 calc(50% - 12px);}}
+/* ARTICLES PREVIEW */
+.articles-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.art-prev-card{background:var(--bg-mid);border:1px solid var(--border);border-radius:var(--radius);padding:32px;display:flex;flex-direction:column;gap:14px;transition:var(--tr);}
+.art-prev-card:hover{border-color:rgba(120,144,124,0.35);transform:translateY(-3px);}
+.art-prev-title{font-size:1.05rem;color:var(--text);font-weight:700;line-height:1.5;}
+.art-prev-desc{font-size:0.88rem;color:var(--text-dim);line-height:1.8;flex:1;}
+.art-prev-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;}
+@media(max-width:768px){.articles-preview-grid{grid-template-columns:1fr;}}
+/* NUMBERS FONT */
+.num,.badge-num,.card-date,.trust-badge .num,time,[dir="ltr"],.timeline-year,.method-num,.ticker-item,.art-card-num,.art-card-date,.card-num{font-family:var(--font-num);}
+/* Ensure all digits everywhere use DIN Next LT Arabic via unicode-range */
+body *{font-variant-numeric:lining-nums;}
+
+/* ── STRATEGIC BRANDING ADDITIONS — Hanadi Personal Brand ── */
+.brand-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+.brand-card,.proof-card,.hub-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:30px 28px;transition:var(--tr);position:relative;overflow:hidden;
+}
+.brand-card::before,.proof-card::before,.hub-card::before{
+  content:'';position:absolute;top:0;right:0;left:0;height:2px;
+  background:linear-gradient(270deg,var(--accent),transparent);
+  transform:scaleX(0);transform-origin:right;transition:var(--tr);
+}
+.brand-card:hover,.proof-card:hover,.hub-card:hover{
+  border-color:rgba(120,144,124,0.38);transform:translateY(-5px);
+  box-shadow:0 24px 56px rgba(0,0,0,0.42),0 0 44px rgba(120,144,124,0.06);
+}
+.brand-card:hover::before,.proof-card:hover::before,.hub-card:hover::before{transform:scaleX(1);}
+.brand-num{font-family:var(--font-en);font-size:0.72rem;letter-spacing:0.18em;color:var(--accent-light);display:block;margin-bottom:14px;}
+.brand-title{font-size:1.05rem;color:var(--text);margin-bottom:12px;}
+.brand-desc{font-size:0.88rem;color:var(--text-dim);line-height:1.85;}
+.proof-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+.proof-card{text-align:center;padding:28px 20px;}
+.proof-value{font-family:var(--font-en);font-size:1.35rem;color:var(--accent-light);display:block;margin-bottom:8px;}
+.proof-label{font-size:0.82rem;color:var(--text-dim);line-height:1.7;}
+.method-grid.method-grid-five{grid-template-columns:repeat(5,1fr);}
+.method-grid.method-grid-five::before{right:10%;left:10%;}
+.hub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.hub-card{display:flex;gap:18px;align-items:flex-start;}
+.hub-index{font-family:var(--font-en);font-size:1.35rem;font-weight:300;color:rgba(159,187,164,0.35);line-height:1;flex-shrink:0;}
+.hub-title{font-size:0.98rem;color:var(--text);margin-bottom:6px;}
+.hub-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.75;}
+.hub-play{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:0.55rem;margin-inline-start:8px;vertical-align:middle;}
+.hub-clickable{cursor:pointer;}
+a:hover>.hub-clickable{border-color:rgba(120,144,124,0.5);}
+.cons-note{margin-top:34px;padding:22px 28px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(120,144,124,0.045);color:var(--text-dim);font-size:0.9rem;line-height:1.85;}
+.about-quote{margin-top:34px;padding:22px 28px;border-right:3px solid var(--accent);background:rgba(120,144,124,0.05);border-radius:0 var(--radius) var(--radius) 0;color:var(--text-dim);line-height:1.9;}
+.about-photo .portrait-word{position:relative;z-index:1;text-align:center;}
+.about-photo .portrait-word .en{font-size:1.8rem;color:var(--accent-light);display:block;margin-bottom:8px;}
+.about-photo .portrait-word small{color:var(--text-muted);font-size:0.78rem;}
+@media(max-width:1024px){
+  .brand-grid{grid-template-columns:repeat(2,1fr);}
+  .proof-grid{grid-template-columns:repeat(3,1fr);}
+  .method-grid.method-grid-five{grid-template-columns:repeat(2,1fr);}
+  .hub-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+  .brand-grid,.proof-grid,.hub-grid{grid-template-columns:1fr;}
+  .method-grid.method-grid-five{grid-template-columns:1fr;}
+  .proof-card{text-align:right;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="page-loader">
+  <div class="loader-logo">
+    <div class="loader-logo-mark">H</div>
+    <div class="loader-logo-text">Hanadi Insights</div>
+  </div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<script>
+(function(){
+  const loader=document.getElementById('page-loader');
+  function hide(){loader.classList.add('hide');setTimeout(()=>{loader.style.display='none';},650);}
+  setTimeout(hide,2000);
+  window.addEventListener('load',function(){setTimeout(hide,400);});
+})();
+</script>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  function revealAll(){document.querySelectorAll('.reveal:not(.visible)').forEach(function(e){e.classList.add('visible');});}
+  if(document.readyState!=='loading'){setTimeout(revealAll,1000);}
+  else{document.addEventListener('DOMContentLoaded',function(){setTimeout(revealAll,1000);});}
+  window.addEventListener('load',function(){setTimeout(revealAll,200);});
+})();
+</script>
+<div id="scrollProgress"></div>
+
+<!-- HEADER -->
+<header id="header">
+<div class="container">
+<div class="header-inner">
+<a href="#hero" class="logo">
+<span class="logo-main en">Hanadi Insights</span>
+<span class="logo-sub">Strategic Market Analysis</span>
+</a>
+<nav>
+<ul class="nav-links">
+<li><a href="#hero">الرئيسية</a></li>
+<li><a href="#about">عن هنادي</a></li>
+<li><a href="#difference">لماذا هنادي؟</a></li>
+<li><a href="#method">المنهجية</a></li>
+<li><a href="#insights">التحليلات</a></li>
+<li><a href="#library">المكتبة</a></li>
+<li><a href="#reports">التقارير</a></li>
+<li><a href="#consultations">الاستشارات</a></li>
+<li id="navCtaItem" style="display:none;"><a href="#booking" class="nav-cta">احجز موعداً</a></li>
+</ul>
+</nav>
+<div class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></div>
+</div>
+</div>
+</header>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-nav" id="mobileNav">
+<a href="#hero">الرئيسية</a>
+<a href="#about">عن هنادي</a>
+<a href="#difference">لماذا هنادي؟</a>
+<a href="#method">المنهجية</a>
+<a href="#insights">التحليلات</a>
+<a href="articles.html">المقالات</a>
+<a href="#library">المكتبة التعليمية</a>
+<a href="#reports">التقارير</a>
+<a href="#consultations">الاستشارات</a>
+<a href="#newsletter">النشرة البريدية</a>
+<span id="mobileNavCta" style="display:none;"><a href="#booking" class="btn btn-green">احجز موعداً</a></span>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+<div class="hero-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+<div class="hero-grid-lines"></div>
+<div class="container">
+<div class="hero-inner">
+<div class="hero-content">
+<div class="hero-label en" data-edit="hero_label">Strategic Market Analysis</div>
+<h1 class="hero-title"><span data-edit="hero_title_line1">هنادي تقرأ الأسواق</span><br><span data-edit="hero_title_line2">من خلف الأحداث</span></h1>
+<p class="hero-text" data-edit="hero_text">منصة تحليل اقتصادي وأسواق عالمية تُحوّل السياسة، الاقتصاد، السيولة، وسلوك المستثمرين إلى رؤية يفهمها المتداول الجاد قبل أن يتخذ قراره.</p>
+<div class="hero-buttons">
+<a href="#insights" class="btn btn-green" data-edit="hero_cta_primary">اقرأ آخر التحليلات</a>
+<span id="heroBookingBtn"><button class="btn btn-outline" data-edit="hero_cta_secondary" onclick="document.getElementById('consultations').scrollIntoView({behavior:'smooth'})">احجز استشارة</button></span>
+</div>
+<div class="trust-badges">
+<div class="trust-badge"><span class="num en" data-edit="hero_badge1_num">منذ 1998</span><span class="lbl" data-edit="hero_badge1_lbl">خبرة عملية في الأسواق</span></div>
+<div class="trust-badge"><span class="num en" data-edit="hero_badge2_num">2002</span><span class="lbl" data-edit="hero_badge2_lbl">أول مكتب فوركس في دمشق</span></div>
+<div class="trust-badge"><span class="num en" data-edit="hero_badge3_num">منذ 2003</span><span class="lbl" data-edit="hero_badge3_lbl">تدريب وتحليل أسواق</span></div>
+</div>
+</div>
+<div class="hero-image-wrap">
+<div class="hero-image-frame"><div class="hero-ph">◈</div></div>
+<div class="hero-badge"><span class="badge-num en" data-edit="hero_badge_num">+25</span><span class="badge-lbl" data-edit="hero_badge_lbl">سنة خبرة</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">About Hanadi</span>
+<h2 class="section-title" data-edit="about_title">من هي هنادي؟</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="about_subtitle">قبل أن تكون منصة محتوى، هنادي هي خبرة سوق بدأت مبكراً وتحولت إلى منهجية في قراءة المال والسياسة والمخاطر.</p>
+</div>
+<div class="about-inner">
+<div>
+<p class="about-text reveal" data-edit="about_text1">بدأت هنادي رحلتها في عالم الأسواق عام 1998 من عمّان، في مرحلة كان فيها عالم الفوركس خارج الثقافة المالية السائدة، وكانت الأسئلة الأساسية عن السوق وحركته ما تزال غامضة على أغلب الجمهور.</p>
+<p class="about-text reveal" data-edit="about_text2">عام 2002 أسست أول مكتب فوركس في دمشق، ثم بدأت منذ 2003 بتقديم التدريب والتحليل، لتصبح تجربتها مزيجاً من العمل العملي، فهم نفسية المتداول، وقراءة العلاقة بين الاقتصاد والسياسة وحركة السيولة.</p>
+<div class="about-quote reveal" data-edit="about_quote">هذه المنصة لا تُبنى حول فكرة التوصيات السريعة، بل حول بناء وعي المتداول: كيف يقرأ الخبر؟ كيف يفهم السيولة؟ وكيف يحمي حسابه قبل أن يبحث عن الربح؟</div>
+<div class="timeline reveal">
+<div class="timeline-item"><span class="timeline-year en" data-edit="about_tl1_year">1998</span><p class="timeline-title" data-edit="about_tl1_title">البداية العملية في عالم الأسواق — عمّان</p></div>
+<div class="timeline-item"><span class="timeline-year en" data-edit="about_tl2_year">2002</span><p class="timeline-title" data-edit="about_tl2_title">تأسيس أول مكتب فوركس في دمشق</p></div>
+<div class="timeline-item"><span class="timeline-year en" data-edit="about_tl3_year">2003</span><p class="timeline-title" data-edit="about_tl3_title">أولى الدورات والتدريبات المتخصصة في الفوركس</p></div>
+<div class="timeline-item"><span class="timeline-year en" data-edit="about_tl4_year">Today</span><p class="timeline-title" data-edit="about_tl4_title">منصة تحليل اقتصادي وأسواق عالمية</p></div>
+</div>
+</div>
+<div class="about-photo reveal delay-2"><div class="portrait-word"><span class="en" data-edit="about_portrait_name">Hanadi</span><small data-edit="about_portrait_role">Market Analyst · Trading Expert</small></div></div>
+</div>
+</div>
+</section>
+
+<!-- DIFFERENCE -->
+<section class="section" id="difference">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Positioning</span>
+<h2 class="section-title" data-edit="difference_title">لماذا تختلف هنادي؟</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="difference_subtitle">لأنها لا تتعامل مع التداول كزر بيع وشراء، بل كقراءة للعالم قبل قراءة الشارت.</p>
+</div>
+<div class="brand-grid">
+<div class="brand-card reveal delay-1"><span class="brand-num en" data-edit="difference_c1_num">01</span><h3 class="brand-title" data-edit="difference_c1_title">خبرة عملية لا تنظير</h3><p class="brand-desc" data-edit="difference_c1_desc">تجربة بدأت من داخل السوق، بين العملاء، الحسابات، الخسائر، إدارة العواطف، وفهم القرار قبل تنفيذه.</p></div>
+<div class="brand-card reveal delay-2"><span class="brand-num en" data-edit="difference_c2_num">02</span><h3 class="brand-title" data-edit="difference_c2_title">ضد ثقافة التوصيات</h3><p class="brand-desc" data-edit="difference_c2_desc">المنصة لا تبيع وهم الدخول والخروج، بل تشرح لماذا يتحرك السوق وكيف يتعامل المتداول مع الاحتمالات.</p></div>
+<div class="brand-card reveal delay-3"><span class="brand-num en" data-edit="difference_c3_num">03</span><h3 class="brand-title" data-edit="difference_c3_title">السياسة قبل السعر</h3><p class="brand-desc" data-edit="difference_c3_desc">الحرب، الفائدة، البنوك المركزية، الصين، النفط والذهب؛ كلها تُقرأ كعوامل تحرك السيولة لا كعناوين أخبار فقط.</p></div>
+<div class="brand-card reveal delay-4"><span class="brand-num en" data-edit="difference_c4_num">04</span><h3 class="brand-title" data-edit="difference_c4_title">إدارة المخاطر أولاً</h3><p class="brand-desc" data-edit="difference_c4_desc">النجاح في السوق لا يبدأ من توقع الاتجاه، بل من حماية الحساب وضبط حجم الدخول والقرار النفسي.</p></div>
+</div>
+</div>
+</section>
+
+<!-- TRUST -->
+<section class="section" id="trust">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Credibility System</span>
+<h2 class="section-title" data-edit="trust_title">لماذا يثق الناس بتحليلات هنادي؟</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="trust_subtitle">لأن الصورة المهنية هنا لا تُبنى على الادعاء، بل على مسار واضح وخبرة طويلة ومنهجية متماسكة.</p>
+</div>
+<div class="proof-grid">
+<div class="proof-card reveal delay-1"><span class="proof-value en" data-edit="trust_c1_value">+25</span><p class="proof-label" data-edit="trust_c1_label">سنة خبرة في الأسواق</p></div>
+<div class="proof-card reveal delay-2"><span class="proof-value en" data-edit="trust_c2_value">1998</span><p class="proof-label" data-edit="trust_c2_label">بداية عملية مبكرة</p></div>
+<div class="proof-card reveal delay-3"><span class="proof-value en" data-edit="trust_c3_value">2002</span><p class="proof-label" data-edit="trust_c3_label">أول مكتب فوركس في دمشق</p></div>
+<div class="proof-card reveal delay-4"><span class="proof-value en" data-edit="trust_c4_value">2003</span><p class="proof-label" data-edit="trust_c4_label">تدريب وتحليل منذ بدايات السوق</p></div>
+<div class="proof-card reveal"><span class="proof-value en" data-edit="trust_c5_value">5%</span><p class="proof-label" data-edit="trust_c5_label">فلسفة صارمة لإدارة المخاطر</p></div>
+</div>
+</div>
+</section>
+
+<!-- METHOD -->
+<section class="section" id="method">
+<div class="method-bg"></div>
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">The Framework</span>
+<h2 class="section-title" data-edit="method_title">منهجية هنادي في قراءة الأسواق</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="method_subtitle">منهجية متسلسلة لا تبدأ من الشارت وحده، بل من السياق الذي يصنع حركة السعر.</p>
+</div>
+<div class="method-grid method-grid-five">
+<div class="method-card reveal delay-1"><span class="method-num en" data-edit="method_c1_num">01</span><div class="method-icon" data-edit="method_c1_icon">◈</div><h3 class="method-name" data-edit="method_c1_name">الحدث السياسي</h3><p class="method-desc" data-edit="method_c1_desc">تمييز الحدث الحقيقي من الضجيج الإعلامي، وفهم وزنه على الأسواق.</p></div>
+<div class="method-card reveal delay-2"><span class="method-num en" data-edit="method_c2_num">02</span><div class="method-icon" data-edit="method_c2_icon">◇</div><h3 class="method-name" data-edit="method_c2_name">الأثر الاقتصادي</h3><p class="method-desc" data-edit="method_c2_desc">تحويل الحدث إلى أسئلة: تضخم؟ فائدة؟ نمو؟ ركود؟ طاقة؟ تجارة؟</p></div>
+<div class="method-card reveal delay-3"><span class="method-num en" data-edit="method_c3_num">03</span><div class="method-icon" data-edit="method_c3_icon">◆</div><h3 class="method-name" data-edit="method_c3_name">حركة السيولة</h3><p class="method-desc" data-edit="method_c3_desc">قراءة أين تتحرك الأموال: ذهب، دولار، سندات، نفط، أسهم أم أصول عالية المخاطر.</p></div>
+<div class="method-card reveal delay-4"><span class="method-num en" data-edit="method_c4_num">04</span><div class="method-icon" data-edit="method_c4_icon">◌</div><h3 class="method-name" data-edit="method_c4_name">نفسية المتداول</h3><p class="method-desc" data-edit="method_c4_desc">فصل الخوف والطمع والاندفاع عن القرار، حتى لا يتحول الخبر إلى فخ.</p></div>
+<div class="method-card reveal"><span class="method-num en" data-edit="method_c5_num">05</span><div class="method-icon" data-edit="method_c5_icon">◎</div><h3 class="method-name" data-edit="method_c5_name">قرار التداول</h3><p class="method-desc" data-edit="method_c5_desc">ترجمة القراءة إلى سيناريوهات واحتمالات وخطة مخاطر، لا إلى توصية عشوائية.</p></div>
+</div>
+</div>
+</section>
+
+<!-- INSIGHTS -->
+<section class="section" id="insights">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Latest Analysis</span>
+<h2 class="section-title" data-edit="title">أحدث التحليلات</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="subtitle">قراءات معمّقة في أبرز الأحداث التي تحرّك الاقتصاد والأسواق والسيولة العالمية.</p>
+</div>
+<div class="insights-grid" id="insightsGrid">
+<div class="insight-card reveal delay-1" onclick="openArticle(0)">
+<span class="card-tag en">Geopolitics</span>
+<h3 class="card-title">الحرب الإيرانية الأميركية وأثرها على عالم التداول</h3>
+<p class="card-desc">كيف تتحول التوترات السياسية إلى حركة في الذهب والنفط والدولار؟ قراءة بعين السوق لا بعين الخبر فقط.</p>
+<div class="card-footer"><span class="card-date en">15 May 2025</span><button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button></div>
+</div>
+<div class="insight-card reveal delay-2" onclick="openArticle(1)">
+<span class="card-tag en">Commodities</span>
+<h3 class="card-title">الذهب ليس غالياً... العالم هو القَلِق</h3>
+<p class="card-desc">ارتفاع الذهب ليس مجرد حركة سعرية؛ إنه انعكاس لحالة الثقة والخوف والسيولة في النظام المالي.</p>
+<div class="card-footer"><span class="card-date en">20 May 2025</span><button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button></div>
+</div>
+<div class="insight-card reveal delay-3" onclick="openArticle(2)">
+<span class="card-tag en">Macro</span>
+<h3 class="card-title">الصين: من يراقبها يفهم اتجاه السيولة</h3>
+<p class="card-desc">الصين ليست مجرد اقتصاد كبير؛ إنها بوصلة مهمة لفهم الطلب العالمي، السلع، وحركة المخاطر.</p>
+<div class="card-footer"><span class="card-date en">25 May 2025</span><button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ARTICLES PREVIEW -->
+<section class="section" id="articles-preview">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Articles</span>
+<h2 class="section-title" data-edit="title">مقالات وتحليلات</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="subtitle">محتوى أطول وأكثر عمقاً يحوّل أفكار الريلز إلى مرجع دائم على المنصة.</p>
+</div>
+<div class="articles-preview-grid reveal" id="articlesPreviewGrid">
+  <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;">⏳ جارٍ تحميل المقالات...</div>
+</div>
+<div style="text-align:center;margin-top:44px;" class="reveal">
+<a href="articles.html" class="btn btn-outline">عرض جميع المقالات →</a>
+</div>
+</div>
+</section>
+
+<!-- LIBRARY -->
+<section class="section" id="library">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Knowledge Hub</span>
+<h2 class="section-title" data-edit="library_title">المكتبة المعرفية</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="library_subtitle">مركز معرفة دائم يحوّل خبرة هنادي إلى مراجع منظمة للمتداول الجاد.</p>
+</div>
+<div class="hub-grid">
+<div class="hub-card reveal delay-1"><span class="hub-index en" data-edit="library_c1_index">01</span><div><h3 class="hub-title" data-edit="library_c1_title">ما هو التداول؟</h3><p class="hub-desc" data-edit="library_c1_desc">فهم التداول كقرار واحتمال ومخاطر، لا كضغط زر.</p></div></div>
+<div class="hub-card reveal delay-2"><span class="hub-index en" data-edit="library_c2_index">02</span><div><h3 class="hub-title" data-edit="library_c2_title">إدارة رأس المال</h3><p class="hub-desc" data-edit="library_c2_desc">كيف يحمي المتداول حسابه قبل أن يبحث عن الربح.</p></div></div>
+<div class="hub-card reveal delay-3"><span class="hub-index en" data-edit="library_c3_index">03</span><div><h3 class="hub-title" data-edit="library_c3_title">الذهب</h3><p class="hub-desc" data-edit="library_c3_desc">قراءة الذهب كمرآة للثقة والتضخم والخوف العالمي.</p></div></div>
+<div class="hub-card reveal delay-1"><span class="hub-index en" data-edit="library_c4_index">04</span><div><h3 class="hub-title" data-edit="library_c4_title">البنوك المركزية</h3><p class="hub-desc" data-edit="library_c4_desc">الفائدة، التضخم، الدولار، وكيف تتحرك توقعات السوق.</p></div></div>
+<div class="hub-card reveal delay-2"><span class="hub-index en" data-edit="library_c5_index">05</span><div><h3 class="hub-title" data-edit="library_c5_title">الصين والسيولة</h3><p class="hub-desc" data-edit="library_c5_desc">لماذا مراقبة الصين تساعد على فهم الطلب والمخاطر والسلع.</p></div></div>
+<div class="hub-card reveal delay-3"><span class="hub-index en" data-edit="library_c6_index">06</span><div><h3 class="hub-title" data-edit="library_c6_title">سيكولوجية التداول</h3><p class="hub-desc" data-edit="library_c6_desc">الخوف، الطمع، الاندفاع، الانتقام، وفخ إثبات الذات أمام السوق.</p></div></div>
+<div class="hub-card reveal delay-1"><span class="hub-index en" data-edit="library_c7_index">07</span><div><h3 class="hub-title" data-edit="library_c7_title">الأخبار الاقتصادية</h3><p class="hub-desc" data-edit="library_c7_desc">كيف تُقرأ البيانات الاقتصادية قبل أن تتحول إلى حركة سعرية.</p></div></div>
+<div class="hub-card reveal delay-2"><span class="hub-index en" data-edit="library_c8_index">08</span><div><h3 class="hub-title" data-edit="library_c8_title">الجيوسياسة والأسواق</h3><p class="hub-desc" data-edit="library_c8_desc">الحروب والعقوبات والطاقة ومسارات المال الذكي.</p></div></div>
+<div class="hub-card reveal delay-3"><span class="hub-index en" data-edit="library_c9_index">09</span><div><h3 class="hub-title" data-edit="library_c9_title">المتداول المحترف</h3><p class="hub-desc" data-edit="library_c9_desc">كيف يفكر المتداول الذي يراقب الاحتمالات لا الضجيج.</p></div></div>
+</div>
+</div>
+</section>
+
+<!-- REPORTS -->
+<section class="section" id="reports">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Market Reports</span>
+<h2 class="section-title" data-edit="reports_title">تقارير الأسواق</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="reports_subtitle">تقارير دورية تصلح كأصول رقمية قابلة للتحميل وتغذية قاعدة بيانات المنصة.</p></div>
+<div class="reports-grid">
+<div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name" data-edit="reports_c1_name">تقرير الذهب الشهري</h3><p class="report-date en" data-edit="reports_c1_date">Monthly Gold Lens</p><a href="#" class="btn btn-ghost" data-edit="reports_c1_btn">تحميل التقرير</a></div>
+<div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name" data-edit="reports_c2_name">تقرير الاقتصاد العالمي</h3><p class="report-date en" data-edit="reports_c2_date">Global Macro Brief</p><a href="#" class="btn btn-ghost" data-edit="reports_c2_btn">تحميل التقرير</a></div>
+<div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name" data-edit="reports_c3_name">تقرير السيولة والأسواق</h3><p class="report-date en" data-edit="reports_c3_date">Liquidity & Markets</p><a href="#" class="btn btn-ghost" data-edit="reports_c3_btn">تحميل التقرير</a></div>
+</div>
+</div>
+</section>
+
+<!-- CONSULTATIONS -->
+<section class="section" id="consultations">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Consultations</span>
+<h2 class="section-title" data-edit="consultations_title">استشارات هنادي</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="consultations_subtitle">جلسات مخصصة للمتداول الجاد والمستثمر الذي يريد وضوحاً لا ضجيجاً.</p>
+</div>
+<div class="cons-note reveal" data-edit="consultations_note">لا توجد في هذه الجلسات توصيات شراء وبيع مباشرة؛ الهدف هو رفع جودة القرار، فهم المخاطر، وبناء طريقة قراءة أكثر نضجاً للسوق.</div>
+<div class="cons-grid" style="display:none" aria-hidden="true"></div>
+<div style="text-align:center;margin-top:44px;">
+<a href="consultations.html" class="btn btn-green" style="font-size:1rem;padding:16px 40px;gap:12px;">
+  استكشف صفحة الاستشارات الكاملة
+  <span style="font-family:var(--font-en);font-size:1.1rem">←</span>
+</a>
+</div>
+</div>
+</section>
+
+<!-- BOOKING -->
+<section class="section" id="booking">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Booking</span>
+<h2 class="section-title" data-edit="booking_title">حجز استشارة</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="booking_subtitle">اختر موعداً مبدئياً للتواصل ومراجعة نوع الاستشارة المناسبة.</p>
+</div>
+<div class="booking-wrapper reveal">
+<div class="cal-header">
+<span class="cal-title" id="calMonthTitle"></span>
+<div class="cal-nav">
+<button class="cal-btn" id="calPrev">‹</button>
+<button class="cal-btn" id="calNext">›</button>
+</div>
+</div>
+<div class="cal-grid-wrap">
+<div class="cal-weekdays" id="calWeekdays"></div>
+<div class="cal-grid" id="calGrid"></div>
+</div>
+<div class="slots-panel">
+<p class="slots-date-title" id="slotsDateTitle">اختر يوماً من التقويم أعلاه</p>
+<div id="slotsContainer"><div class="slots-placeholder">اختر يوماً لعرض المواعيد المتاحة</div></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- QUICK INSIGHTS / Q&A -->
+<section class="section" id="notes">
+<style>
+#faqGrid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;max-width:1000px;margin:0 auto;}
+#faqPills{display:none;}
+@media(max-width:700px){
+  #faqGrid{grid-template-columns:1fr;gap:0;}
+  #faqAnswerWrap{position:static!important;top:auto!important;order:2;}
+  #faqList{display:none!important;}
+  #faqPills{display:flex;gap:10px;overflow-x:auto;padding-bottom:14px;scrollbar-width:none;margin-bottom:24px;order:1;-webkit-overflow-scrolling:touch;}
+  #faqPills::-webkit-scrollbar{display:none;}
+  .faq-pill{flex-shrink:0;border:1px solid rgba(201,178,123,.2);border-radius:999px;padding:9px 16px;font-size:.78rem;color:var(--text-dim);cursor:pointer;background:rgba(22,20,14,.8);white-space:nowrap;transition:.25s;}
+  .faq-pill.active{background:rgba(201,178,123,.1);border-color:rgba(201,178,123,.55);color:var(--gold);}
+  #faqCard{padding:28px 20px!important;}
+}
+</style>
+<div class="container">
+<div class="section-head reveal" style="text-align:center;margin-bottom:60px;">
+  <div style="font-family:var(--font-en);font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-light);margin-bottom:18px;">HANADI INSIGHTS</div>
+  <h2 style="font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.01em;line-height:1.1;color:var(--text);margin-bottom:20px;">أسئلة قبل الاستشارة</h2>
+  <div style="width:40px;height:1px;background:var(--gold);margin:0 auto 20px;opacity:.6"></div>
+  <p style="color:var(--text-dim);font-size:.95rem;max-width:440px;margin:0 auto;">إجابات مختصرة توضّح فلسفة المنصة وحدود ما تقدمه.</p>
+</div>
+
+<div id="faqGrid">
+  <!-- mobile pills (hidden on desktop) -->
+  <div id="faqPills">
+    <div class="faq-pill active" data-q="0">01 — هل تقدم هنادي توصيات؟</div>
+    <div class="faq-pill" data-q="1">02 — التحليل والاستشارة</div>
+    <div class="faq-pill" data-q="2">03 — للمبتدئين؟</div>
+    <div class="faq-pill" data-q="3">04 — السياسة والاقتصاد</div>
+  </div>
+  <!-- answer card (left) -->
+  <div style="position:sticky;top:100px;" id="faqAnswerWrap" class="reveal">
+    <div id="faqCard" style="background:linear-gradient(145deg,rgba(22,20,14,.95),rgba(14,13,10,.98));border:1px solid rgba(201,178,123,.22);border-radius:20px;padding:40px 36px;min-height:280px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(201,178,123,.07),transparent 60%);pointer-events:none;"></div>
+      <div style="text-align:center;margin-bottom:28px;position:relative;">
+        <div style="width:56px;height:56px;border-radius:50%;border:1px solid rgba(201,178,123,.35);background:rgba(201,178,123,.07);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:var(--font-en);font-size:1.5rem;color:var(--gold);">?</div>
+        <div style="font-family:var(--font-en);letter-spacing:.18em;text-transform:uppercase;font-size:.62rem;color:var(--gold);">الإجابة</div>
+        <div style="width:32px;height:1px;background:var(--gold);margin:10px auto 0;opacity:.5;"></div>
+      </div>
+      <p id="faqAnswerText" style="color:var(--text-dim);font-size:1rem;line-height:2;text-align:center;position:relative;">لا. هنادي إنسايتس تقدم تحليلاً معمقاً ورؤى تعليمية مبنية على البحث والفهم للسياق السياسي والاقتصادي، ولا تقدم توصيات مباشرة بالشراء أو البيع.</p>
+    </div>
+  </div>
+
+  <!-- questions list (right) -->
+  <div style="display:grid;gap:0;" class="reveal delay-1" id="faqList">
+    <div class="faq-row active" data-q="0" style="border-bottom:1px solid rgba(201,178,123,.12);padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text);">هل تقدم هنادي توصيات بيع وشراء مباشرة؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--gold);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(201,178,123,.35);background:rgba(201,178,123,.08);display:flex;align-items:center;justify-content:center;">01</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar0"></div>
+
+    <div class="faq-row" data-q="1" style="border-bottom:1px solid rgba(201,178,123,.12);padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text-dim);">ما الفرق بين التحليل والاستشارة؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--text-muted);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(120,144,124,.18);background:rgba(120,144,124,.05);display:flex;align-items:center;justify-content:center;">02</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar1"></div>
+
+    <div class="faq-row" data-q="2" style="border-bottom:1px solid rgba(201,178,123,.12);padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text-dim);">هل المحتوى مناسب للمبتدئين؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--text-muted);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(120,144,124,.18);background:rgba(120,144,124,.05);display:flex;align-items:center;justify-content:center;">03</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar2"></div>
+
+    <div class="faq-row" data-q="3" style="padding:22px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+      <span style="font-size:1rem;color:var(--text-dim);">لماذا التركيز على السياسة والاقتصاد؟</span>
+      <span style="font-family:var(--font-en);font-size:1.15rem;font-weight:700;color:var(--text-muted);flex-shrink:0;width:36px;height:36px;border-radius:50%;border:1px solid rgba(120,144,124,.18);background:rgba(120,144,124,.05);display:flex;align-items:center;justify-content:center;">04</span>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0;opacity:0;transition:.3s" id="faqBar3"></div>
+  </div>
+</div>
+
+<!-- bottom badge -->
+<div style="text-align:center;margin-top:52px;" class="reveal">
+  <span style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(201,178,123,.2);border-radius:999px;padding:8px 20px;font-size:.78rem;color:var(--text-muted);">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    المحتوى لأغراض تعليمية وتثقيفية فقط
+  </span>
+</div>
+
+<script>
+(function(){
+  const answers=[
+    'لا. هنادي إنسايتس تقدم تحليلاً معمقاً ورؤى تعليمية مبنية على البحث والفهم للسياق السياسي والاقتصادي، ولا تقدم توصيات مباشرة بالشراء أو البيع.',
+    'التحليل يشرح المشهد العام، أما الاستشارة فتساعد المتداول أو المستثمر على فهم أخطائه ومنهجيته وحدود مخاطره ضمن سياق شخصي.',
+    'نعم، لكن ليس بروح التبسيط السطحي. المحتوى يساعد المبتدئ على بناء أساس صحيح قبل الدخول العشوائي في السوق.',
+    'لأن السعر لا يتحرك وحده. خلف كل حركة توجد توقعات وسيولة وخوف وثقة وقرارات بنوك مركزية ومصالح كبرى.'
+  ];
+  let cur=0;
+  function setFaq(i){
+    document.querySelectorAll('.faq-row').forEach((r,idx)=>{
+      const active=idx===i;
+      r.querySelector('span:first-child').style.color=active?'var(--text)':'var(--text-dim)';
+      const num=r.querySelector('span:last-child');
+      num.style.color=active?'var(--gold)':'var(--text-muted)';
+      num.style.borderColor=active?'rgba(201,178,123,.35)':'rgba(120,144,124,.18)';
+      num.style.background=active?'rgba(201,178,123,.08)':'rgba(120,144,124,.05)';
+      const bar=document.getElementById('faqBar'+idx);
+      if(bar)bar.style.opacity=active?'1':'0';
+    });
+    const card=document.getElementById('faqCard');
+    card.style.opacity='0';card.style.transform='translateY(8px)';
+    setTimeout(()=>{
+      document.getElementById('faqAnswerText').textContent=answers[i];
+      card.style.transition='opacity .3s,transform .3s';
+      card.style.opacity='1';card.style.transform='translateY(0)';
+    },180);
+    cur=i;
+  }
+  document.querySelectorAll('.faq-row').forEach((r,idx)=>{
+    r.addEventListener('click',()=>setFaq(idx));
+  });
+  document.querySelectorAll('.faq-pill').forEach((p,idx)=>{
+    p.addEventListener('click',()=>{
+      document.querySelectorAll('.faq-pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      setFaq(idx);
+    });
+  });
+  // activate first bar
+  const b=document.getElementById('faqBar0');if(b)b.style.opacity='1';
+})();
+</script>
+</div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" id="testimonials">
+<div class="container">
+<div class="section-head reveal">
+<span class="section-label en">Testimonials</span>
+<h2 class="section-title" data-edit="title">ماذا يقول المتدربون</h2>
+<div class="green-line"></div>
+<p class="section-subtitle" data-edit="subtitle">آراء بعض من رافقوا هنادي في رحلة فهم الأسواق.</p>
+</div>
+<div class="testi-grid">
+<div class="testi-card reveal delay-1">
+<div class="testi-stars">★★★★★</div>
+<p class="testi-text">منهجية هنادي غيّرت طريقة تفكيري في السوق بالكامل. صرت أفهم لماذا يتحرك السعر بدل أن أطارده. تحليل هادئ وعميق بعيد عن الضجيج.</p>
+<div class="testi-person"><div class="testi-avatar en">أ</div><div><div class="testi-name">أحمد المصري</div><div class="testi-role">متداول فوركس</div></div></div>
+</div>
+<div class="testi-card reveal delay-2">
+<div class="testi-stars">★★★★★</div>
+<p class="testi-text">جلسة قراءة السوق كانت نقطة تحول. وضوح في الرؤية وربط ذكي بين السياسة والاقتصاد والسيولة. أنصح بها كل مستثمر جاد.</p>
+<div class="testi-person"><div class="testi-avatar en">ل</div><div><div class="testi-name">لمى الحسن</div><div class="testi-role">مستثمرة</div></div></div>
+</div>
+<div class="testi-card reveal delay-3">
+<div class="testi-stars">★★★★★</div>
+<p class="testi-text">خبرة حقيقية تنبع من سنوات في السوق، لا مجرد توصيات. تعلّمت كيف أقرأ الأخبار وأفهم نية البنوك المركزية. محتوى يستحق كل دقيقة.</p>
+<div class="testi-person"><div class="testi-avatar en">خ</div><div><div class="testi-name">خالد العتيبي</div><div class="testi-role">مدير محفظة</div></div></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="newsletter">
+<div class="container">
+<div class="nl-inner reveal">
+<span class="section-label en" style="display:flex;justify-content:center;">Weekly Newsletter</span>
+<h2 class="section-title" data-edit="newsletter_title">رسالة أسبوعية من هنادي</h2>
+<div class="green-line" style="margin:16px auto 32px;"></div>
+<p class="section-subtitle" style="text-align:center;margin:0 auto 44px;" data-edit="newsletter_subtitle">تحليل هادئ لأهم ما يتحرك خلف الأسواق... يصلك مباشرة إلى بريدك.</p>
+<div class="nl-form">
+<input type="email" class="nl-input" placeholder="your@email.com">
+<button class="btn btn-green" id="nlBtn" type="submit" data-edit="newsletter_button">اشتراك</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+<div class="container">
+<div class="footer-top">
+<div class="footer-brand">
+<div class="logo"><span class="logo-main en">Hanadi Insights</span><span class="logo-sub en">Strategic Market Analysis</span></div>
+<p>منصة شخصية لتحليل الأسواق تربط السياسة والاقتصاد والسيولة وإدارة المخاطر بمنهجية هنادي.</p>
+<div class="social-links">
+<a href="#" class="social-link" title="Facebook"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.791-4.697 4.532-4.697 1.313 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.269h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg></a>
+<a href="#" class="social-link" title="Instagram"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+</div>
+</div>
+<div class="footer-col">
+<h4>روابط سريعة</h4>
+<ul>
+<li><a href="#about">عن هنادي</a></li>
+<li><a href="#difference">لماذا تختلف هنادي</a></li>
+<li><a href="#trust">لماذا يثق الناس</a></li>
+<li><a href="#method">المنهجية</a></li>
+<li><a href="#insights">التحليلات</a></li>
+<li><a href="articles.html">المقالات</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h4>استكشف المزيد</h4>
+<ul>
+<li id="footerLibrary"><a href="#library">المكتبة المعرفية</a></li>
+<li><a href="#reports">التقارير</a></li>
+<li id="footerConsultations"><a href="#consultations">الاستشارات</a></li>
+<li><a href="#notes">الأسئلة الشائعة</a></li>
+<li><a href="#testimonials">آراء العملاء</a></li>
+<li><a href="#newsletter">النشرة البريدية</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span class="footer-copy en">© 2025 Hanadi Insights</span>
+<p class="footer-legal">المحتوى المنشور لأغراض تعليمية وتحليلية ولا يُعد توصية استثمارية مباشرة.</p>
+</div>
+</div>
+</footer>
+
+<div id="scrollTop">↑</div>
+
+<!-- BOOKING MODAL -->
+<!-- CONSULTATION REQUEST MODAL -->
+<div class="modal-overlay" id="consModal">
+<div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto;padding:0;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent;">
+<button class="modal-close" onclick="document.getElementById('consModal').classList.remove('open')" style="position:sticky;top:16px;float:left;margin:16px 16px 0 0;z-index:10;">✕</button>
+<div style="padding:36px 44px 0;">
+<div class="hero-label en" style="margin-bottom:14px;">Consultation</div>
+<h3 style="font-size:1.45rem;color:var(--text);margin-bottom:8px;" id="consModalTitle">طلب استشارة</h3>
+<p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:28px;">قبل الحجز، اطّلعي على أسئلة يطرحها الزبائن عادةً</p>
+<div style="border-bottom:1px solid var(--line);margin-bottom:24px;"></div>
+<!-- Q&A section -->
+<div class="qa-list" style="max-width:100%;margin-bottom:32px;">
+<div class="qa-item open"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>هل تقدم هنادي توصيات بيع وشراء مباشرة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">لا. المنصة تعليمية وتحليلية، وهدفها بناء فهم أعمق للسوق وإدارة المخاطر، لا بيع إشارات دخول وخروج.</div></div></div>
+<div class="qa-item"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>ما الفرق بين التحليل والاستشارة؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">التحليل يشرح المشهد العام، أما الاستشارة فتساعد المتداول على فهم أخطائه ومنهجيته وحدود مخاطره ضمن سياق شخصي.</div></div></div>
+<div class="qa-item"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>كم مدة الجلسة وكيف تتم؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">الجلسات بين 60 و90 دقيقة عبر مكالمة مرئية، وتُحدَّد المواعيد بحسب التوفر بعد التواصل.</div></div></div>
+<div class="qa-item"><button class="qa-question" onclick="this.closest('.qa-item').classList.toggle('open')"><span class="qa-q-icon">س</span><span>ما المعلومات التي أحتاج لتحضيرها؟</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">يُفضَّل أن تكون لديك فكرة عن تجربتك في السوق، حجم حسابك التقريبي، وأبرز التحديات التي تواجهها في اتخاذ القرار.</div></div></div>
+</div>
+<div style="border-bottom:1px solid var(--line);margin-bottom:28px;"><span style="font-size:0.7rem;letter-spacing:0.2em;color:var(--accent-light);text-transform:uppercase;font-family:var(--font-en);position:relative;top:10px;background:var(--card);padding:0 12px;">نموذج التواصل</span></div>
+<!-- Contact form -->
+<div id="consFormWrap">
+<div class="form-group"><label class="form-label">الاسم الكامل *</label><input type="text" class="form-input" id="consName" placeholder="أدخل اسمك الكامل"/></div>
+<div class="form-group"><label class="form-label">رقم واتساب / الهاتف *</label>
+<div style="display:flex;gap:8px;" dir="ltr">
+<select class="form-input" id="consCountry" style="flex:0 0 130px;padding-inline:8px;"></select>
+<input type="tel" class="form-input" id="consPhone" placeholder="5x xxx xxxx" dir="ltr" style="flex:1;"/>
+</div></div>
+<div class="form-group"><label class="form-label">البريد الإلكتروني * <span style="color:var(--text-muted);font-size:0.78rem;">(لإرسال تأكيد الحجز)</span></label><input type="email" class="form-input" id="consEmail" placeholder="your@email.com" dir="ltr"/></div>
+<div class="form-group"><label class="form-label">نوع الاستشارة</label><select class="form-input" id="consType"></select></div>
+<div class="form-group"><label class="form-label">رسالة مختصرة (اختياري)</label><textarea class="form-input" id="consMsg" rows="3" placeholder="اكتب باختصار ما تريد مناقشته..."></textarea></div>
+<div class="modal-actions" style="padding-bottom:8px;">
+<button class="btn btn-ghost" onclick="document.getElementById('consModal').classList.remove('open')">إلغاء</button>
+<button class="btn btn-green" id="consSendBtn" onclick="sendConsRequest()">إرسال الطلب ←</button>
+</div>
+</div>
+<div id="consSuccessWrap" style="display:none;text-align:center;padding:32px 0 20px;">
+<div style="font-size:3rem;margin-bottom:18px;">✅</div>
+<h4 style="font-size:1.2rem;color:var(--text);margin-bottom:10px;">تم استلام طلبك!</h4>
+<p style="font-size:0.88rem;color:var(--text-dim);">سيتم التواصل معك خلال 24 ساعة لتأكيد الموعد.</p>
+</div>
+</div>
+<div style="height:36px;"></div>
+</div>
+</div>
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="videoModal">
+<div class="modal" style="max-width:880px;width:100%;padding:14px;background:#000;border-color:rgba(120,144,124,0.3);">
+<button class="modal-close" onclick="closeVideo()" style="top:-14px;left:-14px;">✕</button>
+<div id="videoBody" style="position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;"></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="bookingModal">
+<div class="modal">
+<button class="modal-close" id="modalClose">✕</button>
+<div id="modalForm">
+<h3>تأكيد الحجز</h3>
+<p class="modal-slot-info" id="modalSlotInfo"></p>
+<div class="form-group"><label class="form-label">الاسم الكامل</label><input type="text" class="form-input" id="bookName" placeholder="أدخل اسمك الكامل"/></div>
+<div class="form-group"><label class="form-label">رقم واتساب / الهاتف</label><input type="text" class="form-input" id="bookPhone" placeholder="+966 5x xxx xxxx" dir="ltr"/></div>
+<div class="form-group"><label class="form-label">البريد الإلكتروني</label><input type="email" class="form-input" id="bookEmail" placeholder="your@email.com" dir="ltr"/></div>
+<div class="modal-actions"><button class="btn btn-ghost" id="modalCancelBtn">إلغاء</button><button class="btn btn-green" id="modalConfirmBtn">تأكيد الحجز</button></div>
+</div>
+<div class="success-msg" id="successMsg">
+<div class="success-icon">✅</div>
+<h4>تم تأكيد حجزك!</h4>
+<p id="successDetail"></p>
+</div>
+</div>
+</div>
+
+<!-- ARTICLE MODAL -->
+<div class="modal-overlay" id="articleModal">
+<div class="modal">
+<button class="art-close-btn" id="artModalClose">✕</button>
+<div class="art-modal-head">
+<span class="art-modal-tag" id="artTag"></span>
+<h2 class="art-modal-title" id="artTitle"></h2>
+<div class="art-modal-meta">
+<span id="artDate"></span>
+<span id="artReadTime"></span>
+</div>
+</div>
+<div class="art-modal-body" id="artBody"></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+const SUPABASE_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
+const SUPABASE_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
+const sbClient=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+// EmailJS
+const EJS_PUBLIC_KEY='6NHm0wz_2eclb5bbW';
+const EJS_SERVICE_ID='service_c8o89cr';
+const EJS_TEMPLATE_ID='template_llcycmu';
+const EJS_CONFIRM_TEMPLATE_ID='template_1e1hk15'; // تأكيد للزبون
+const ADMIN_EMAIL='souchamaa35@gmail.com';
+if(window.emailjs&&EJS_PUBLIC_KEY){try{emailjs.init(EJS_PUBLIC_KEY);}catch(e){}}
+
+let ARTICLES = [
+{
+tag:'Geopolitics',title:'الحرب الإيرانية الأميركية وأثرها على عالم التداول',
+excerpt:'كيف تؤثر التوترات الجيوسياسية على سلوك السيولة وقرارات المستثمرين الكبار؟ قراءة هادئة بعيداً عن الضوضاء.',
+date:'15 May 2025',readTime:'8 دقائق قراءة',
+body:`
+<p>في كل مرة تشتعل فيها التوترات بين واشنطن وطهران، يتسارع قلب المتداول قبل أن يتحرك السوق. لكن الخطأ الذي يقع فيه كثيرون هو الاستجابة للضوضاء الإعلامية قبل قراءة ما تقوله الأموال الكبيرة.</p>
+<h4>ما الذي يحدث فعلاً في السيولة؟</h4>
+<p>عندما تتصاعد التوترات الجيوسياسية في منطقة الشرق الأوسط، تتحرك ثلاثة أصول بشكل متزامن: الذهب يرتفع، والدولار يتقوى كملاذ آمن، والنفط يقفز. لكن الحركة الأكثر أهمية هي خروج السيولة من أسواق الملاكي الناشئة والتوجه نحو السندات الأمريكية قصيرة الأجل.</p>
+<p>المستثمرون المؤسسيون الكبار لا يبيعون بسبب الخوف — بل يعيدون توزيع المخاطر وفقاً لسيناريوهات محددة سبق أن وضعوها. هذه النقطة هي الفارق بين من يفهم السوق ومن يلاحقه.</p>
+<h4>السيناريو الأكثر ترجيحاً</h4>
+<p>تاريخياً، أثبتت التوترات الإيرانية الأمريكية أنها دورات قصيرة تمتد بين 3 إلى 8 أسابيع. الأسواق تسعّر الخطر بسرعة، ثم تعود للتركيز على البيانات الاقتصادية. النفط هو الأصل الأكثر حساسية، خاصة إذا تعطلت حركة الملاحة في مضيق هرمز.</p>
+<blockquote>من يشتري على الخوف ويبيع على الخبر، يتصرف كالسوق — لا معه.</blockquote>
+<p>خلاصة القول: لا تدع العناوين الإخبارية تقود قراراتك. راقب مستويات الذهب ومنحنى العائد الأمريكي — فهما يخبرانك بما يفكر فيه الكبار قبل أن يُعلنوه.</p>
+`
+},
+{
+tag:'Commodities',title:'الذهب ليس غاليًا... العالم هو القَلِق',
+date:'8 May 2025',readTime:'7 دقائق قراءة',
+body:`
+<p>حين يسألني أحدهم: "هل الذهب غالٍ الآن؟" أجيب دائماً: السؤال الصحيح ليس عن سعر الذهب، بل عن حالة الثقة في النظام المالي العالمي.</p>
+<h4>الذهب مرآة، ليس سلعة</h4>
+<p>الذهب لا ينتج دخلاً، ولا يدفع أرباحاً، ولا تقيّمه نماذج DCF التقليدية. ما يحرّكه هو مستوى القلق الجماعي من استقرار العملات، والسياسات النقدية، والديون السيادية. عندما يرتفع الذهب بقوة، فهو يقول لك: ثمة شيء في النظام يقلق الكبار.</p>
+<p>في عام 2024-2025، شهدنا ارتفاعاً تاريخياً في الذهب رافقه شراء قياسي من البنوك المركزية — وهذه إشارة نادرة الأهمية. البنوك المركزية لا تشتري من باب المضاربة، بل من باب الحماية الاستراتيجية.</p>
+<h4>ماذا تقرأ في السعر؟</h4>
+<p>ارتفاع الذهب مع قوة الدولار في الوقت ذاته يعني أن هناك قلقاً عميقاً يتجاوز عملة بعينها. هذا بالضبط ما نراه اليوم — خوف من تضخم هيكلي، ومن استدامة المديونية الأمريكية، ومن تآكل الثقة في مؤسسات بريتون وودز.</p>
+<blockquote>الذهب لا يكذب. عندما يرتفع، اسأل نفسك: من يشتريه وماذا يخاف؟</blockquote>
+<p>المتداول الذكي لا يسأل "هل يجب أن أشتري ذهباً؟" — بل يسأل "ماذا يخبرني سعر الذهب عن حالة العالم؟" والإجابة على هذا السؤال تفتح أبواباً لقراءة كل الأسواق الأخرى.</p>
+`
+},
+{
+tag:'Macro',title:'الصين: من يراقبها يفهم اتجاه السيولة',
+date:'1 May 2025',readTime:'9 دقائق قراءة',
+body:`
+<p>إذا أردت أن تفهم اتجاه السيولة العالمية في الأشهر القادمة، فانظر إلى الصين. ليس لأنها الاقتصاد الأكبر، بل لأن قراراتها تحرّك المواد الخام، والعملات، والتدفقات الاستثمارية بشكل مؤثر وسابق للأحداث.</p>
+<h4>الصين كمؤشر استباقي</h4>
+<p>حين تُحفّز الصين اقتصادها — عبر خفض الاحتياطي الإلزامي أو زيادة الإنفاق البنية التحتية — يرتفع الطلب على النفط والنحاس والحديد الصلب. هذه السلع هي مؤشر استباقي لما ستفعله الأسواق الناشئة والأسهم الصناعية العالمية.</p>
+<p>في المقابل، حين يتراجع النشاط الصناعي الصيني (PMI أقل من 50)، فهذا يعني ضغطاً على أسعار السلع وتراجعاً في الطلب العالمي — وهو ما أثّر سلباً على عملات دول كأستراليا والبرازيل وكندا.</p>
+<h4>ما الذي تراقبه الآن؟</h4>
+<p>ثلاثة مؤشرات صينية يجب أن تكون على شاشتك دائماً: مؤشر PMI الصناعي، صادرات النفط والنحاس، وسعر صرف اليوان أمام الدولار. هذه الثلاثة معاً تعطيك صورة دقيقة عن نية بكين الاقتصادية قبل أن تُعلنها رسمياً.</p>
+<blockquote>الصين تتحرك ببطء، لكن أثرها عميق ودائم. من يراقب الإشارات المبكرة يجد نفسه دائماً قبل الحدث.</blockquote>
+<p>المتداول الذي يفهم الصين يملك ميزة حقيقية في قراءة اتجاهات السلع والأسواق الناشئة. ابنِ هذا الفهم، وستجد قراراتك أكثر وضوحاً وأقل تأثراً بضوضاء السوق اليومية.</p>
+`
+}
+];
+
+// ARTICLE MODAL
+function openArticle(i){
+const a=ARTICLES[i];
+document.getElementById('artTag').textContent=a.tag;
+document.getElementById('artTitle').textContent=a.title;
+document.getElementById('artDate').textContent='📅 '+a.date;
+document.getElementById('artReadTime').textContent='⏱ '+a.readTime;
+document.getElementById('artBody').innerHTML=a.body;
+const m=document.getElementById('articleModal');
+m.classList.add('open');
+m.querySelector('.modal').scrollTop=0;
+document.body.style.overflow='hidden';
+}
+function closeArticle(){
+document.getElementById('articleModal').classList.remove('open');
+document.body.style.overflow='';
+}
+
+// جلب أحدث 3 تحليلات منشورة من Supabase وتحديث البطاقات
+function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+async function loadLatestArticles(){
+if(!sbClient)return;
+try{
+const {data,error}=await sbClient.from('articles').select('*').eq('published',true).order('created_at',{ascending:false}).limit(3);
+if(error){console.warn('insights supabase:',error.message);return;}
+if(!data||!data.length)return;
+ARTICLES=data.map(r=>{
+const txt=(r.content||'').replace(/<[^>]+>/g,'');
+const mins=Math.max(1,Math.round(txt.length/700));
+let d='';try{d=new Date(r.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{}
+return {tag:r.tag||'تحليل',title:r.title,excerpt:r.excerpt||'',date:d,readTime:mins+' دقائق قراءة',body:r.content||''};
+});
+const grid=document.getElementById('insightsGrid');
+if(!grid)return;
+grid.innerHTML=ARTICLES.map((a,i)=>`
+<div class="insight-card reveal visible delay-${i+1}" onclick="openArticle(${i})">
+<span class="card-tag en">${escHtml(a.tag)}</span>
+<h3 class="card-title">${escHtml(a.title)}</h3>
+<p class="card-desc">${escHtml(a.excerpt)}</p>
+<div class="card-footer">
+<span class="card-date en">${escHtml(a.date)}</span>
+<button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button>
+</div>
+</div>`).join('');
+}catch(err){console.warn('insights load:',err);}
+}
+loadLatestArticles();
+
+// جلب أحدث 3 مقالات (content_type='article') من Supabase
+let BLOG_ARTICLES=[];
+async function loadLatestBlogPosts(){
+if(!sbClient)return;
+try{
+const {data,error}=await sbClient.from('articles').select('*').eq('published',true).eq('content_type','article').order('created_at',{ascending:false}).limit(3);
+const grid=document.getElementById('articlesPreviewGrid');
+if(!grid)return;
+if(error||!data||!data.length){
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;">لا توجد مقالات منشورة بعد.</div>';
+  return;
+}
+BLOG_ARTICLES=data;
+grid.innerHTML=data.map((r,i)=>{
+  let d='';try{d=new Date(r.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{}
+  return `<div class="art-prev-card reveal visible delay-${i+1}" onclick="openBlogArticle(${i})" style="cursor:pointer;">
+  <span class="card-tag en">${escHtml(r.tag||'مقال')}</span>
+  <h3 class="art-prev-title">${escHtml(r.title)}</h3>
+  <p class="art-prev-desc">${escHtml(r.excerpt||'')}</p>
+  <div class="art-prev-footer"><span class="card-date en">${escHtml(d)}</span><button class="read-more-btn">اقرأ المقال <span class="arr">←</span></button></div>
+  </div>`;
+}).join('');
+}catch(err){console.warn('blog load:',err);}
+}
+function openBlogArticle(i){
+const a=BLOG_ARTICLES[i];
+if(!a)return;
+document.getElementById('artTag').textContent=a.tag||'مقال';
+document.getElementById('artTitle').textContent=a.title;
+const txt=(a.content||'').replace(/<[^>]+>/g,'');
+const mins=Math.max(1,Math.round(txt.length/700));
+let d='';try{d=new Date(a.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{}
+document.getElementById('artDate').textContent='📅 '+d;
+document.getElementById('artReadTime').textContent='⏱ '+mins+' دقائق قراءة';
+document.getElementById('artBody').innerHTML=a.content||'';
+const m=document.getElementById('articleModal');
+m.classList.add('open');m.querySelector('.modal').scrollTop=0;
+document.body.style.overflow='hidden';
+}
+loadLatestBlogPosts();
+
+// ── PAGE SECTIONS LOADER ──
+// Maps section_key → {el: DOM selector, updates: [{field, selector, fn}]}
+const _SEC_MAP={
+  hero:           {el:'#hero'},
+  ticker:         {el:'.ticker-wrap'},
+  insights:       {el:'#insights',      grid:'.insights-grid'},
+  method:         {el:'#method',        grid:'.method-grid'},
+  notes:          {el:'#notes'},
+  consultations:  {el:'#consultations', grid:'.cons-grid'},
+  booking:        {el:'#booking'},
+  about:{
+    el:'#about',
+    updates:[
+      {field:'image_url',sel:'.about-photo',fn:(el,v)=>{
+        if(!v)return;
+        const img=el.querySelector('img')||document.createElement('img');
+        img.src=v;img.alt='هنادي';img.style.cssText='width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:6px;';
+        el.style.position='relative';el.innerHTML='';el.appendChild(img);
+      }}
+    ]
+  },
+  library:      {el:'#library',      grid:'.library-grid'},
+  reports:      {el:'#reports',      grid:'.reports-grid'},
+  testimonials: {el:'#testimonials', grid:'.testi-grid'},
+  articles_cta: {el:'#articles-cta', updates:[
+    {field:'title',   sel:'.section-title',fn:(el,v)=>el.textContent=v},
+    {field:'subtitle',sel:'p[style]',       fn:(el,v)=>el.textContent=v},
+    {field:'btn_text',sel:'.btn-green',     fn:(el,v)=>el.textContent=v},
+  ]},
+  newsletter:{el:'#newsletter', updates:[
+    {field:'placeholder',sel:'.nl-input',fn:(el,v)=>el.setAttribute('placeholder',v)},
+  ]},
+  'articles-preview':{el:'#articles-preview'},
+  difference:{el:'#difference', grid:'.brand-grid'},
+  trust:{el:'#trust', grid:'.proof-grid'},
+};
+
+// ── REPEATABLE ITEMS (CMS) ────────────────────
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const ITEM_TEMPLATES={
+  difference:it=>`<div class="brand-card reveal visible"><span class="brand-num en">${esc(it.num)}</span><h3 class="brand-title">${esc(it.title)}</h3><p class="brand-desc">${esc(it.desc)}</p></div>`,
+  trust:it=>`<div class="proof-card reveal visible"><span class="proof-value en">${esc(it.value)}</span><p class="proof-label">${esc(it.label)}</p></div>`,
+  method:it=>`<div class="method-card reveal visible"><span class="method-num en">${esc(it.num)}</span><div class="method-icon">${esc(it.icon)}</div><h3 class="method-name">${esc(it.name)}</h3><p class="method-desc">${esc(it.desc)}</p></div>`,
+  library:it=>{const u=(it.url||'').trim();const play=u?'<span class="hub-play">▶</span>':'';return `<div class="hub-card reveal visible${u?' hub-clickable':''}"${u?` data-video="${esc(u)}"`:''}><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}${play}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`;},
+  reports:it=>`<div class="report-card reveal visible"><div class="report-icon">${esc(it.icon||'📄')}</div><h3 class="report-name">${esc(it.name)}</h3><p class="report-date en">${esc(it.date)}</p><a href="#" class="btn btn-ghost">${esc(it.btn||'تحميل التقرير')}</a></div>`,
+  consultations:it=>`<div class="cons-card reveal visible${it.featured?' featured':''}"><div class="cons-icon">${esc(it.icon)}</div><h3 class="cons-name">${esc(it.name)}</h3><p class="cons-desc">${esc(it.desc)}</p><div class="cons-duration">${esc(it.duration||'')}</div><button class="btn btn-outline" style="margin-top:8px" onclick="openConsModal(this)">${esc(it.btn||'طلب استشارة')}</button></div>`,
+  notes:it=>`<div class="qa-item reveal visible"><button class="qa-question" onclick="toggleQA(this)"><span class="qa-q-icon">س</span><span>${esc(it.question)}</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">${esc(it.answer)}</div></div></div>`,
+  about:it=>`<div class="timeline-item"><span class="timeline-year en">${esc(it.year)}</span><p class="timeline-title">${esc(it.title)}</p></div>`,
+};
+function rebuildSectionItems(sec,domEl){
+  const items=sec.content&&sec.content._items;
+  if(!Array.isArray(items)||!items.length)return;
+  const tpl=ITEM_TEMPLATES[sec.section_key];
+  if(!tpl)return;
+  let gridSel;
+  if(sec.section_key==='about')gridSel='.timeline';
+  else{const m=_SEC_MAP[sec.section_key];gridSel=m&&m.grid;}
+  if(!gridSel)return;
+  const gridEl=domEl.querySelector(gridSel);
+  if(!gridEl)return;
+  gridEl.innerHTML=items.map(tpl).join('');
+  gridEl.querySelectorAll('.reveal').forEach(r=>r.classList.add('visible'));
+}
+
+// ── CAROUSEL BUILDER ──────────────────────────
+function makeCarousel(gridEl){
+  if(!gridEl||gridEl.closest('.carousel-wrap'))return; // already done
+  const cards=[...gridEl.children];
+  if(cards.length<2)return;
+
+  // Wrap grid in carousel
+  const wrap=document.createElement('div');
+  wrap.className='carousel-wrap';
+  gridEl.parentNode.insertBefore(wrap,gridEl);
+  const track=document.createElement('div');
+  track.className='carousel-track';
+  // Move children to track
+  cards.forEach(c=>{track.appendChild(c);c.classList.add('visible');});
+  // Remove old grid class (keep element for possible re-use)
+  gridEl.style.display='none';
+  wrap.appendChild(track);
+
+  // Nav
+  const nav=document.createElement('div');nav.className='carousel-nav';
+  const btnPrev=document.createElement('button');btnPrev.className='carousel-btn';btnPrev.innerHTML='&#8592;';btnPrev.setAttribute('aria-label','السابق');
+  const btnNext=document.createElement('button');btnNext.className='carousel-btn';btnNext.innerHTML='&#8594;';btnNext.setAttribute('aria-label','التالي');
+  const dotsWrap=document.createElement('div');dotsWrap.className='carousel-dots';
+  nav.appendChild(btnNext);nav.appendChild(dotsWrap);nav.appendChild(btnPrev);
+  wrap.appendChild(nav);
+
+  // Per-slide count based on viewport
+  function perSlide(){return window.innerWidth<=600?1:window.innerWidth<=900?2:Math.min(3,cards.length);}
+  let cur=0;
+  function totalPages(){return Math.max(1,Math.ceil(cards.length/perSlide()));}
+  function render(){
+    const ps=perSlide();
+    const gapPx=24;
+    const wrapW=wrap.offsetWidth||wrap.getBoundingClientRect().width||600;
+    const cardW=(wrapW - gapPx*(ps-1))/ps;
+    cards.forEach(c=>{c.style.flex=`0 0 ${cardW}px`;c.style.minWidth='0';c.style.boxSizing='border-box';});
+    const slideW=cardW+gapPx;
+    track.style.transform=`translateX(${cur*ps*slideW}px)`;
+    btnPrev.disabled=cur===0;btnNext.disabled=cur>=totalPages()-1;
+    [...dotsWrap.children].forEach((d,i)=>d.classList.toggle('active',i===cur));
+  }
+  function buildDots(){
+    dotsWrap.innerHTML='';
+    for(let i=0;i<totalPages();i++){
+      const d=document.createElement('button');d.className='carousel-dot'+(i===0?' active':'');
+      d.addEventListener('click',()=>{cur=i;render();});dotsWrap.appendChild(d);
+    }
+  }
+  btnPrev.addEventListener('click',()=>{if(cur>0){cur--;render();}});
+  btnNext.addEventListener('click',()=>{if(cur<totalPages()-1){cur++;render();}});
+  // Touch
+  let tx0=null;
+  track.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX;},{passive:true});
+  track.addEventListener('touchend',e=>{if(tx0===null)return;const dx=tx0-e.changedTouches[0].clientX;if(Math.abs(dx)>40){if(dx>0&&cur<totalPages()-1)cur++;else if(dx<0&&cur>0)cur--;}tx0=null;render();});
+  window.addEventListener('resize',()=>{buildDots();render();});
+  buildDots();render();
+}
+
+// QA Carousel — percentage-based, RTL-safe
+let qaIdx=0;
+let _qaInitDone=false;
+function initQACarousel(){
+  const wrap=document.querySelector('.qa-carousel-wrap');
+  const track=document.getElementById('qaTrack');
+  const dots=document.getElementById('qaDots');
+  if(!track||!dots||!wrap)return;
+  const cards=[...track.querySelectorAll('.qa-card')];
+  if(!cards.length)return;
+  const vis=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const gap=24;
+  // Size each card as exact percentage of track
+  cards.forEach(c=>{
+    c.style.flex=`0 0 calc(${100/vis}% - ${gap*(vis-1)/vis}px)`;
+    c.style.minWidth='0';
+  });
+  const total=Math.ceil(cards.length/vis);
+  dots.innerHTML=Array.from({length:total},(_,i)=>`<span class="qa-dot${i===0?' active':''}" onclick="goQA(${i})"></span>`).join('');
+  if(!_qaInitDone){
+    let sx=0;
+    track.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+    track.addEventListener('touchend',e=>{const dx=sx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)moveQA(dx>0?1:-1);});
+    _qaInitDone=true;
+  }
+  goQA(Math.min(qaIdx,total-1));
+}
+function moveQA(dir){
+  const track=document.getElementById('qaTrack');
+  if(!track)return;
+  const vis=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const total=Math.ceil(track.querySelectorAll('.qa-card').length/vis);
+  qaIdx=Math.max(0,Math.min(total-1,qaIdx+dir));
+  goQA(qaIdx);
+}
+function goQA(i){
+  qaIdx=i;
+  const track=document.getElementById('qaTrack');
+  if(!track)return;
+  const cards=[...track.querySelectorAll('.qa-card')];
+  const vis=window.innerWidth<=768?1:window.innerWidth<=1024?2:3;
+  const totalPages=Math.ceil(cards.length/vis);
+  // translateX % is relative to the track element itself.
+  // Track has cards.length cards; one page = vis cards = (vis/cards.length * 100)% of track width.
+  // To advance i pages: translate -(i * vis/cards.length * 100)%.
+  const pct=cards.length?-(i*vis/cards.length*100):0;
+  track.style.transform=`translateX(${pct}%)`;
+  document.querySelectorAll('.qa-dot').forEach((d,idx)=>d.classList.toggle('active',idx===i));
+}
+document.addEventListener('DOMContentLoaded',initQACarousel);
+window.addEventListener('resize',()=>{_qaInitDone=false;initQACarousel();});
+
+// ── SITE THEME (colors + fonts + template) ──
+const GFONT_MAP={
+  'Noto Naskh Arabic':'Noto+Naskh+Arabic:wght@400;500;600;700',
+  'Cairo':'Cairo:wght@400;500;600;700;800',
+  'Tajawal':'Tajawal:wght@400;500;700;800',
+  'IBM Plex Sans Arabic':'IBM+Plex+Sans+Arabic:wght@300;400;500;600;700',
+  'Almarai':'Almarai:wght@300;400;700;800',
+  'Noto Kufi Arabic':'Noto+Kufi+Arabic:wght@400;500;600;700',
+  'El Messiri':'El+Messiri:wght@400;500;600;700',
+  // English / Latin fonts
+  'Cormorant Garamond':'Cormorant+Garamond:wght@400;500;600;700',
+  'Playfair Display':'Playfair+Display:wght@400;500;600;700',
+  'Marcellus':'Marcellus',
+  'Poppins':'Poppins:wght@300;400;500;600;700',
+  'Montserrat':'Montserrat:wght@300;400;500;600;700'
+};
+function loadFontFamily(name){
+  if(!name||name==='DIN Next LT Arabic')return; // local font, already declared
+  if(!GFONT_MAP[name])return;
+  const id='gf_'+name.replace(/\s/g,'');
+  if(document.getElementById(id))return;
+  const link=document.createElement('link');link.id=id;link.rel='stylesheet';
+  link.href='https://fonts.googleapis.com/css2?family='+GFONT_MAP[name]+'&display=swap';
+  document.head.appendChild(link);
+}
+async function loadSiteTheme(){
+  if(!sbClient)return;
+  try{
+    const {data}=await sbClient.from('site_settings').select('*').eq('id',1).single();
+    if(!data)return;
+    // Google Sheets webhook (read once, used by booking)
+    if(data.sheets_webhook)window.__SHEETS_WEBHOOK=data.sheets_webhook;
+    if(!data.theme)return;
+    const t=data.theme;const r=document.documentElement;
+    // Design skin (نمط التصميم)
+    if(t.style&&t.style!=='classic')r.setAttribute('data-style',t.style);
+    else r.removeAttribute('data-style');
+    // Colors
+    if(t.colors){const c=t.colors;
+      const set=(k,v)=>{if(v)r.style.setProperty(k,v);};
+      set('--bg',c.bg);set('--bg-mid',c.bg_mid);set('--card',c.card);
+      set('--accent',c.accent);set('--accent-light',c.accent_light);
+      set('--text',c.text);set('--text-dim',c.text_dim);
+      if(c.accent){r.style.setProperty('--border','color-mix(in srgb,'+c.accent+' 18%,transparent)');
+        r.style.setProperty('--line','color-mix(in srgb,'+c.accent+' 22%,transparent)');}
+    }
+    // Hero booking button visibility
+    if(t.hero_booking_hidden) document.getElementById('heroBookingBtn').style.display='none';
+    // Nav CTA visibility
+    if(t.nav_cta_visible){
+      const el=document.getElementById('navCtaItem');if(el)el.style.display='';
+      const mel=document.getElementById('mobileNavCta');if(mel)mel.style.display='';
+      // Sync footer booking links
+      const fb=document.getElementById('footerBooking');if(fb)fb.style.display='';
+      const fbc=document.getElementById('footerBookingCta');if(fbc)fbc.style.display='';
+    }
+    // Per-element fonts (granular typography)
+    const fonts=t.fonts||{};
+    // Backward compat: old single font_ar = body+heading+button
+    if(t.font_ar&&!t.fonts){fonts.body=t.font_ar;fonts.heading=t.font_ar;fonts.button=t.font_ar;}
+    const applyFont=(varName,fontName,fallback)=>{
+      if(!fontName)return;
+      loadFontFamily(fontName);
+      r.style.setProperty(varName,"'"+fontName+"',"+(fallback||'sans-serif'));
+    };
+    applyFont('--font-body',   fonts.body,   "'Noto Naskh Arabic',sans-serif");
+    applyFont('--font-heading',fonts.heading,"'Noto Naskh Arabic',sans-serif");
+    applyFont('--font-btn',    fonts.button, "'Noto Naskh Arabic',sans-serif");
+    applyFont('--font-en',     fonts.english,'serif');
+  }catch(e){console.warn('theme:',e);}
+}
+loadSiteTheme();
+
+// ── LIVE TESTIMONIALS from Supabase ──
+async function loadLiveTestimonials(){
+  if(!sbClient)return;
+  try{
+    const {data}=await sbClient.from('testimonials').select('*').eq('visible',true).order('order_index',{ascending:true});
+    if(!data||!data.length)return;
+    const grid=document.querySelector('#testimonials .testi-grid');
+    if(!grid)return;
+    grid.innerHTML=data.map((t,i)=>{
+      const initial=(t.name||'؟').trim().charAt(0);
+      const stars='★'.repeat(t.rating||5)+'☆'.repeat(5-(t.rating||5));
+      return `<div class="testi-card reveal delay-${(i%3)+1}">
+        <div class="testi-stars">${stars}</div>
+        <p class="testi-text">${(t.text||'').replace(/</g,'&lt;')}</p>
+        <div class="testi-person"><div class="testi-avatar en">${initial}</div>
+        <div><div class="testi-name">${(t.name||'').replace(/</g,'&lt;')}</div>
+        <div class="testi-role">${(t.role||'').replace(/</g,'&lt;')}</div></div></div>
+      </div>`;}).join('');
+    grid.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+  }catch(e){console.warn('testimonials:',e);}
+}
+loadLiveTestimonials();
+
+async function loadPageSections(){
+  if(!sbClient)return;
+  try{
+    const {data,error}=await sbClient.from('page_sections').select('*').order('order_index',{ascending:true});
+    if(error||!data||!data.length)return;
+
+    // Build ordered list of section keys
+    const ordered=data.map(s=>s.section_key);
+
+    data.forEach(sec=>{
+      const map=_SEC_MAP[sec.section_key];
+      if(!map)return;
+      const domEl=document.querySelector(map.el);
+      if(!domEl)return;
+
+      // Visibility
+      if(!sec.visible){
+        domEl.style.display='none';
+        return;
+      }else{
+        domEl.style.display='';
+      }
+
+      // Content updates
+      if(map.updates&&sec.content){
+        map.updates.forEach(u=>{
+          const val=sec.content[u.field];
+          if(!val&&val!==false)return;
+          const target=domEl.querySelector(u.sel);
+          if(target)try{u.fn(target,val);}catch(e){}
+        });
+      }
+
+      // Generic data-edit applier — overrides hardcoded text/numbers when content provided.
+      // Keys are globally unique (<sectionkey>_<field>). Skip empty/whitespace to keep fallbacks.
+      if(sec.content){
+        Object.entries(sec.content).forEach(([key,val])=>{
+          if(typeof val!=='string'||!val.trim())return;
+          const t=domEl.querySelector('[data-edit="'+key+'"]');
+          if(t)t.textContent=val;
+        });
+      }
+
+      // Repeatable items — rebuild grid from content._items (before carousel runs)
+      rebuildSectionItems(sec,domEl);
+
+      // Carousel / Grid layout
+      if(map.grid&&sec.content){
+        const layout=sec.content.layout||'grid';
+        const gridEl=domEl.querySelector(map.grid);
+        if(gridEl){
+          if(layout==='carousel'){
+            // Apply carousel (only once — guard inside makeCarousel)
+            setTimeout(()=>makeCarousel(gridEl),50);
+          }else{
+            // Ensure grid styles restored if switching back
+            gridEl.style.display='';
+          }
+          // insights: control count
+          if(sec.section_key==='insights'&&sec.content.count){
+            const cards=[...gridEl.children];
+            cards.forEach((c,i)=>c.style.display=i<sec.content.count?'':'none');
+          }
+        }
+      }
+    });
+
+    // Sync nav visibility with sections
+    const visMap={};
+    (data||[]).forEach(s=>{visMap[s.section_key||s.id]=s.visible!==false;});
+    document.querySelectorAll('.nav-links li a').forEach(a=>{
+      const h=a.getAttribute('href');if(!h||!h.startsWith('#'))return;
+      const key=h.slice(1);
+      if(key in visMap){const li=a.closest('li');if(li)li.style.display=visMap[key]?'':'none';}
+    });
+    document.querySelectorAll('#mobileNav a').forEach(a=>{
+      const h=a.getAttribute('href');if(!h||!h.startsWith('#'))return;
+      const key=h.slice(1);
+      if(key in visMap)a.style.display=visMap[key]?'':'none';
+    });
+    // Sync ALL footer links with section visibility (مثل المينو بار تماماً)
+    // يعتمد على حالة السيكشن الفعلية في الصفحة + بيانات الإظهار معاً (مضمون)
+    const isHidden=key=>{
+      if(key in visMap && !visMap[key])return true;
+      const el=document.getElementById(key);
+      if(el && el.style.display==='none')return true;
+      return false;
+    };
+    document.querySelectorAll('#footer .footer-col li a[href^="#"]').forEach(a=>{
+      const h=a.getAttribute('href');if(!h||!h.startsWith('#'))return;
+      const key=h.slice(1);
+      const li=a.closest('li');if(li)li.style.display=isHidden(key)?'none':'';
+    });
+    // ونفس المبدأ للمينو بار (احتياطاً)
+    document.querySelectorAll('.nav-links li a[href^="#"],#mobileNav a[href^="#"]').forEach(a=>{
+      const key=a.getAttribute('href').slice(1);
+      const t=a.closest('li')||a;
+      if(isHidden(key))t.style.display='none';
+    });
+
+    // Reorder sections in DOM based on order_index
+    const body=document.body;
+    const refEl=document.getElementById('footer');
+    // Move known ordered sections before footer (in correct order)
+    ordered.forEach(key=>{
+      const map=_SEC_MAP[key];
+      if(!map)return;
+      const el=document.querySelector(map.el);
+      if(el&&el.style.display!=='none'){
+        body.insertBefore(el,refEl);
+      }
+    });
+    // Render custom sections (section_key starts with 'custom_') then insert them
+    data.filter(s=>(s.section_key||'').startsWith('custom_')).forEach(sec=>{
+      if(!sec.visible)return;
+      let existing=document.getElementById(sec.section_key);
+      if(!existing){existing=buildCustomSection(sec);if(existing)body.insertBefore(existing,refEl);}
+    });
+
+    // Move any remaining body-level sections not yet reordered to end
+    const alreadyMoved=new Set(ordered.map(k=>{
+      if((k||'').startsWith('custom_'))return document.getElementById(k);
+      return _SEC_MAP[k]&&document.querySelector(_SEC_MAP[k].el);
+    }).filter(Boolean));
+    document.querySelectorAll('body>section,body>.ticker-wrap').forEach(el=>{
+      if(!alreadyMoved.has(el)&&el.id!=='footer'){
+        body.insertBefore(el,refEl);
+      }
+    });
+
+  }catch(e){console.warn('page sections:',e);}
+}
+
+// ── Custom Section Builder ─────────────────────
+function escT(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function buildCustomSection(sec){
+  const c=sec.content||{};
+  const id=sec.section_key;
+  const anim=sec.animation&&sec.animation!=='none'?` data-anim="${sec.animation}"`:'';
+  let inner='';
+  switch(sec.section_type){
+    case 'box':
+      const bg=c.bg==='mid'?'background:var(--bg-mid);':c.bg==='accent'?'background:rgba(120,144,124,0.08);':'';
+      inner=`<div class="container" style="${bg}border-radius:var(--radius);padding:48px 40px;">
+        ${c.title?`<h2 class="section-title"${anim}>${escT(c.title)}</h2><div class="green-line"></div>`:''}
+        <p style="color:var(--text-dim);line-height:2;font-size:1rem;white-space:pre-line;"${anim}>${escT(c.text)}</p>
+      </div>`;
+      break;
+    case 'image':
+      const imgStyle=c.size==='full'?'width:100%;':'max-width:900px;margin:0 auto;display:block;';
+      inner=`<div class="${c.size==='full'?'':'container'}">
+        <img src="${escT(c.url)}" alt="${escT(c.caption)}" style="${imgStyle}border-radius:var(--radius);max-height:520px;object-fit:cover;" loading="lazy">
+        ${c.caption?`<p style="text-align:center;color:var(--text-dim);font-size:0.85rem;margin-top:14px;">${escT(c.caption)}</p>`:''}
+      </div>`;
+      break;
+    case 'carousel':
+      const cItems=(c.items||[]).map((it,i)=>`
+        <div class="insight-card reveal" style="flex:0 0 calc(33.333% - 16px);min-width:0;box-sizing:border-box;">
+          ${it.icon?`<div style="font-size:2rem;margin-bottom:12px;">${escT(it.icon)}</div>`:''}
+          <h3 class="card-title">${escT(it.title)}</h3>
+          <p class="card-desc">${escT(it.text)}</p>
+        </div>`).join('');
+      const cWrapId='cw_'+id;
+      inner=`<div class="container">
+        ${c.title?`<div class="section-head reveal"><h2 class="section-title">${escT(c.title)}</h2><div class="green-line"></div></div>`:''}
+        <div style="overflow:hidden;margin-top:32px;" id="${cWrapId}">
+          <div style="display:flex;gap:24px;flex-wrap:wrap;">${cItems}</div>
+        </div>
+      </div>`;
+      break;
+    case 'slideshow':
+      const slides=(c.images||[]);
+      if(!slides.length)return null;
+      const ssId='ss_'+id;
+      inner=`<div class="container">
+        ${c.title?`<div class="section-head reveal"><h2 class="section-title">${escT(c.title)}</h2><div class="green-line"></div></div>`:''}
+        <div style="position:relative;overflow:hidden;border-radius:var(--radius);margin-top:32px;" id="${ssId}">
+          ${slides.map((s,i)=>`<div class="ss-slide" data-ssid="${ssId}" style="display:${i===0?'block':'none'};">
+            <img src="${escT(s.url)}" alt="${escT(s.caption)}" style="width:100%;max-height:480px;object-fit:cover;">
+            ${s.caption?`<p style="text-align:center;padding:12px;color:var(--text-dim);font-size:0.85rem;">${escT(s.caption)}</p>`:''}
+          </div>`).join('')}
+          ${slides.length>1?`<div style="display:flex;justify-content:center;gap:10px;margin-top:16px;">
+            ${slides.map((_,i)=>`<span class="ss-dot" data-ssid="${ssId}" data-idx="${i}" onclick="goSlide('${ssId}',${i})" style="width:8px;height:8px;border-radius:50%;background:${i===0?'var(--accent-light)':'var(--accent-dim)'};cursor:pointer;display:inline-block;transition:background 0.3s;"></span>`).join('')}
+          </div>`:''}
+        </div>
+      </div>`;
+      if(c.autoplay&&slides.length>1){
+        setTimeout(()=>{let si=0;setInterval(()=>{si=(si+1)%slides.length;goSlide(ssId,si);},4000);},800);
+      }
+      break;
+    case 'icons':
+      const iItems=(c.items||[]).map(it=>`
+        <div class="reveal" style="text-align:center;padding:24px 16px;">
+          <div style="font-size:2.4rem;margin-bottom:12px;">${escT(it.icon)}</div>
+          <h3 style="color:var(--text);font-size:1rem;font-weight:700;margin-bottom:8px;">${escT(it.label)}</h3>
+          <p style="color:var(--text-dim);font-size:0.88rem;line-height:1.8;">${escT(it.desc)}</p>
+        </div>`).join('');
+      inner=`<div class="container">
+        ${c.title?`<div class="section-head reveal"><h2 class="section-title">${escT(c.title)}</h2><div class="green-line"></div></div>`:''}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:32px;">${iItems}</div>
+      </div>`;
+      break;
+    case 'cta':
+      inner=`<div class="container" style="text-align:center;padding:64px 20px;">
+        ${c.title?`<h2 class="section-title reveal">${escT(c.title)}</h2><div class="green-line" style="margin:16px auto;"></div>`:''}
+        ${c.text?`<p class="reveal" style="color:var(--text-dim);font-size:1rem;line-height:1.9;max-width:560px;margin:0 auto 32px;">${escT(c.text)}</p>`:''}
+        ${c.btn_text?`<a href="${escT(c.btn_url||'#')}" class="btn btn-green reveal">${escT(c.btn_text)}</a>`:''}
+      </div>`;
+      break;
+    default: return null;
+  }
+  const el=document.createElement('section');
+  el.className='section';el.id=id;
+  el.innerHTML=inner;
+  return el;
+}
+
+function goSlide(ssId,idx){
+  document.querySelectorAll(`.ss-slide[data-ssid="${ssId}"]`).forEach((s,i)=>s.style.display=i===idx?'block':'none');
+  document.querySelectorAll(`.ss-dot[data-ssid="${ssId}"]`).forEach((d,i)=>d.style.background=i===idx?'var(--accent-light)':'var(--accent-dim)');
+}
+loadPageSections();
+
+document.getElementById('artModalClose').addEventListener('click',closeArticle);
+document.getElementById('articleModal').addEventListener('click',function(e){if(e.target===this)closeArticle();});
+
+// MOBILE MENU
+const menuToggle=document.getElementById('menuToggle');
+const mobileNav=document.getElementById('mobileNav');
+menuToggle.addEventListener('click',()=>mobileNav.classList.toggle('open'));
+mobileNav.querySelectorAll('a').forEach(l=>l.addEventListener('click',()=>mobileNav.classList.remove('open')));
+
+// SCROLL TOP
+const scrollTopBtn=document.getElementById('scrollTop');
+const scrollProgress=document.getElementById('scrollProgress');
+window.addEventListener('scroll',()=>{
+scrollTopBtn.classList.toggle('visible',window.scrollY>400);
+const h=document.documentElement;
+const pct=(h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+if(scrollProgress)scrollProgress.style.width=pct+'%';
+});
+window.addEventListener('scroll',()=>scrollTopBtn.classList.toggle('visible',window.scrollY>400));
+scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+// REVEAL
+const observer=new IntersectionObserver((entries)=>{
+entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+// safety net: reveal everything after 2.5s in case the observer misfires
+setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),2500);
+
+// NEWSLETTER
+const nlBtn=document.getElementById('nlBtn');
+nlBtn.addEventListener('click',()=>{
+const input=document.querySelector('.nl-input');
+if(input.value.trim()){input.value='';const orig=nlBtn.textContent;nlBtn.textContent='✓ تم';nlBtn.disabled=true;setTimeout(()=>{nlBtn.textContent=orig;nlBtn.disabled=false;},3000);}
+});
+
+// ACTIVE NAV
+const sections=document.querySelectorAll('section[id],footer[id]');
+const navLinks=document.querySelectorAll('.nav-links a:not(.nav-cta)');
+const navObs=new IntersectionObserver((entries)=>{
+entries.forEach(e=>{
+if(e.isIntersecting){const id=e.target.id;navLinks.forEach(l=>{l.style.color=l.getAttribute('href')==='#'+id?'var(--accent-light)':'';});}
+});
+},{threshold:0.4});
+sections.forEach(s=>navObs.observe(s));
+
+// CALENDAR
+const SLOTS=['10:00','14:00','18:00'];
+const SLOT_AR={'10:00':'10:00 صباحاً','14:00':'2:00 ظهراً','18:00':'6:00 مساءً'};
+const AR_DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const AR_DAYS_SHORT=['أحد','إثن','ثلا','أربع','خمي','جمع','سبت'];
+const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const STORE_KEY='hanadi_bookings';
+function getBookings(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{}');}catch{return {};}}
+function saveBooking(dk,slot,name,phone){const b=getBookings();if(!b[dk])b[dk]={};b[dk][slot]={name,phone,ts:Date.now()};localStorage.setItem(STORE_KEY,JSON.stringify(b));}
+function isBooked(dk,slot){const b=getBookings();return !!(b[dk]&&b[dk][slot]);}
+function toDateKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+
+let curYear,curMonth,selectedDate=null;
+const today=new Date();today.setHours(0,0,0,0);
+curYear=today.getFullYear();curMonth=today.getMonth();
+
+const calTitle=document.getElementById('calMonthTitle');
+const calGrid=document.getElementById('calGrid');
+const calWeekdays=document.getElementById('calWeekdays');
+const slotsContainer=document.getElementById('slotsContainer');
+const slotsDateTitle=document.getElementById('slotsDateTitle');
+
+function buildWeekdays(){
+calWeekdays.innerHTML='';
+AR_DAYS_SHORT.forEach(d=>{const el=document.createElement('div');el.className='cal-wd';el.textContent=d;calWeekdays.appendChild(el);});
+}
+
+function buildCalendar(){
+calTitle.textContent=AR_MONTHS[curMonth]+' '+curYear;
+calGrid.innerHTML='';
+const firstDay=new Date(curYear,curMonth,1).getDay();
+const daysInMonth=new Date(curYear,curMonth+1,0).getDate();
+for(let i=0;i<firstDay;i++){const empty=document.createElement('div');calGrid.appendChild(empty);}
+for(let d=1;d<=daysInMonth;d++){
+const date=new Date(curYear,curMonth,d);
+const dk=toDateKey(date);
+const booked=getBookings()[dk]||{};
+const bookedCount=Object.keys(booked).length;
+const isPast=date<today;
+const isToday=toDateKey(date)===toDateKey(today);
+const isSelected=selectedDate&&toDateKey(selectedDate)===dk;
+const cell=document.createElement('div');
+cell.className='cal-day';
+if(isPast)cell.classList.add('past');
+if(isToday)cell.classList.add('today');
+if(isSelected)cell.classList.add('selected');
+if(bookedCount>0&&bookedCount<SLOTS.length)cell.classList.add('has-slots');
+else if(bookedCount>=SLOTS.length)cell.classList.add('fully-booked');
+else cell.classList.add('no-slots');
+cell.innerHTML=`<span class="day-n">${d}</span><span class="day-dot"></span>`;
+if(!isPast){cell.addEventListener('click',()=>{selectedDate=date;buildCalendar();showSlots(date);});}
+calGrid.appendChild(cell);
+}
+}
+
+function showSlots(d){
+const dk=toDateKey(d);
+slotsDateTitle.textContent=AR_DAYS[d.getDay()]+'، '+d.getDate()+' '+AR_MONTHS[d.getMonth()]+' '+d.getFullYear();
+slotsContainer.innerHTML='';
+const grid=document.createElement('div');grid.className='slots-grid';
+SLOTS.forEach(slot=>{
+const booked=isBooked(dk,slot);
+const card=document.createElement('div');
+card.className='slot'+(booked?' booked':'');
+card.innerHTML=`<span class="slot-time en">${slot}</span><span class="slot-label">${SLOT_AR[slot]}</span>`;
+if(!booked)card.addEventListener('click',()=>openBookingModal(d,slot));
+grid.appendChild(card);
+});
+slotsContainer.appendChild(grid);
+}
+
+document.getElementById('calPrev').addEventListener('click',()=>{curMonth--;if(curMonth<0){curMonth=11;curYear--;}buildCalendar();if(selectedDate)showSlots(selectedDate);});
+document.getElementById('calNext').addEventListener('click',()=>{curMonth++;if(curMonth>11){curMonth=0;curYear++;}buildCalendar();if(selectedDate)showSlots(selectedDate);});
+
+// BOOKING MODAL
+let pendingDate=null,pendingSlot=null;
+function openBookingModal(d,slot){
+pendingDate=d;pendingSlot=slot;
+const dateStr=d.getDate()+' '+AR_MONTHS[d.getMonth()]+' '+d.getFullYear();
+document.getElementById('modalSlotInfo').textContent=dateStr+' — '+SLOT_AR[slot];
+document.getElementById('bookName').value='';
+document.getElementById('bookPhone').value='';
+document.getElementById('bookEmail').value='';
+document.getElementById('bookName').style.borderColor='';
+document.getElementById('bookPhone').style.borderColor='';
+document.getElementById('bookEmail').style.borderColor='';
+document.getElementById('modalForm').style.display='';
+document.getElementById('successMsg').style.display='none';
+document.getElementById('bookingModal').classList.add('open');
+document.body.style.overflow='hidden';
+}
+function closeBookingModal(){
+document.getElementById('bookingModal').classList.remove('open');
+document.body.style.overflow='';
+pendingDate=null;pendingSlot=null;
+}
+document.getElementById('modalClose').addEventListener('click',closeBookingModal);
+document.getElementById('modalCancelBtn').addEventListener('click',closeBookingModal);
+document.getElementById('bookingModal').addEventListener('click',function(e){if(e.target===this)closeBookingModal();});
+document.getElementById('modalConfirmBtn').addEventListener('click',async()=>{
+const name=document.getElementById('bookName').value.trim();
+const phone=document.getElementById('bookPhone').value.trim();
+const email=document.getElementById('bookEmail').value.trim();
+const emailOk=!email||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+if(!name||!phone){
+document.getElementById('bookName').style.borderColor=name?'':'#c0392b';
+document.getElementById('bookPhone').style.borderColor=phone?'':'#c0392b';
+return;
+}
+document.getElementById('bookEmail').style.borderColor=emailOk?'':'#c0392b';
+if(!emailOk)return;
+
+const btn=document.getElementById('modalConfirmBtn');
+btn.disabled=true;const orig=btn.textContent;btn.textContent='...جارٍ الحجز';
+const dateStr=pendingDate.getDate()+' '+AR_MONTHS[pendingDate.getMonth()]+' '+pendingDate.getFullYear();
+const slotLabel=SLOT_AR[pendingSlot];
+
+// 1) محلياً (للتقويم)
+saveBooking(toDateKey(pendingDate),pendingSlot,name,phone);
+
+// 2) Supabase (يظهر بلوحة التحكم)
+try{
+if(sbClient)await sbClient.from('bookings').insert([{
+client_name:name,client_phone:phone,client_email:email||null,
+consultation_type:'حجز موعد عبر التقويم',
+message:'حجز موعد: '+dateStr+' الساعة '+slotLabel,
+date:toDateKey(pendingDate),time:pendingSlot,status:'pending'
+}]);
+}catch(e){console.warn('booking supabase:',e);}
+
+// 3) Google Sheets (إن وُجد رابط webhook)
+try{
+if(window.__SHEETS_WEBHOOK){
+fetch(window.__SHEETS_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+body:JSON.stringify({name,phone,email:email||'',type:'حجز موعد عبر التقويم',date:dateStr,time:slotLabel,message:'حجز موعد: '+dateStr+' — '+slotLabel,created_at:new Date().toISOString()})});
+}
+}catch(e){console.warn('sheets:',e);}
+
+// 4) إيميل لهنادي
+try{
+if(window.emailjs&&EJS_PUBLIC_KEY){
+await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
+from_name:name,phone:phone,from_email:email||'لم يُدخل',
+session:'حجز موعد عبر التقويم',
+message:'حجز موعد جديد: '+dateStr+' — '+slotLabel,
+date:dateStr,consultation_type:'حجز موعد عبر التقويم',
+to_email:ADMIN_EMAIL,reply_to:email||ADMIN_EMAIL
+});
+// تأكيد للزبون (إن أدخل بريداً)
+if(email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
+to_name:name,name:name,client_name:name,
+to_email:email,email:email,
+consultation_type:'حجز موعد',session:'حجز موعد',type:'حجز موعد',
+phone:phone,message:'حجز موعد: '+dateStr+' — '+slotLabel,
+date:dateStr+' — '+slotLabel,reply_to:ADMIN_EMAIL
+});
+}
+}
+}catch(e){console.warn('booking email:',e);}
+
+document.getElementById('successDetail').textContent=dateStr+' — '+slotLabel;
+document.getElementById('modalForm').style.display='none';
+document.getElementById('successMsg').style.display='block';
+btn.disabled=false;btn.textContent=orig;
+buildCalendar();
+if(selectedDate)showSlots(selectedDate);
+setTimeout(closeBookingModal,3500);
+});
+
+buildWeekdays();
+buildCalendar();
+
+// Q&A ACCORDION toggle
+function toggleQA(btn){
+const item=btn.closest('.qa-item');
+const isOpen=item.classList.contains('open');
+document.querySelectorAll('.qa-item.open').forEach(i=>i.classList.remove('open'));
+if(!isOpen)item.classList.add('open');
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('#notes .qa-question').forEach(function(b){
+    b.addEventListener('click',function(){toggleQA(b);});
+  });
+});
+
+// QA Carousel functions defined above (search initQACarousel)
+
+// LIVE TICKER — updates prices in place (keeps scroll smooth) with flash on change
+const TICKER_DATA=[
+{sym:'XAU/USD',base:2341.50,dec:2,price:2341.50},
+{sym:'EUR/USD',base:1.0832,dec:4,price:1.0832},
+{sym:'WTI Crude',base:78.94,dec:2,price:78.94},
+{sym:'S&P 500',base:5248.3,dec:1,price:5248.3},
+{sym:'USD/JPY',base:153.20,dec:2,price:153.20},
+{sym:'BTC/USD',base:62410,dec:0,price:62410},
+{sym:'GBP/USD',base:1.2710,dec:4,price:1.2710},
+{sym:'ETH/USD',base:3200,dec:1,price:3200},
+];
+function fmt(n,dec){return n.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
+function unitHTML(copy){
+let html='';
+TICKER_DATA.forEach((d,i)=>{
+const pct=((d.price-d.base)/d.base*100).toFixed(2);
+const up=d.price>=d.base;
+html+=`<span class="ticker-item"><b>${d.sym}</b> <span class="ti-val ${up?'ti-up':'ti-down'}" data-k="${copy}-${i}">${up?'▲':'▼'} ${fmt(d.price,d.dec)} ${up?'+':''}${pct}%</span></span><span class="ticker-sep">·</span>`;
+});
+return html;
+}
+function buildTickerOnce(){
+const wrap=document.getElementById('ticker');
+if(!wrap)return;
+// measure one unit width to know how many copies overflow the viewport
+wrap.style.animation='none';
+wrap.innerHTML=unitHTML(0);
+const unitW=wrap.scrollWidth||600;
+const vw=window.innerWidth||1200;
+// enough copies so the loop is seamless: shift = 1 unit, rest must cover viewport
+const copies=Math.max(4,Math.ceil(vw/unitW)+2);
+let html='';
+for(let c=0;c<copies;c++)html+=unitHTML(c);
+wrap.innerHTML=html;
+// seamless loop: translate by exactly one unit width (px), constant speed
+const dur=Math.max(8,unitW/90); // ~90px per second
+let kf=document.getElementById('tickerKF');
+if(!kf){kf=document.createElement('style');kf.id='tickerKF';document.head.appendChild(kf);}
+kf.textContent=`@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-${unitW}px);}}`;
+wrap.style.animation=`tickerScroll ${dur}s linear infinite`;
+}
+let _tkRT;
+window.addEventListener('resize',()=>{clearTimeout(_tkRT);_tkRT=setTimeout(buildTickerOnce,250);});
+function tickTicker(){
+TICKER_DATA.forEach((d,i)=>{
+const drift=(Math.random()-0.49)*d.base*0.0015;
+d.price=Math.max(d.base*0.9,d.price+drift);
+const pct=((d.price-d.base)/d.base*100).toFixed(2);
+const up=d.price>=d.base;
+document.querySelectorAll(`.ti-val[data-k$="-${i}"]`).forEach(el=>{
+el.textContent=`${up?'▲':'▼'} ${fmt(d.price,d.dec)} ${up?'+':''}${pct}%`;
+el.classList.remove('ti-up','ti-down');
+el.classList.add(up?'ti-up':'ti-down');
+el.classList.add(drift>=0?'flash-up':'flash-down');
+setTimeout(()=>el.classList.remove('flash-up','flash-down'),700);
+});
+});
+}
+buildTickerOnce();
+
+// ── LIVE TICKER via Coinbase + Frankfurter (free, no-key APIs) ──
+async function fetchLivePrices(){
+  try{
+    // BTC & ETH from Coinbase (free, no key)
+    const [btcR,ethR]=await Promise.all([
+      fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot').then(r=>r.json()).catch(()=>null),
+      fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot').then(r=>r.json()).catch(()=>null)
+    ]);
+    if(btcR?.data?.amount){
+      const p=parseFloat(btcR.data.amount);
+      const d=TICKER_DATA.find(x=>x.sym==='BTC/USD');
+      if(d){const old=d.price;d.price=p;if(!d._baseSet){d.base=p;d._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(d),old);}
+    }
+    if(ethR?.data?.amount){
+      const p=parseFloat(ethR.data.amount);
+      const d=TICKER_DATA.find(x=>x.sym==='ETH/USD');
+      if(d){const old=d.price;d.price=p;if(!d._baseSet){d.base=p;d._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(d),old);}
+    }
+    // EUR/USD & GBP/USD from Frankfurter (free ECB rates)
+    const fxR=await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR,GBP').then(r=>r.json()).catch(()=>null);
+    if(fxR?.rates){
+      const eur=TICKER_DATA.find(x=>x.sym==='EUR/USD');
+      const gbp=TICKER_DATA.find(x=>x.sym==='GBP/USD');
+      if(eur&&fxR.rates.EUR){const old=eur.price;const p=1/fxR.rates.EUR;eur.price=p;if(!eur._baseSet){eur.base=p;eur._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(eur),old);}
+      if(gbp&&fxR.rates.GBP){const old=gbp.price;const p=1/fxR.rates.GBP;gbp.price=p;if(!gbp._baseSet){gbp.base=p;gbp._baseSet=true;}updateTickerCell(TICKER_DATA.indexOf(gbp),old);}
+    }
+  }catch(e){}
+  // Smooth drift for items not yet updated (XAU, WTI, S&P, NAS, JPY)
+  tickTicker();
+}
+function updateTickerCell(i,oldPrice){
+  const d=TICKER_DATA[i];
+  if(!d)return;
+  const pct=((d.price-d.base)/d.base*100).toFixed(2);
+  const up=d.price>=d.base;
+  const dir=d.price>oldPrice;
+  document.querySelectorAll(`.ti-val[data-k$="-${i}"]`).forEach(el=>{
+    el.textContent=`${up?'▲':'▼'} ${fmt(d.price,d.dec)} ${up?'+':''}${pct}%`;
+    el.className=`ti-val ${up?'ti-up':'ti-down'} ${dir?'flash-up':'flash-down'}`;
+    setTimeout(()=>el.classList.remove('flash-up','flash-down'),700);
+  });
+}
+fetchLivePrices();
+setInterval(fetchLivePrices,3000);
+
+// ── VIDEO PLAYER (YouTube embed or uploaded video file) ──
+function ytId(u){
+  const m=u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+  return m?m[1]:null;
+}
+function openVideo(url){
+  if(!url)return;
+  const body=document.getElementById('videoBody');
+  const yt=ytId(url);
+  if(yt){
+    body.innerHTML=`<iframe src="https://www.youtube.com/embed/${yt}?autoplay=1&rel=0" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay;encrypted-media;fullscreen" allowfullscreen></iframe>`;
+  }else if(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url)||url.includes('/storage/')){
+    body.innerHTML=`<video src="${url}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;background:#000;"></video>`;
+  }else{
+    window.open(url,'_blank','noopener');return;
+  }
+  document.getElementById('videoModal').classList.add('open');
+}
+function closeVideo(){
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('videoBody').innerHTML=''; // stop playback
+}
+document.addEventListener('click',function(e){
+  const card=e.target.closest('.hub-card[data-video]');
+  if(card){openVideo(card.getAttribute('data-video'));return;}
+  if(e.target===document.getElementById('videoModal'))closeVideo();
+});
+
+// ── CONSULTATION MODAL ──
+const COUNTRY_CODES=[
+  // الدول العربية أولاً
+  {c:'🇸🇦 +966',v:'+966'},{c:'🇦🇪 +971',v:'+971'},{c:'🇶🇦 +974',v:'+974'},
+  {c:'🇰🇼 +965',v:'+965'},{c:'🇧🇭 +973',v:'+973'},{c:'🇴🇲 +968',v:'+968'},
+  {c:'🇯🇴 +962',v:'+962'},{c:'🇱🇧 +961',v:'+961'},{c:'🇸🇾 +963',v:'+963'},
+  {c:'🇮🇶 +964',v:'+964'},{c:'🇪🇬 +20',v:'+20'},{c:'🇵🇸 +970',v:'+970'},
+  {c:'🇾🇪 +967',v:'+967'},{c:'🇱🇾 +218',v:'+218'},{c:'🇩🇿 +213',v:'+213'},
+  {c:'🇲🇦 +212',v:'+212'},{c:'🇹🇳 +216',v:'+216'},{c:'🇸🇩 +249',v:'+249'},
+  {c:'🇲🇷 +222',v:'+222'},{c:'🇸🇴 +252',v:'+252'},{c:'🇩🇯 +253',v:'+253'},{c:'🇰🇲 +269',v:'+269'},
+  // بقية العالم
+  {c:'🇹🇷 +90',v:'+90'},{c:'🇮🇷 +98',v:'+98'},{c:'🇮🇱 +972',v:'+972'},
+  {c:'🇬🇧 +44',v:'+44'},{c:'🇺🇸 +1',v:'+1'},{c:'🇨🇦 +1',v:'+1'},
+  {c:'🇩🇪 +49',v:'+49'},{c:'🇫🇷 +33',v:'+33'},{c:'🇮🇹 +39',v:'+39'},
+  {c:'🇪🇸 +34',v:'+34'},{c:'🇵🇹 +351',v:'+351'},{c:'🇳🇱 +31',v:'+31'},
+  {c:'🇧🇪 +32',v:'+32'},{c:'🇨🇭 +41',v:'+41'},{c:'🇦🇹 +43',v:'+43'},
+  {c:'🇸🇪 +46',v:'+46'},{c:'🇳🇴 +47',v:'+47'},{c:'🇩🇰 +45',v:'+45'},
+  {c:'🇫🇮 +358',v:'+358'},{c:'🇮🇪 +353',v:'+353'},{c:'🇵🇱 +48',v:'+48'},
+  {c:'🇬🇷 +30',v:'+30'},{c:'🇷🇴 +40',v:'+40'},{c:'🇨🇿 +420',v:'+420'},
+  {c:'🇭🇺 +36',v:'+36'},{c:'🇺🇦 +380',v:'+380'},{c:'🇷🇺 +7',v:'+7'},
+  {c:'🇰🇿 +7',v:'+7'},{c:'🇮🇳 +91',v:'+91'},{c:'🇵🇰 +92',v:'+92'},
+  {c:'🇧🇩 +880',v:'+880'},{c:'🇱🇰 +94',v:'+94'},{c:'🇦🇫 +93',v:'+93'},
+  {c:'🇨🇳 +86',v:'+86'},{c:'🇯🇵 +81',v:'+81'},{c:'🇰🇷 +82',v:'+82'},
+  {c:'🇮🇩 +62',v:'+62'},{c:'🇲🇾 +60',v:'+60'},{c:'🇸🇬 +65',v:'+65'},
+  {c:'🇹🇭 +66',v:'+66'},{c:'🇵🇭 +63',v:'+63'},{c:'🇻🇳 +84',v:'+84'},
+  {c:'🇦🇺 +61',v:'+61'},{c:'🇳🇿 +64',v:'+64'},
+  {c:'🇧🇷 +55',v:'+55'},{c:'🇦🇷 +54',v:'+54'},{c:'🇲🇽 +52',v:'+52'},
+  {c:'🇨🇱 +56',v:'+56'},{c:'🇨🇴 +57',v:'+57'},{c:'🇵🇪 +51',v:'+51'},
+  {c:'🇳🇬 +234',v:'+234'},{c:'🇰🇪 +254',v:'+254'},{c:'🇿🇦 +27',v:'+27'},
+  {c:'🇬🇭 +233',v:'+233'},{c:'🇪🇹 +251',v:'+251'},{c:'🇹🇿 +255',v:'+255'},
+  {c:'🇸🇳 +221',v:'+221'},{c:'🇨🇮 +225',v:'+225'},{c:'🇨🇲 +237',v:'+237'},
+  {c:'🇦🇿 +994',v:'+994'},{c:'🇬🇪 +995',v:'+995'},{c:'🇦🇲 +374',v:'+374'}
+];
+function openConsModal(btn){
+  const cc=document.getElementById('consCountry');
+  if(cc&&!cc.options.length){cc.innerHTML=COUNTRY_CODES.map(o=>`<option value="${o.v}">${o.c}</option>`).join('');}
+  const sel=document.getElementById('consType');
+  // ابنِ القائمة ديناميكياً من كروت الاستشارات الموجودة (أي استشارة تُضاف تظهر تلقائياً)
+  if(sel){
+    const names=[...document.querySelectorAll('#consultations .cons-card .cons-name')]
+      .map(n=>n.textContent.trim()).filter(Boolean);
+    const list=names.length?names:['استشارة عامة'];
+    sel.innerHTML=list.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+    const card=btn?.closest('.cons-card');
+    const type=card?.querySelector('.cons-name')?.textContent.trim();
+    if(type)sel.value=type;
+  }
+  document.getElementById('consFormWrap').style.display='';
+  document.getElementById('consSuccessWrap').style.display='none';
+  document.getElementById('consModal').classList.add('open');
+}
+async function sendConsRequest(){
+  const name=document.getElementById('consName').value.trim();
+  const cc=document.getElementById('consCountry').value;
+  const phoneNum=document.getElementById('consPhone').value.trim();
+  const phone=phoneNum?cc+' '+phoneNum:'';
+  const email=document.getElementById('consEmail').value.trim();
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const mark=(id,bad)=>{document.getElementById(id).style.borderColor=bad?'#c0392b':'';};
+  mark('consName',!name);mark('consPhone',!phoneNum);mark('consEmail',!emailOk);
+  if(!name||!phoneNum||!emailOk){
+    alert('الرجاء تعبئة جميع الحقول المطلوبة (الاسم، الهاتف، بريد إلكتروني صحيح)');return;
+  }
+  const btn=document.getElementById('consSendBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>';
+  const type=document.getElementById('consType').value;
+  const msg=document.getElementById('consMsg').value.trim();
+  const dateStr=new Date().toLocaleDateString('ar-EG');
+  // 1) Supabase (يظهر بلوحة التحكم)
+  try{
+    if(sbClient){
+      await sbClient.from('bookings').insert({
+        client_name:name,client_phone:phone,client_email:email,
+        consultation_type:type,message:msg||type,
+        date:null,time:null,status:'pending'
+      });
+    }
+  }catch(e){console.warn('cons supabase:',e);}
+  // 2) Google Sheets
+  try{
+    if(window.__SHEETS_WEBHOOK){
+      fetch(window.__SHEETS_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify({name,phone,email,type,message:msg,created_at:new Date().toISOString()})});
+    }
+  }catch(e){}
+  // 3) إيميل لهنادي (المدير)
+  try{
+    if(window.emailjs&&EJS_PUBLIC_KEY){
+      await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
+        from_name:name,phone:phone,from_email:email,
+        session:type,consultation_type:type,
+        message:'طلب استشارة جديد ('+type+')'+(msg?' — '+msg:''),
+        date:dateStr,to_email:ADMIN_EMAIL,reply_to:email
+      });
+    }
+  }catch(e){console.warn('emailjs admin:',e);}
+  // 4) إيميل تأكيد للزبون — مستقل عن إيميل المدير
+  try{
+    if(window.emailjs&&EJS_PUBLIC_KEY){
+      await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
+        to_name:name,name:name,client_name:name,
+        to_email:email,email:email,
+        consultation_type:type,session:type,type:type,
+        phone:phone,message:msg||type,date:dateStr,
+        reply_to:ADMIN_EMAIL
+      });
+      console.log('✅ confirmation email sent to',email);
+    }
+  }catch(e){console.warn('emailjs customer confirm:',e);}
+  document.getElementById('consFormWrap').style.display='none';
+  document.getElementById('consSuccessWrap').style.display='';
+  btn.disabled=false;btn.innerHTML='إرسال الطلب ←';
+}
+document.getElementById('consModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+</script>
+</body>
