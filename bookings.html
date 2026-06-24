@@ -1113,9 +1113,7 @@ document.getElementById('sendPayBtn').addEventListener('click',async()=>{
   if(!b.client_email){showS('⚠ لا يوجد بريد لهذا الطلب.',false);return;}
   const baseAmount=parseInt(document.getElementById('payAmount').value)||0;
   if(!baseAmount){showS('⚠ أدخلي المبلغ أولاً.',false);return;}
-  // مبلغ فريد: نضيف قروشاً مشتقّة من رقم الطلب حتى يطابقه النظام تلقائياً
-  const cents=((b.id%99)+1);
-  const amount=(baseAmount+cents/100).toFixed(2); // مثال: 80.07
+  const amount=String(baseAmount); // مبلغ نظيف بدون فواصل
   const code=reqCodeOf(b)||('HN-REQUEST-'+(b.id||''));
   const link=location.origin+location.pathname.replace(/bookings\.html$/,'')+'payment.html?code='+encodeURIComponent(code)+'&amount='+amount;
   if(!window.emailjs){showS('⚠ خدمة الإيميل غير محمّلة.',false);return;}

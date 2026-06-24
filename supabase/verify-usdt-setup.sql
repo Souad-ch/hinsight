@@ -3,8 +3,17 @@
 -- نفّذي هذا مرة واحدة في Supabase → SQL Editor
 -- ════════════════════════════════════════════════════════════
 
--- 1) عمود المبلغ الفريد لكل حجز
+-- 1) عمود المبلغ لكل حجز
 alter table bookings add column if not exists pay_amount numeric;
+
+-- 1ب) جدول التحويلات المُعالَجة (حتى لا يُعاد استخدام أي تحويل)
+create table if not exists processed_payments (
+  tx_hash text primary key,
+  amount numeric,
+  booking_id bigint,
+  matched boolean default false,
+  created_at timestamptz default now()
+);
 
 -- 2) تفعيل الإضافات اللازمة للجدولة والاتصال
 create extension if not exists pg_cron;

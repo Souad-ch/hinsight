@@ -1,15 +1,15 @@
 // ════════════════════════════════════════════════════════════
 // verify-usdt — Supabase Edge Function
-// يفحص محفظة USDT (TRC20) تلقائياً عبر Tronscan كل دقيقة،
-// ويؤكّد الحجوزات التي وصلها المبلغ الفريد المطابق + يقفل الموعد.
+// يفحص محفظة USDT (TRC20) تلقائياً عبر Tronscan كل دقيقة.
+// يطابق كل تحويل وارد بأقدم حجز معلّق بنفس المبلغ، ويؤكّده + يقفل الموعد.
+// يتذكّر كل تحويل عالجه (processed_payments) حتى لا يُعاد استخدامه.
 // ════════════════════════════════════════════════════════════
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// ⚠️ بدّلي هذا بعنوان محفظتك الحقيقي للـ USDT (TRC20)
+// ⚠️ عنوان محفظتك للـ USDT (TRC20)
 const WALLET = "TKvBio7SAkXMWsS7hELWc1DMGu5g7yj3uk";
 const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
 
-// يحوّل اسم اليوم العربي لأقرب تاريخ قادم
 function nextDateForDay(arabicDay: string): string | null {
   const map: Record<string, number> = {
     "الأحد": 0, "الاثنين": 1, "الإثنين": 1, "الثلاثاء": 2,
@@ -36,48 +36,64 @@ Deno.serve(async () => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  // 1) الحجوزات التي بانتظار الدفع ولها مبلغ فريد محدد
-  const { data: pending, error: pErr } = await sb
-    .from("bookings")
-    .select("id,time,pay_amount,client_email,client_name")
-    .eq("status", "awaiting_payment")
-    .not("pay_amount", "is", null);
-
-  if (pErr) return new Response(JSON.stringify({ error: pErr.message }), { status: 500 });
-  if (!pending || !pending.length) {
-    return new Response(JSON.stringify({ checked: 0, confirmed: 0 }), { status: 200 });
-  }
-
-  // 2) آخر التحويلات الواردة لمحفظتنا عبر Tronscan
+  // 1) آخر التحويلات الواردة لمحفظتنا (الأقدم أولاً للمطابقة العادلة)
   const url =
     `https://apilist.tronscanapi.com/api/token_trc20/transfers` +
-    `?limit=40&start=0&contract_address=${USDT_CONTRACT}&toAddress=${WALLET}&confirm=true`;
+    `?limit=50&start=0&contract_address=${USDT_CONTRACT}&toAddress=${WALLET}&confirm=true`;
   const r = await fetch(url);
   const j = await r.json();
   const transfers = (j?.token_transfers || j?.data || []) as any[];
 
-  // مبالغ التحويلات الواردة (مقرّبة لخانتين عشريتين)
-  const incoming = new Set<string>();
-  for (const t of transfers) {
-    const to = (t.to_address || t.toAddress || "").trim();
-    if (to !== WALLET) continue;
-    const dec = parseInt(t.tokenInfo?.tokenDecimal ?? t.decimals ?? 6);
-    const raw = t.quant ?? t.amount_str ?? t.amount ?? "0";
-    const amt = Number(raw) / Math.pow(10, dec);
-    incoming.add(amt.toFixed(2));
-  }
+  // طبّع التحويلات: هاش + مبلغ
+  const incoming = transfers
+    .map((t) => {
+      const to = (t.to_address || t.toAddress || "").trim();
+      if (to !== WALLET) return null;
+      const dec = parseInt(t.tokenInfo?.tokenDecimal ?? t.decimals ?? 6);
+      const raw = t.quant ?? t.amount_str ?? t.amount ?? "0";
+      const amount = Number(raw) / Math.pow(10, dec);
+      const hash = t.transaction_id || t.hash || t.transactionHash || "";
+      const ts = Number(t.block_ts || t.timestamp || 0);
+      return hash ? { hash, amount: Number(amount.toFixed(2)), ts } : null;
+    })
+    .filter(Boolean) as { hash: string; amount: number; ts: number }[];
 
-  // 3) طابق كل حجز معلّق بمبلغه الفريد
+  incoming.sort((a, b) => a.ts - b.ts); // الأقدم أولاً
+
   let confirmed = 0;
-  for (const b of pending) {
-    const expect = Number(b.pay_amount).toFixed(2);
-    if (!incoming.has(expect)) continue;
+  for (const tx of incoming) {
+    // 2) هل عالجنا هذا التحويل من قبل؟
+    const seen = await sb
+      .from("processed_payments")
+      .select("tx_hash")
+      .eq("tx_hash", tx.hash)
+      .maybeSingle();
+    if (seen.data) continue; // سبق وعولج
 
-    // تأكيد الحجز
-    await sb.from("bookings").update({ status: "confirmed" }).eq("id", b.id);
+    // 3) أقدم حجز معلّق بنفس المبلغ
+    const { data: match } = await sb
+      .from("bookings")
+      .select("id,time")
+      .eq("status", "awaiting_payment")
+      .eq("pay_amount", tx.amount)
+      .order("id", { ascending: true })
+      .limit(1);
 
-    // قفل الموعد
-    const { day, time } = parseSlot(b.time || "");
+    const booking = match && match[0];
+
+    // 4) سجّل التحويل كمُعالَج (سواء طابق أم لا) حتى لا يُعاد استخدامه
+    await sb.from("processed_payments").insert({
+      tx_hash: tx.hash,
+      amount: tx.amount,
+      booking_id: booking ? booking.id : null,
+      matched: !!booking,
+    });
+
+    if (!booking) continue;
+
+    // 5) أكّد الحجز + اقفل الموعد
+    await sb.from("bookings").update({ status: "confirmed" }).eq("id", booking.id);
+    const { day, time } = parseSlot(booking.time || "");
     if (day && time) {
       const slot_date = nextDateForDay(day);
       const ins = await sb.from("slot_locks").insert({ day, time, slot_date });
@@ -89,7 +105,7 @@ Deno.serve(async () => {
   }
 
   return new Response(
-    JSON.stringify({ checked: pending.length, confirmed }),
+    JSON.stringify({ transfers: incoming.length, confirmed }),
     { status: 200, headers: { "Content-Type": "application/json" } },
   );
 });
