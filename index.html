@@ -2101,20 +2101,37 @@ const TICKER_DATA=[
 {sym:'ETH/USD',base:3200,dec:1,price:3200},
 ];
 function fmt(n,dec){return n.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
-function buildTickerOnce(){
-const wrap=document.getElementById('ticker');
-if(!wrap)return;
+function unitHTML(copy){
 let html='';
-// four copies (2+2) for a denser, gap-free seamless marquee loop
-for(let copy=0;copy<4;copy++){
 TICKER_DATA.forEach((d,i)=>{
 const pct=((d.price-d.base)/d.base*100).toFixed(2);
 const up=d.price>=d.base;
 html+=`<span class="ticker-item"><b>${d.sym}</b> <span class="ti-val ${up?'ti-up':'ti-down'}" data-k="${copy}-${i}">${up?'▲':'▼'} ${fmt(d.price,d.dec)} ${up?'+':''}${pct}%</span></span><span class="ticker-sep">·</span>`;
 });
+return html;
 }
+function buildTickerOnce(){
+const wrap=document.getElementById('ticker');
+if(!wrap)return;
+// measure one unit width to know how many copies overflow the viewport
+wrap.style.animation='none';
+wrap.innerHTML=unitHTML(0);
+const unitW=wrap.scrollWidth||600;
+const vw=window.innerWidth||1200;
+// enough copies so the loop is seamless: shift = 1 unit, rest must cover viewport
+const copies=Math.max(4,Math.ceil(vw/unitW)+2);
+let html='';
+for(let c=0;c<copies;c++)html+=unitHTML(c);
 wrap.innerHTML=html;
+// seamless loop: translate by exactly one unit width (px), constant speed
+const dur=Math.max(8,unitW/90); // ~90px per second
+let kf=document.getElementById('tickerKF');
+if(!kf){kf=document.createElement('style');kf.id='tickerKF';document.head.appendChild(kf);}
+kf.textContent=`@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-${unitW}px);}}`;
+wrap.style.animation=`tickerScroll ${dur}s linear infinite`;
 }
+let _tkRT;
+window.addEventListener('resize',()=>{clearTimeout(_tkRT);_tkRT=setTimeout(buildTickerOnce,250);});
 function tickTicker(){
 TICKER_DATA.forEach((d,i)=>{
 const drift=(Math.random()-0.49)*d.base*0.0015;
