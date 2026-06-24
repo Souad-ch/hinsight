@@ -948,21 +948,8 @@ iNext.addEventListener('click',async()=>{
       else console.log('✅ booking inserted');
     }catch(e){console.warn('supabase:',e);sbErrors.push('bookings exception: '+e.message);}
 
-    // قفل الموعد (جدول عام بدون بيانات شخصية) حتى يظهر "محجوز" للزبون التالي
-    try{
-      if(iState.day&&iState.time){
-        const lockDate=nextDateForDay(iState.day);
-        const lockRow={day:iState.day,time:iState.time,slot_date:lockDate};
-        let lockErr;
-        ({error:lockErr}=await sbClient.from('slot_locks').insert(lockRow));
-        // إذا عمود slot_date غير موجود بعد، أعد المحاولة بدونه
-        if(lockErr&&/slot_date/.test(lockErr.message||'')){
-          ({error:lockErr}=await sbClient.from('slot_locks').insert({day:iState.day,time:iState.time}));
-        }
-        if(lockErr){console.error('❌ slot_locks insert error:',lockErr);sbErrors.push('slot_locks: '+(lockErr.message||lockErr.code||JSON.stringify(lockErr)));}
-        else console.log('✅ slot_locks inserted:',iState.day,iState.time,lockDate);
-      }
-    }catch(e){console.warn('slot_locks:',e);sbErrors.push('slot_locks exception: '+e.message);}
+    // ملاحظة: لا يتم قفل الموعد عند الطلب — يبقى متاحاً حتى يدفع الزبون ويُؤكَّد الدفع
+    // (القفل يتم تلقائياً في صفحة الدفع payment.html بعد تأكيد الدفع)
   }
   // Show visible diagnostic in success panel if errors occurred
   const dbg=document.getElementById('iDbgMsg');
