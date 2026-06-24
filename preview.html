@@ -76,7 +76,7 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:var(--radius);font-family:var(--font-btn);font-size:0.95rem;font-weight:600;cursor:pointer;transition:var(--tr);border:none;outline:none;position:relative;overflow:hidden;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:var(--radius);font-family:var(--font-btn);font-size:0.95rem;font-weight:700;cursor:pointer;transition:var(--tr);border:none;outline:none;position:relative;overflow:hidden;}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 60%);opacity:0;transition:var(--tr);}
 .btn:hover::after{opacity:1;}
 .btn-green{background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:var(--bg);}
@@ -597,23 +597,6 @@ a:hover>.hub-clickable{border-color:rgba(143,185,150,0.5);}
 .section-title,.hero-title,.testi-name,.cons-card h3,.insight-card h3{
   text-shadow:0 0 22px rgba(143,185,150,0.25);
 }
-/* ══ PREVIEW: عمق وحياة — حدود أوضح + توهّج على الكروت ══ */
-.insight-card,.cons-card,.lib-card,.report-card,.testi-card,.qa-item,.stat-card,.proof-card,.method-card{
-  border:1px solid rgba(143,185,150,0.28) !important;
-  box-shadow:0 4px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(143,185,150,0.06) !important;
-  transition:border-color 0.3s,box-shadow 0.3s;
-}
-.insight-card:hover,.cons-card:hover,.lib-card:hover,.report-card:hover,.method-card:hover{
-  border-color:rgba(157,196,163,0.55) !important;
-  box-shadow:0 8px 40px rgba(0,0,0,0.45), 0 0 20px rgba(143,185,150,0.12) !important;
-}
-/* أخضر أكثر حياة على الأزرار */
-.btn-green,.nav-cta{
-  background:linear-gradient(135deg,#9DC4A3,#6B8A71) !important;
-  box-shadow:0 4px 18px rgba(143,185,150,0.30) !important;
-}
-/* شريط التمرير أوضح */
-::-webkit-scrollbar-thumb{background:rgba(143,185,150,0.35)!important;}
 </style>
 </head>
 <body>
