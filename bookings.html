@@ -421,10 +421,10 @@ a{text-decoration:none;color:inherit}
               <div class="msg-label">إرسال رابط الدفع</div>
               <div style="display:flex;gap:10px;flex-wrap:wrap">
                 <select class="select" id="payAmount" style="flex:1;min-width:120px">
-                  <option value="250">250$ — جلسة عامة</option>
-                  <option value="400">400$ — جلسة متقدمة</option>
-                  <option value="600">600$ — إدارة مخاطر</option>
-                  <option value="1000">1000$ — عضوية VIP</option>
+                  <option value="250">250$ — تقييم المتداول</option>
+                  <option value="400">400$ — هندسة المخاطر</option>
+                  <option value="600">600$ — قراءة المشهد الاقتصادي</option>
+                  <option value="1000">1000$ — عضوية VIP الشهرية</option>
                 </select>
                 <button class="btn btn-green" id="sendPayBtn" style="flex:1;min-width:140px">💳 إرسال رابط الدفع</button>
               </div>
@@ -719,6 +719,13 @@ function renderDetail(){
   const ds=document.getElementById('dStatus');const st=stOf(b.status);
   ds.className=`status ${st[1]}`;ds.textContent=st[0];
   document.getElementById('dType').textContent=b.consultation_type||'—';
+  // تعبئة المبلغ تلقائياً حسب نوع الباقة
+  (function(){
+    const map={'تقييم المتداول':'250','جلسة إدارة مخاطر':'400','هندسة المخاطر':'400','قراءة المشهد الاقتصادي':'600','عضوية VIP الشهرية':'1000'};
+    const sel=document.getElementById('payAmount');
+    const t=(b.consultation_type||'').trim();
+    if(sel&&map[t])sel.value=map[t];
+  })();
   document.getElementById('dEmail').textContent=b.client_email||'—';
   document.getElementById('dDate').textContent=b.date||'—';
   document.getElementById('dTime').textContent=b.time||'—';
