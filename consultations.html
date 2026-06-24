@@ -222,9 +222,25 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .field input,.field select,.field textarea{width:100%;background:#0b0b0e;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:13px 14px;outline:none;transition:var(--tr);font-size:.92rem}
 .field textarea{min-height:106px;resize:vertical}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(120,144,124,.1)}
-.phone-row{display:flex;gap:8px}
-.phone-row select{width:auto;min-width:110px;flex-shrink:0}
+.phone-row{display:flex;gap:8px;position:relative}
 .phone-row input{flex:1}
+/* custom country picker */
+.cc-wrap{position:relative;flex-shrink:0;width:128px}
+.cc-btn{width:100%;background:#0b0b0e;border:1px solid var(--border);border-radius:10px;color:var(--text);padding:13px 12px;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:6px;transition:var(--tr);white-space:nowrap;overflow:hidden}
+.cc-btn:hover,.cc-btn.open{border-color:var(--accent)}
+.cc-arrow{font-size:.65rem;opacity:.5;transition:.2s}
+.cc-btn.open .cc-arrow{transform:rotate(180deg);opacity:.9}
+.cc-dropdown{position:absolute;top:calc(100% + 6px);right:0;left:0;background:#111318;border:1px solid var(--accent);border-radius:12px;z-index:9999;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.55);display:none;min-width:210px}
+.cc-dropdown.open{display:block}
+.cc-search{width:100%;background:#0b0b0e;border:none;border-bottom:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:.85rem;outline:none;direction:rtl}
+.cc-search::placeholder{color:var(--text-muted)}
+.cc-list{max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent}
+.cc-list::-webkit-scrollbar{width:4px}.cc-list::-webkit-scrollbar-thumb{background:var(--accent-dim);border-radius:4px}
+.cc-opt{padding:9px 12px;font-size:.88rem;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.15s;direction:ltr}
+.cc-opt:hover{background:rgba(120,144,124,.12);color:var(--accent-light)}
+.cc-opt.selected{background:rgba(120,144,124,.08);color:var(--accent-light)}
+.cc-opt-code{font-weight:700;min-width:46px}
+.cc-opt-name{color:var(--text-muted);font-size:.78rem;flex:1;direction:rtl;text-align:right}
 .side-summary{position:relative;z-index:1;margin-top:30px;display:grid;gap:12px}
 .summary-box{background:rgba(12,11,15,.45);border:1px solid var(--border);border-radius:12px;padding:16px}
 .summary-label{font-family:var(--font-en);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-light);margin-bottom:8px}
@@ -639,28 +655,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
             <div class="field"><label>البريد الإلكتروني *</label><input id="iEmail" type="email" placeholder="example@email.com" dir="ltr" /></div>
             <div class="field full"><label>رقم واتساب *</label>
               <div class="phone-row">
-                <select id="iCC">
-                  <option value="+966">🇸🇦 +966</option><option value="+971">🇦🇪 +971</option><option value="+974">🇶🇦 +974</option>
-                  <option value="+965">🇰🇼 +965</option><option value="+973">🇧🇭 +973</option><option value="+968">🇴🇲 +968</option>
-                  <option value="+962">🇯🇴 +962</option><option value="+961">🇱🇧 +961</option><option value="+963">🇸🇾 +963</option>
-                  <option value="+964">🇮🇶 +964</option><option value="+967">🇾🇪 +967</option><option value="+20">🇪🇬 +20</option>
-                  <option value="+218">🇱🇾 +218</option><option value="+216">🇹🇳 +216</option><option value="+213">🇩🇿 +213</option>
-                  <option value="+212">🇲🇦 +212</option><option value="+249">🇸🇩 +249</option><option value="+252">🇸🇴 +252</option>
-                  <option value="+90">🇹🇷 +90</option><option value="+98">🇮🇷 +98</option><option value="+92">🇵🇰 +92</option>
-                  <option value="+91">🇮🇳 +91</option><option value="+1">🇺🇸 +1</option><option value="+44">🇬🇧 +44</option>
-                  <option value="+49">🇩🇪 +49</option><option value="+33">🇫🇷 +33</option><option value="+7">🇷🇺 +7</option>
-                  <option value="+86">🇨🇳 +86</option><option value="+81">🇯🇵 +81</option><option value="+82">🇰🇷 +82</option>
-                  <option value="+55">🇧🇷 +55</option><option value="+52">🇲🇽 +52</option><option value="+34">🇪🇸 +34</option>
-                  <option value="+39">🇮🇹 +39</option><option value="+31">🇳🇱 +31</option><option value="+46">🇸🇪 +46</option>
-                  <option value="+47">🇳🇴 +47</option><option value="+45">🇩🇰 +45</option><option value="+41">🇨🇭 +41</option>
-                  <option value="+43">🇦🇹 +43</option><option value="+32">🇧🇪 +32</option><option value="+351">🇵🇹 +351</option>
-                  <option value="+48">🇵🇱 +48</option><option value="+380">🇺🇦 +380</option><option value="+30">🇬🇷 +30</option>
-                  <option value="+61">🇦🇺 +61</option><option value="+64">🇳🇿 +64</option><option value="+65">🇸🇬 +65</option>
-                  <option value="+60">🇲🇾 +60</option><option value="+66">🇹🇭 +66</option><option value="+62">🇮🇩 +62</option>
-                  <option value="+63">🇵🇭 +63</option><option value="+84">🇻🇳 +84</option><option value="+880">🇧🇩 +880</option>
-                  <option value="+94">🇱🇰 +94</option><option value="+234">🇳🇬 +234</option><option value="+27">🇿🇦 +27</option>
-                  <option value="+254">🇰🇪 +254</option><option value="+233">🇬🇭 +233</option>
-                </select>
+                <div class="cc-wrap" id="ccWrap">
+                  <button type="button" class="cc-btn" id="ccBtn"><span id="ccDisplay">🇸🇦 +966</span><span class="cc-arrow">▼</span></button>
+                  <div class="cc-dropdown" id="ccDropdown">
+                    <input class="cc-search" id="ccSearch" placeholder="ابحث عن البلد أو الرمز..." autocomplete="off"/>
+                    <div class="cc-list" id="ccList"></div>
+                  </div>
+                </div>
                 <input id="iPhone" placeholder="رقم الهاتف" dir="ltr" />
               </div>
             </div>
@@ -913,7 +914,7 @@ iNext.addEventListener('click',async()=>{
   iNext.disabled=true;iNext.innerHTML='<span class="spinner"></span>';
   const name=document.getElementById('iName').value.trim();
   const email=document.getElementById('iEmail').value.trim();
-  const cc=document.getElementById('iCC').value;
+  const cc=window._ccValue||'+966';
   const phoneNum=document.getElementById('iPhone').value.trim();
   const phone=cc+' '+phoneNum;
   const type=iState.service||'استشارة عامة';
@@ -1009,6 +1010,99 @@ iPrev.addEventListener('click',()=>{if(iState.step>1){iState.step--;iUpdateUI();
 const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 setTimeout(()=>document.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible')),600);
+
+// ── Country Code Picker ──
+const CC_DATA=[
+  {code:'+966',flag:'🇸🇦',name:'السعودية'},
+  {code:'+971',flag:'🇦🇪',name:'الإمارات'},
+  {code:'+974',flag:'🇶🇦',name:'قطر'},
+  {code:'+965',flag:'🇰🇼',name:'الكويت'},
+  {code:'+973',flag:'🇧🇭',name:'البحرين'},
+  {code:'+968',flag:'🇴🇲',name:'عُمان'},
+  {code:'+962',flag:'🇯🇴',name:'الأردن'},
+  {code:'+961',flag:'🇱🇧',name:'لبنان'},
+  {code:'+963',flag:'🇸🇾',name:'سوريا'},
+  {code:'+964',flag:'🇮🇶',name:'العراق'},
+  {code:'+967',flag:'🇾🇪',name:'اليمن'},
+  {code:'+20',flag:'🇪🇬',name:'مصر'},
+  {code:'+218',flag:'🇱🇾',name:'ليبيا'},
+  {code:'+216',flag:'🇹🇳',name:'تونس'},
+  {code:'+213',flag:'🇩🇿',name:'الجزائر'},
+  {code:'+212',flag:'🇲🇦',name:'المغرب'},
+  {code:'+249',flag:'🇸🇩',name:'السودان'},
+  {code:'+252',flag:'🇸🇴',name:'الصومال'},
+  {code:'+90',flag:'🇹🇷',name:'تركيا'},
+  {code:'+98',flag:'🇮🇷',name:'إيران'},
+  {code:'+92',flag:'🇵🇰',name:'باكستان'},
+  {code:'+91',flag:'🇮🇳',name:'الهند'},
+  {code:'+1',flag:'🇺🇸',name:'الولايات المتحدة'},
+  {code:'+44',flag:'🇬🇧',name:'بريطانيا'},
+  {code:'+49',flag:'🇩🇪',name:'ألمانيا'},
+  {code:'+33',flag:'🇫🇷',name:'فرنسا'},
+  {code:'+7',flag:'🇷🇺',name:'روسيا'},
+  {code:'+86',flag:'🇨🇳',name:'الصين'},
+  {code:'+81',flag:'🇯🇵',name:'اليابان'},
+  {code:'+82',flag:'🇰🇷',name:'كوريا الجنوبية'},
+  {code:'+55',flag:'🇧🇷',name:'البرازيل'},
+  {code:'+52',flag:'🇲🇽',name:'المكسيك'},
+  {code:'+34',flag:'🇪🇸',name:'إسبانيا'},
+  {code:'+39',flag:'🇮🇹',name:'إيطاليا'},
+  {code:'+31',flag:'🇳🇱',name:'هولندا'},
+  {code:'+46',flag:'🇸🇪',name:'السويد'},
+  {code:'+47',flag:'🇳🇴',name:'النرويج'},
+  {code:'+45',flag:'🇩🇰',name:'الدنمارك'},
+  {code:'+41',flag:'🇨🇭',name:'سويسرا'},
+  {code:'+43',flag:'🇦🇹',name:'النمسا'},
+  {code:'+32',flag:'🇧🇪',name:'بلجيكا'},
+  {code:'+351',flag:'🇵🇹',name:'البرتغال'},
+  {code:'+48',flag:'🇵🇱',name:'بولندا'},
+  {code:'+380',flag:'🇺🇦',name:'أوكرانيا'},
+  {code:'+30',flag:'🇬🇷',name:'اليونان'},
+  {code:'+61',flag:'🇦🇺',name:'أستراليا'},
+  {code:'+64',flag:'🇳🇿',name:'نيوزيلندا'},
+  {code:'+65',flag:'🇸🇬',name:'سنغافورة'},
+  {code:'+60',flag:'🇲🇾',name:'ماليزيا'},
+  {code:'+66',flag:'🇹🇭',name:'تايلاند'},
+  {code:'+62',flag:'🇮🇩',name:'إندونيسيا'},
+  {code:'+63',flag:'🇵🇭',name:'الفلبين'},
+  {code:'+84',flag:'🇻🇳',name:'فيتنام'},
+  {code:'+880',flag:'🇧🇩',name:'بنغلاديش'},
+  {code:'+94',flag:'🇱🇰',name:'سريلانكا'},
+  {code:'+234',flag:'🇳🇬',name:'نيجيريا'},
+  {code:'+27',flag:'🇿🇦',name:'جنوب أفريقيا'},
+  {code:'+254',flag:'🇰🇪',name:'كينيا'},
+  {code:'+233',flag:'🇬🇭',name:'غانا'},
+];
+window._ccValue=CC_DATA[0].code;
+function renderCC(list){
+  const el=document.getElementById('ccList');
+  if(!el)return;
+  el.innerHTML=list.map(c=>`<div class="cc-opt${c.code===window._ccValue?' selected':''}" data-code="${c.code}"><span>${c.flag}</span><span class="cc-opt-code">${c.code}</span><span class="cc-opt-name">${c.name}</span></div>`).join('');
+  el.querySelectorAll('.cc-opt').forEach(o=>o.addEventListener('click',()=>{
+    window._ccValue=o.dataset.code;
+    const found=CC_DATA.find(x=>x.code===o.dataset.code);
+    document.getElementById('ccDisplay').textContent=found.flag+' '+found.code;
+    closeCC();
+  }));
+}
+function closeCC(){
+  document.getElementById('ccBtn').classList.remove('open');
+  document.getElementById('ccDropdown').classList.remove('open');
+  document.getElementById('ccSearch').value='';
+  renderCC(CC_DATA);
+}
+renderCC(CC_DATA);
+document.getElementById('ccBtn').addEventListener('click',e=>{
+  e.stopPropagation();
+  const open=document.getElementById('ccDropdown').classList.toggle('open');
+  document.getElementById('ccBtn').classList.toggle('open',open);
+  if(open)setTimeout(()=>document.getElementById('ccSearch').focus(),60);
+});
+document.getElementById('ccSearch').addEventListener('input',function(){
+  const q=this.value.trim().toLowerCase();
+  renderCC(q?CC_DATA.filter(c=>c.name.includes(q)||c.code.includes(q)||c.flag.includes(q)):CC_DATA);
+});
+document.addEventListener('click',e=>{if(!document.getElementById('ccWrap').contains(e.target))closeCC();});
 </script>
 </body>
 </html>
