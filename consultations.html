@@ -241,6 +241,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .cc-opt.selected{background:rgba(120,144,124,.08);color:var(--accent-light)}
 .cc-opt-code{font-weight:700;min-width:46px}
 .cc-opt-name{color:var(--text-muted);font-size:.78rem;flex:1;direction:rtl;text-align:right}
+#ccDisplay{display:inline-flex;align-items:center;gap:2px;direction:ltr}
 .side-summary{position:relative;z-index:1;margin-top:30px;display:grid;gap:12px}
 .summary-box{background:rgba(12,11,15,.45);border:1px solid var(--border);border-radius:12px;padding:16px}
 .summary-label{font-family:var(--font-en);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-light);margin-bottom:8px}
@@ -1216,14 +1217,23 @@ const CC_DATA=[
 window._ccValue='+966';
 // ترتيب أبجدي عربي
 CC_DATA.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+// تحويل إيموجي العلم إلى صورة علم حقيقية (تظهر على كل الأجهزة بما فيها ويندوز)
+function flagImg(emoji){
+  try{
+    const cc=[...emoji].map(ch=>String.fromCharCode(ch.codePointAt(0)-0x1F1E6+65)).join('').toLowerCase();
+    if(cc.length!==2)return '';
+    return `<img src="https://flagcdn.com/24x18/${cc}.png" loading="lazy" style="width:22px;height:16px;border-radius:2px;object-fit:cover;flex-shrink:0" alt=""/>`;
+  }catch(e){return '';}
+}
+function ccDisplayHTML(c){return flagImg(c.flag)+`<span style="margin-inline-start:6px">${c.code}</span>`;}
 function renderCC(list){
   const el=document.getElementById('ccList');
   if(!el)return;
-  el.innerHTML=list.map(c=>`<div class="cc-opt${c.code===window._ccValue?' selected':''}" data-code="${c.code}"><span>${c.flag}</span><span class="cc-opt-code">${c.code}</span><span class="cc-opt-name">${c.name}</span></div>`).join('');
+  el.innerHTML=list.map(c=>`<div class="cc-opt${c.code===window._ccValue?' selected':''}" data-code="${c.code}">${flagImg(c.flag)}<span class="cc-opt-code">${c.code}</span><span class="cc-opt-name">${c.name}</span></div>`).join('');
   el.querySelectorAll('.cc-opt').forEach(o=>o.addEventListener('click',()=>{
     window._ccValue=o.dataset.code;
     const found=CC_DATA.find(x=>x.code===o.dataset.code);
-    document.getElementById('ccDisplay').textContent=found.flag+' '+found.code;
+    document.getElementById('ccDisplay').innerHTML=ccDisplayHTML(found);
     closeCC();
   }));
 }
@@ -1234,6 +1244,8 @@ function closeCC(){
   renderCC(CC_DATA);
 }
 renderCC(CC_DATA);
+// العلم الافتراضي (السعودية) كصورة
+(function(){const d=CC_DATA.find(c=>c.code===window._ccValue);if(d)document.getElementById('ccDisplay').innerHTML=ccDisplayHTML(d);})();
 document.getElementById('ccBtn').addEventListener('click',e=>{
   e.stopPropagation();
   const open=document.getElementById('ccDropdown').classList.toggle('open');
