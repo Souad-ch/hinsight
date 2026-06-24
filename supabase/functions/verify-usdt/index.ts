@@ -1,12 +1,11 @@
 // ════════════════════════════════════════════════════════════
 // verify-usdt — Supabase Edge Function
-// يفحص محفظة USDT (TRC20) تلقائياً عبر Tronscan كل دقيقة.
-// يطابق كل تحويل وارد بأقدم حجز معلّق بنفس المبلغ، ويؤكّده + يقفل الموعد.
+// يفحص محفظة USDT (TRC20) عبر TronGrid، يطابق كل تحويل وارد
+// بأقدم حجز معلّق بنفس المبلغ، يؤكّده + يقفل الموعد.
 // يتذكّر كل تحويل عالجه (processed_payments) حتى لا يُعاد استخدامه.
 // ════════════════════════════════════════════════════════════
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-// ⚠️ عنوان محفظتك للـ USDT (TRC20)
 const WALLET = "TKvBio7SAkXMWsS7hELWc1DMGu5g7yj3uk";
 const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
 
@@ -36,41 +35,47 @@ Deno.serve(async () => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  // 1) آخر التحويلات الواردة لمحفظتنا (الأقدم أولاً للمطابقة العادلة)
+  // ── جلب آخر تحويلات USDT الواردة عبر TronGrid ──
   const url =
-    `https://apilist.tronscanapi.com/api/token_trc20/transfers` +
-    `?limit=50&start=0&contract_address=${USDT_CONTRACT}&toAddress=${WALLET}&confirm=true`;
-  const r = await fetch(url);
-  const j = await r.json();
-  const transfers = (j?.token_transfers || j?.data || []) as any[];
+    `https://api.trongrid.io/v1/accounts/${WALLET}/transactions/trc20` +
+    `?only_to=true&limit=50&contract_address=${USDT_CONTRACT}`;
 
-  // طبّع التحويلات: هاش + مبلغ
+  let transfers: any[] = [];
+  try {
+    const r = await fetch(url, { headers: { "Accept": "application/json" } });
+    const text = await r.text();
+    let j: any = {};
+    try { j = JSON.parse(text); } catch { j = {}; }
+    transfers = j?.data || [];
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "fetch failed", detail: String(e) }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const incoming = transfers
     .map((t) => {
-      const to = (t.to_address || t.toAddress || "").trim();
+      const to = (t.to || "").trim();
       if (to !== WALLET) return null;
-      const dec = parseInt(t.tokenInfo?.tokenDecimal ?? t.decimals ?? 6);
-      const raw = t.quant ?? t.amount_str ?? t.amount ?? "0";
-      const amount = Number(raw) / Math.pow(10, dec);
-      const hash = t.transaction_id || t.hash || t.transactionHash || "";
-      const ts = Number(t.block_ts || t.timestamp || 0);
+      const dec = parseInt(t.token_info?.decimals ?? 6);
+      const amount = Number(t.value || "0") / Math.pow(10, dec);
+      const hash = t.transaction_id || "";
+      const ts = Number(t.block_timestamp || 0);
       return hash ? { hash, amount: Number(amount.toFixed(2)), ts } : null;
     })
     .filter(Boolean) as { hash: string; amount: number; ts: number }[];
 
-  incoming.sort((a, b) => a.ts - b.ts); // الأقدم أولاً
+  incoming.sort((a, b) => a.ts - b.ts);
 
   let confirmed = 0;
   for (const tx of incoming) {
-    // 2) هل عالجنا هذا التحويل من قبل؟
     const seen = await sb
       .from("processed_payments")
       .select("tx_hash")
       .eq("tx_hash", tx.hash)
       .maybeSingle();
-    if (seen.data) continue; // سبق وعولج
+    if (seen.data) continue;
 
-    // 3) أقدم حجز معلّق بنفس المبلغ
     const { data: match } = await sb
       .from("bookings")
       .select("id,time")
@@ -81,7 +86,6 @@ Deno.serve(async () => {
 
     const booking = match && match[0];
 
-    // 4) سجّل التحويل كمُعالَج (سواء طابق أم لا) حتى لا يُعاد استخدامه
     await sb.from("processed_payments").insert({
       tx_hash: tx.hash,
       amount: tx.amount,
@@ -91,7 +95,6 @@ Deno.serve(async () => {
 
     if (!booking) continue;
 
-    // 5) أكّد الحجز + اقفل الموعد
     await sb.from("bookings").update({ status: "confirmed" }).eq("id", booking.id);
     const { day, time } = parseSlot(booking.time || "");
     if (day && time) {
