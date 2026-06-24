@@ -189,6 +189,20 @@ document.getElementById('qrImg').src='https://api.qrserver.com/v1/create-qr-code
   }catch(e){console.warn('load booking:',e);}
 })();
 
+// ── مراقبة تلقائية: إذا أكّد النظام الدفع (USDT) ينتقل الزبون لشاشة النجاح تلقائياً ──
+let _paidShown=false;
+async function pollPaymentStatus(){
+  if(_paidShown||!REQ_CODE||REQ_CODE==='HN-REQUEST-----')return;
+  try{
+    const {data}=await sb.from('bookings').select('status').ilike('message','%'+REQ_CODE+'%').limit(1);
+    if(data&&data.length&&data[0].status==='confirmed'){
+      _paidShown=true;
+      showSuccess('تم تأكيد الدفع ✓','تم التحقق من تحويلك تلقائياً وتثبيت موعدك. ستصلك رسالة تأكيد على بريدك.');
+    }
+  }catch(e){}
+}
+setInterval(pollPaymentStatus,12000);
+
 // ── TABS ──
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
