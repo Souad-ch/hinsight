@@ -286,6 +286,12 @@ document.getElementById('verifyBtn').addEventListener('click',async()=>{
     if(!match){throw new Error('لم يُعثر على تحويل USDT إلى محفظتنا في هذه العملية.');}
     const paid=parseFloat(match.amount_str||match.amount||'0')/Math.pow(10,parseInt(match.decimals||6));
     if(paid+0.01 < AMOUNT){throw new Error('المبلغ المُحوَّل ('+paid.toFixed(2)+' USDT) أقل من المطلوب ('+AMOUNT+' USDT).');}
+    // امنع إعادة استخدام نفس رقم العملية لطلب آخر
+    try{
+      const {data:used}=await sb.from('processed_payments').select('tx_hash').eq('tx_hash',txid).maybeSingle();
+      if(used){throw new Error('رقم العملية هذا مُستخدَم لطلب آخر. تأكد من لصق العملية الصحيحة.');}
+      await sb.from('processed_payments').insert({tx_hash:txid,amount:paid,booking_id:booking?booking.id:null,matched:!!booking});
+    }catch(e){ if(/مُستخدَم/.test(e.message||''))throw e; /* إن لم يوجد الجدول بعد، تابع */ }
     // نجح التحقق
     res.className='result info';res.innerHTML='<span class="spinner" style="border-top-color:var(--gold)"></span> تم التحقق من الدفع ('+paid.toFixed(2)+' USDT). جارٍ تثبيت موعدك...';
     await finalizePaid('USDT (TRC20)',txid);
