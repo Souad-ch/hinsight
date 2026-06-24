@@ -11,7 +11,7 @@
 @font-face{font-family:'DIN Next LT Arabic';src:url('fonts/DINNextLTArabic-Bold.woff2') format('woff2');font-weight:700 900;font-display:swap;}
 @font-face{font-family:'DIN Nums';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+0030-0039,U+0660-0669,U+06F0-06F9,U+002E,U+002C,U+0025,U+002B,U+002D,U+003A,U+0020;}
 :root{
-  --bg:#0C0B0F;--card:#161818;--border:rgba(201,178,123,.18);--line:rgba(120,144,124,.18);
+  --bg:#0C0B0F;--card:#161818;--border:rgba(201,178,123,.18);--line:rgba(143,185,150,.18);
   --accent:#78907C;--accent-light:#9FBBA4;--text:#DDDEDD;--text-dim:#8a9a8c;--text-muted:#5a6a5c;
   --gold:#c9b27b;--danger:#d98a82;--success:#88ae94;
   --font-ar:'DIN Nums','DIN Next LT Arabic','Noto Naskh Arabic',sans-serif;
@@ -19,7 +19,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:var(--font-ar);font-weight:600;line-height:1.7;min-height:100vh;padding:30px 16px;
-  background-image:radial-gradient(circle at 20% 10%,rgba(201,178,123,.06),transparent 40%),radial-gradient(circle at 80% 90%,rgba(120,144,124,.06),transparent 40%);}
+  background-image:radial-gradient(circle at 20% 10%,rgba(201,178,123,.06),transparent 40%),radial-gradient(circle at 80% 90%,rgba(143,185,150,.06),transparent 40%);}
 .wrap{max-width:560px;margin:0 auto}
 .brand{text-align:center;margin-bottom:28px}
 .brand-main{font-family:var(--font-en);font-size:1.6rem;color:var(--gold);letter-spacing:1px}
@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ar);font-weig
 .amount-val{font-size:2.4rem;font-weight:800;color:var(--gold);line-height:1}
 .amount-code{font-family:var(--font-en);font-size:.78rem;color:var(--text-muted);letter-spacing:.06em;margin-top:8px;direction:ltr}
 .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
-.tab{border:1px solid var(--line);background:rgba(120,144,124,.05);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;transition:.25s;font-size:.78rem;color:var(--text-dim)}
+.tab{border:1px solid var(--line);background:rgba(143,185,150,.05);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;transition:.25s;font-size:.78rem;color:var(--text-dim)}
 .tab.active{border-color:var(--gold);background:rgba(201,178,123,.1);color:var(--gold)}
 .tab .ti{display:block;font-size:1.2rem;margin-bottom:4px}
 .pane{display:none}.pane.active{display:block}
@@ -41,14 +41,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ar);font-weig
 .btn-gold{background:linear-gradient(135deg,var(--gold),#a8915c);color:#0c0b0f}
 .btn-gold:hover{transform:translateY(-2px)}
 .btn-gold:disabled{opacity:.55;cursor:not-allowed;transform:none}
-.btn-ghost{background:rgba(120,144,124,.08);border:1px solid var(--line);color:var(--text-dim)}
+.btn-ghost{background:rgba(143,185,150,.08);border:1px solid var(--line);color:var(--text-dim)}
 .btn-copy{padding:0 16px;background:rgba(201,178,123,.12);border:1px solid var(--gold);color:var(--gold);border-radius:10px;cursor:pointer;font-size:.8rem}
 .qr{display:block;width:180px;height:180px;margin:0 auto 16px;border-radius:14px;background:#fff;padding:10px}
 .input{width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:10px;padding:13px 14px;color:var(--text);font-family:var(--font-en);font-size:.85rem;direction:ltr;outline:none;margin-bottom:14px}
 .input:focus{border-color:var(--gold)}
 .input.ar{font-family:var(--font-ar);direction:rtl;text-align:right}
 .note{font-size:.78rem;color:var(--text-muted);line-height:1.7;margin-bottom:14px}
-.net-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(120,144,124,.1);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.75rem;color:var(--accent-light);margin-bottom:14px}
+.net-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(143,185,150,.1);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.75rem;color:var(--accent-light);margin-bottom:14px}
 .result{display:none;border-radius:12px;padding:16px;margin-top:8px;font-size:.85rem;line-height:1.7}
 .result.ok{display:block;background:rgba(136,174,148,.12);border:1px solid rgba(136,174,148,.4);color:#a7d0b1}
 .result.err{display:block;background:rgba(217,138,130,.1);border:1px solid rgba(217,138,130,.35);color:var(--danger)}
@@ -67,11 +67,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-ar);font-weig
 .chat-empty{text-align:center;color:var(--text-muted);font-size:.78rem;margin:auto}
 .chat-bubble{max-width:86%;border-radius:12px;padding:10px 13px;font-size:.84rem;line-height:1.6;word-break:break-word}
 .chat-bubble.customer{align-self:flex-end;background:rgba(201,178,123,.12);border:1px solid rgba(201,178,123,.25);color:var(--text)}
-.chat-bubble.operator{align-self:flex-start;background:rgba(120,144,124,.12);border:1px solid rgba(120,144,124,.25);color:var(--text)}
+.chat-bubble.operator{align-self:flex-start;background:rgba(143,185,150,.12);border:1px solid rgba(143,185,150,.25);color:var(--text)}
 .chat-sender{font-size:.67rem;color:var(--accent-light);display:block;margin-bottom:3px}
 .chat-time{font-size:.64rem;color:var(--text-muted);margin-top:3px;direction:ltr}
 .chat-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;margin-right:5px;animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* توهّج خفيف على النصوص */
+.hero-text,.section-subtitle,.card-excerpt,.testi-text,.about-text,.about-quote,
+.timeline-item p,.footer-col ul a,.footer-about,.nl-text,.cons-card p,.lib-card p,
+.method-card p,.report-card p,.qa-card p,li{text-shadow:0 0 16px rgba(143,185,150,0.22);}
+.nav-links a,.section-label,.hero-label,.card-tag,.brand-num,.method-num,
+.timeline-year,.logo-sub,.read-more-btn{text-shadow:0 0 14px rgba(188,217,192,0.35);}
+.section-title,.hero-title,.testi-name,.cons-card h3,.insight-card h3{text-shadow:0 0 22px rgba(143,185,150,0.25);}
 </style>
 </head>
 <body>

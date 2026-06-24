@@ -12,7 +12,7 @@
 @font-face{font-family:'DIN Nums';src:url('fonts/DINNextLTArabic-Regular.woff2') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+0030-0039,U+0660-0669,U+06F0-06F9,U+002E,U+002C,U+0025,U+002B,U+002D,U+003A,U+0020;}
 :root{
   --bg:#0C0B0F;--bg-mid:#111014;--card:#161818;
-  --border:rgba(120,144,124,.16);--border-strong:rgba(159,187,164,.32);--line:rgba(120,144,124,.18);
+  --border:rgba(143,185,150,.16);--border-strong:rgba(188,217,192,.32);--line:rgba(143,185,150,.18);
   --accent:#78907C;--accent-light:#9FBBA4;--accent-dim:#506155;
   --text:#DDDEDD;--text-dim:#8a9a8c;--text-muted:#4a5a4c;
   --gold:#c9b27b;--gold-dim:rgba(201,178,123,.12);--gold-border:rgba(201,178,123,.28);
@@ -31,7 +31,7 @@ button{cursor:pointer}
 
 /* ── LOGIN ── */
 #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-  background-image:radial-gradient(circle at 20% 10%,rgba(201,178,123,.07),transparent 42%),radial-gradient(circle at 80% 85%,rgba(120,144,124,.06),transparent 38%);}
+  background-image:radial-gradient(circle at 20% 10%,rgba(201,178,123,.07),transparent 42%),radial-gradient(circle at 80% 85%,rgba(143,185,150,.06),transparent 38%);}
 .login-box{width:100%;max-width:420px;text-align:center;background:linear-gradient(145deg,rgba(22,24,22,.98),rgba(13,14,12,.98));border:1px solid var(--gold-border);border-radius:22px;padding:52px 42px}
 .login-crown{font-size:1.8rem;margin-bottom:12px}
 .login-logo{font-family:var(--font-en);font-size:1.6rem;font-weight:600;color:var(--gold);margin-bottom:4px}
@@ -52,7 +52,7 @@ button{cursor:pointer}
 .app{min-height:100vh;display:grid;grid-template-columns:260px 1fr}
 .app::before{content:'';position:fixed;inset:0;pointer-events:none;
   background:radial-gradient(circle at 15% 12%,rgba(201,178,123,.07),transparent 32%),
-             radial-gradient(circle at 85% 88%,rgba(120,144,124,.06),transparent 36%),
+             radial-gradient(circle at 85% 88%,rgba(143,185,150,.06),transparent 36%),
              linear-gradient(rgba(201,178,123,.018) 1px,transparent 1px),
              linear-gradient(90deg,rgba(201,178,123,.018) 1px,transparent 1px);
   background-size:auto,auto,64px 64px,64px 64px}
@@ -69,7 +69,7 @@ button{cursor:pointer}
 .user-card{margin-top:auto;border:1px solid var(--border);background:linear-gradient(145deg,rgba(22,24,22,.85),rgba(13,14,12,.9));border-radius:16px;padding:16px;font-size:.8rem}
 .user-name{color:var(--text);font-size:.9rem;margin-bottom:2px}
 .user-email{color:var(--text-muted);font-size:.72rem;font-family:var(--font-en);direction:ltr}
-.logout-btn{width:100%;background:rgba(120,144,124,.08);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:8px;font-size:.8rem;margin-top:12px;font-weight:700;transition:var(--tr)}
+.logout-btn{width:100%;background:rgba(143,185,150,.08);border:1px solid var(--border);color:var(--text-dim);border-radius:10px;padding:8px;font-size:.8rem;margin-top:12px;font-weight:700;transition:var(--tr)}
 .logout-btn:hover{border-color:rgba(168,88,78,.4);color:#e0ada7}
 
 /* ── MAIN ── */
@@ -81,8 +81,8 @@ button{cursor:pointer}
 .btn-gold{background:linear-gradient(135deg,var(--gold),#a8915c);color:#0c0b0f}
 .btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(201,178,123,.3)}
 .btn-gold:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-ghost{background:rgba(120,144,124,.055);border:1px solid var(--border);color:var(--text-dim)}
-.btn-ghost:hover{border-color:rgba(159,187,164,.32);color:var(--accent-light)}
+.btn-ghost{background:rgba(143,185,150,.055);border:1px solid var(--border);color:var(--text-dim)}
+.btn-ghost:hover{border-color:rgba(188,217,192,.32);color:var(--accent-light)}
 .btn-outline{background:transparent;border:1px solid var(--gold-border);color:var(--gold)}
 .panel{border:1px solid var(--border);background:rgba(17,16,20,.72);backdrop-filter:blur(22px);border-radius:20px;overflow:hidden;margin-bottom:20px}
 .panel-head{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}
@@ -113,7 +113,7 @@ button{cursor:pointer}
 .session-slot{border:1px solid var(--border);border-radius:16px;padding:18px 14px;text-align:center;position:relative;transition:var(--tr)}
 .session-slot.done{border-color:rgba(136,174,148,.3);background:var(--success-bg)}
 .session-slot.next{border-color:var(--gold-border);background:var(--gold-dim)}
-.session-slot.empty{border-style:dashed;border-color:rgba(120,144,124,.18);opacity:.6}
+.session-slot.empty{border-style:dashed;border-color:rgba(143,185,150,.18);opacity:.6}
 .slot-num{font-family:var(--font-en);font-size:1.6rem;color:var(--text-muted);line-height:1;margin-bottom:8px}
 .session-slot.done .slot-num{color:var(--success)}
 .session-slot.next .slot-num{color:var(--gold)}
@@ -155,7 +155,7 @@ button{cursor:pointer}
 
 /* ── INFO BOX ── */
 .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
-.info-box{border:1px solid rgba(120,144,124,.14);background:rgba(12,11,15,.4);border-radius:14px;padding:14px}
+.info-box{border:1px solid rgba(143,185,150,.14);background:rgba(12,11,15,.4);border-radius:14px;padding:14px}
 .info-label{color:var(--text-muted);font-size:.72rem;margin-bottom:4px}
 .info-value{color:var(--text);font-size:.87rem;word-break:break-word}
 
@@ -183,6 +183,14 @@ button{cursor:pointer}
   .info-grid{grid-template-columns:1fr}
 }
 @media(max-width:560px){.sessions-grid{grid-template-columns:1fr 1fr}}
+
+/* توهّج خفيف على النصوص */
+.hero-text,.section-subtitle,.card-excerpt,.testi-text,.about-text,.about-quote,
+.timeline-item p,.footer-col ul a,.footer-about,.nl-text,.cons-card p,.lib-card p,
+.method-card p,.report-card p,.qa-card p,li{text-shadow:0 0 16px rgba(143,185,150,0.22);}
+.nav-links a,.section-label,.hero-label,.card-tag,.brand-num,.method-num,
+.timeline-year,.logo-sub,.read-more-btn{text-shadow:0 0 14px rgba(188,217,192,0.35);}
+.section-title,.hero-title,.testi-name,.cons-card h3,.insight-card h3{text-shadow:0 0 22px rgba(143,185,150,0.25);}
 </style>
 </head>
 <body>
@@ -546,7 +554,7 @@ function renderAllSessions(){
     const status=s?s.status:'available';
     const badge=status==='completed'?'<span class="sub-status-badge active" style="font-size:.7rem">● مكتملة</span>':
                 status==='scheduled'?'<span class="sub-status-badge" style="font-size:.7rem;color:var(--gold);background:var(--gold-dim);border-color:var(--gold-border)">● قادمة</span>':
-                '<span class="sub-status-badge expired" style="font-size:.7rem;color:var(--text-muted);background:rgba(120,144,124,.06);border-color:var(--border)">● لم تُحجز بعد</span>';
+                '<span class="sub-status-badge expired" style="font-size:.7rem;color:var(--text-muted);background:rgba(143,185,150,.06);border-color:var(--border)">● لم تُحجز بعد</span>';
     const summary=s&&s.summary?s.summary:'';
     const next=s&&s.next_summary?s.next_summary:'';
     html+=`<div style="border:1px solid var(--border);border-radius:18px;padding:20px 22px;margin-bottom:16px;background:rgba(12,11,15,.4)">
