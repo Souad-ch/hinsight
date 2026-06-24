@@ -146,7 +146,7 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
 .ticker-wrap::before{right:0;background:linear-gradient(270deg,var(--card),transparent);}
 .ticker-wrap::after{left:0;background:linear-gradient(90deg,var(--card),transparent);}
-.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tickerScroll 9s linear infinite;will-change:transform;}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;direction:ltr;width:max-content;animation:tickerScroll 9s linear infinite;will-change:transform;}
 @keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-25%);}}
 .ticker-item{font-family:var(--font-en);font-size:0.78rem;color:var(--text-muted);padding:0 32px;display:inline-flex;align-items:center;gap:12px;}
 .ticker-item .ti-val{transition:color 0.3s,background 0.3s;border-radius:4px;padding:1px 4px;}
@@ -2138,7 +2138,7 @@ const perHalf=Math.max(2,Math.ceil(vw/unitW)+1);
 let half='';
 for(let c=0;c<perHalf;c++)half+=unitHTML(c);
 wrap.innerHTML=half+half;
-const dur=Math.max(10,(unitW*perHalf)/90); // ~90px per second, constant speed
+const dur=Math.max(7,(unitW*perHalf)/140); // ~140px per second, constant speed
 let kf=document.getElementById('tickerKF');
 if(!kf){kf=document.createElement('style');kf.id='tickerKF';document.head.appendChild(kf);}
 kf.textContent='@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}';
