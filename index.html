@@ -2126,25 +2126,28 @@ return html;
 function buildTickerOnce(){
 const wrap=document.getElementById('ticker');
 if(!wrap)return;
-// measure one unit width to know how many copies overflow the viewport
+// measure one unit width to decide how many units fill the viewport
 wrap.style.animation='none';
 wrap.innerHTML=unitHTML(0);
 const unitW=wrap.scrollWidth||600;
 const vw=window.innerWidth||1200;
-// enough copies so the loop is seamless: shift = 1 unit, rest must cover viewport
-const copies=Math.max(4,Math.ceil(vw/unitW)+2);
-let html='';
-for(let c=0;c<copies;c++)html+=unitHTML(c);
-wrap.innerHTML=html;
-// seamless loop: translate by exactly one unit width (px), constant speed
-const dur=Math.max(8,unitW/90); // ~90px per second
+// build ONE half wide enough to cover the screen, then duplicate it.
+// translateX(-50%) over two identical halves = perfectly seamless,
+// font-load/measurement errors can't break it (no px math involved).
+const perHalf=Math.max(2,Math.ceil(vw/unitW)+1);
+let half='';
+for(let c=0;c<perHalf;c++)half+=unitHTML(c);
+wrap.innerHTML=half+half;
+const dur=Math.max(10,(unitW*perHalf)/90); // ~90px per second, constant speed
 let kf=document.getElementById('tickerKF');
 if(!kf){kf=document.createElement('style');kf.id='tickerKF';document.head.appendChild(kf);}
-kf.textContent=`@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-${unitW}px);}}`;
+kf.textContent='@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}';
 wrap.style.animation=`tickerScroll ${dur}s linear infinite`;
 }
 let _tkRT;
 window.addEventListener('resize',()=>{clearTimeout(_tkRT);_tkRT=setTimeout(buildTickerOnce,250);});
+// rebuild once custom fonts finish loading (correct width count)
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>buildTickerOnce());
 function tickTicker(){
 TICKER_DATA.forEach((d,i)=>{
 const drift=(Math.random()-0.49)*d.base*0.0015;
