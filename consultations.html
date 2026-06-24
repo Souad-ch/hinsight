@@ -232,15 +232,16 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .cc-btn.open .cc-arrow{transform:rotate(180deg);opacity:.9}
 .cc-dropdown{position:absolute;top:calc(100% + 6px);right:0;left:0;background:#111318;border:1px solid var(--accent);border-radius:12px;z-index:9999;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.55);display:none;min-width:210px}
 .cc-dropdown.open{display:block}
-.cc-search{width:100%;background:#0b0b0e;border:none;border-bottom:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:.85rem;outline:none;direction:rtl}
-.cc-search::placeholder{color:var(--text-muted)}
+.cc-search{width:100%;background:#0b0b0e;border:none;border-bottom:1px solid var(--border);color:#eef2ee;padding:11px 12px;font-size:.88rem;outline:none;direction:rtl}
+.cc-search::placeholder{color:#9aa89c}
 .cc-list{max-height:220px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--accent-dim) transparent}
 .cc-list::-webkit-scrollbar{width:4px}.cc-list::-webkit-scrollbar-thumb{background:var(--accent-dim);border-radius:4px}
-.cc-opt{padding:9px 12px;font-size:.88rem;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.15s;direction:ltr}
-.cc-opt:hover{background:rgba(120,144,124,.12);color:var(--accent-light)}
-.cc-opt.selected{background:rgba(120,144,124,.08);color:var(--accent-light)}
-.cc-opt-code{font-weight:700;min-width:46px}
-.cc-opt-name{color:var(--text-muted);font-size:.78rem;flex:1;direction:rtl;text-align:right}
+.cc-opt{padding:10px 12px;font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.15s;direction:ltr;color:#e8ece8}
+.cc-opt:hover{background:rgba(120,144,124,.18);color:#fff}
+.cc-opt.selected{background:rgba(120,144,124,.14);color:#fff}
+.cc-opt-code{font-weight:700;min-width:46px;color:#cfe0d2}
+.cc-opt-name{color:#d4ddd5;font-size:.84rem;flex:1;direction:rtl;text-align:right}
+.cc-opt:hover .cc-opt-name,.cc-opt.selected .cc-opt-name{color:#fff}
 #ccDisplay{display:inline-flex;align-items:center;gap:2px;direction:ltr}
 .side-summary{position:relative;z-index:1;margin-top:30px;display:grid;gap:12px}
 .summary-box{background:rgba(12,11,15,.45);border:1px solid var(--border);border-radius:12px;padding:16px}
