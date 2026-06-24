@@ -2138,7 +2138,7 @@ const perHalf=Math.max(2,Math.ceil(vw/unitW)+1);
 let half='';
 for(let c=0;c<perHalf;c++)half+=unitHTML(c);
 wrap.innerHTML=half+half;
-const dur=Math.max(7,(unitW*perHalf)/140); // ~140px per second, constant speed
+const dur=Math.max(10,(unitW*perHalf)/90); // ~90px per second, constant speed
 let kf=document.getElementById('tickerKF');
 if(!kf){kf=document.createElement('style');kf.id='tickerKF';document.head.appendChild(kf);}
 kf.textContent='@keyframes tickerScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}';
