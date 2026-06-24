@@ -425,7 +425,9 @@ a{text-decoration:none;color:inherit}
                   <option value="400">400$ — هندسة المخاطر</option>
                   <option value="600">600$ — قراءة المشهد الاقتصادي</option>
                   <option value="1000">1000$ — عضوية VIP الشهرية</option>
+                  <option value="custom">✏️ مبلغ مخصص...</option>
                 </select>
+                <input type="number" id="payAmountCustom" min="1" placeholder="المبلغ بالدولار" class="select" style="flex:1;min-width:120px;display:none"/>
                 <button class="btn btn-green" id="sendPayBtn" style="flex:1;min-width:140px">💳 إرسال رابط الدفع</button>
               </div>
               <div id="payStatus" style="font-size:.78rem;margin-top:8px;display:none"></div>
@@ -724,7 +726,7 @@ function renderDetail(){
     const map={'تقييم المتداول':'250','جلسة إدارة مخاطر':'400','هندسة المخاطر':'400','قراءة المشهد الاقتصادي':'600','عضوية VIP الشهرية':'1000'};
     const sel=document.getElementById('payAmount');
     const t=(b.consultation_type||'').trim();
-    if(sel&&map[t])sel.value=map[t];
+    if(sel&&map[t]){sel.value=map[t];const c=document.getElementById('payAmountCustom');if(c)c.style.display='none';}
   })();
   document.getElementById('dEmail').textContent=b.client_email||'—';
   document.getElementById('dDate').textContent=b.date||'—';
@@ -1101,6 +1103,11 @@ document.getElementById('emailMessage').addEventListener('click',async()=>{
 });
 
 // ── إرسال رابط الدفع ──
+// إظهار حقل المبلغ المخصص عند اختيار "مبلغ مخصص"
+document.getElementById('payAmount').addEventListener('change',function(){
+  const c=document.getElementById('payAmountCustom');
+  if(this.value==='custom'){c.style.display='';c.focus();}else{c.style.display='none';}
+});
 function reqCodeOf(b){
   const m=(b&&b.message||'').match(/HN-REQUEST-\d+/);
   return m?m[0]:'';
@@ -1111,7 +1118,10 @@ document.getElementById('sendPayBtn').addEventListener('click',async()=>{
   const showS=(t,ok)=>{status.style.display='block';status.style.color=ok?'#a7d0b1':'#e0ada7';status.textContent=t;};
   if(!b)return toast('اختاري طلباً أولاً');
   if(!b.client_email){showS('⚠ لا يوجد بريد لهذا الطلب.',false);return;}
-  const baseAmount=parseInt(document.getElementById('payAmount').value)||0;
+  const sel=document.getElementById('payAmount');
+  const baseAmount=sel.value==='custom'
+    ?(parseInt(document.getElementById('payAmountCustom').value)||0)
+    :(parseInt(sel.value)||0);
   if(!baseAmount){showS('⚠ أدخلي المبلغ أولاً.',false);return;}
   const amount=String(baseAmount); // مبلغ نظيف بدون فواصل
   const code=reqCodeOf(b)||('HN-REQUEST-'+(b.id||''));
