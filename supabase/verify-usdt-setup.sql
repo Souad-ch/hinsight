@@ -28,7 +28,7 @@ select cron.schedule(
   '* * * * *',
   $$
   select net.http_post(
-    url    := 'https://<PROJECT_REF>.supabase.co/functions/v1/verify-usdt',
+    url    := 'https://<PROJECT_REF>.supabase.co/functions/v1/dynamic-processor',
     headers:= '{"Content-Type":"application/json","Authorization":"Bearer <SERVICE_ROLE_KEY>"}'::jsonb,
     body   := '{}'::jsonb
   );
