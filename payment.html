@@ -175,7 +175,6 @@ if(window.emailjs)emailjs.init(EJS_PUBLIC);
 const ADMIN_EMAIL='souchamaa35@gmail.com';
 const USDT_ADDR='TKvBio7SAkXMWsS7hELWc1DMGu5g7yj3uk';
 const USDT_CONTRACT='TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'; // عقد USDT على Tron
-const SUPPORT_URL='https://wa.me/'; // سيُربط لاحقاً بمحادثة لوحة الحجوزات
 
 // ── URL PARAMS ──
 const P=new URLSearchParams(location.search);
@@ -187,7 +186,6 @@ document.getElementById('reqCode').textContent=REQ_CODE;
 document.getElementById('amtUsd').textContent=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
 document.getElementById('amtUsdt2').textContent=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
 document.getElementById('qrImg').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data='+encodeURIComponent(USDT_ADDR);
-{const _sb=document.getElementById('supportBtn');if(_sb)_sb.href=SUPPORT_URL;}
 
 // ── جلب بيانات الحجز عبر رمز الطلب ──
 (async function loadBooking(){
