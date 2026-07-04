@@ -1146,6 +1146,11 @@ ${link}
 رمز طلبك: ${code}
 
 بعد إتمام الدفع سيتم تثبيت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.`;
+  // 1) علّمي الطلب كبانتظار الدفع + خزّني المبلغ (ليطابقه النظام تلقائياً) — مستقلّ عن الإيميل
+  try{await sb.from('bookings').update({status:'awaiting_payment',pay_amount:amount}).eq('id',b.id);}catch(e){console.error('status update:',e);}
+  // 2) اعرضي الرابط دائماً حتى يمكن نسخه يدوياً
+  const linkBox=`<div style="margin-top:8px;font-size:12px"><a href="${link}" target="_blank" style="color:#a7d0b1;word-break:break-all">${link}</a> <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}');this.textContent='✔ نُسخ'" style="cursor:pointer;margin-inline-start:6px">نسخ</button></div>`;
+  // 3) حاولي إرسال الإيميل (اختياري — لو القالب غير موجود يبقى الرابط ظاهراً)
   try{
     await emailjs.send(EJS_SERVICE_ID,EJS_MANUAL_TEMPLATE_ID,{
       to_email:b.client_email,email:b.client_email,
@@ -1153,12 +1158,12 @@ ${link}
       subject:'إتمام دفع استشارتك — Hanadi Insights ('+amount+'$)',
       message:body,reply_to:''
     });
-    // علّمي الطلب كبانتظار الدفع + خزّني المبلغ الفريد ليطابقه النظام تلقائياً
-    try{await sb.from('bookings').update({status:'awaiting_payment',pay_amount:amount}).eq('id',b.id);}catch(e){}
-    showS('✅ تم إرسال رابط الدفع ('+amount+'$) إلى '+b.client_email,true);
+    status.style.display='block';status.style.color='#a7d0b1';
+    status.innerHTML='✅ تم إرسال رابط الدفع ('+amount+'$) إلى '+b.client_email+linkBox;
   }catch(e){
-    console.error('pay link error:',e);
-    showS('⚠ تعذّر الإرسال: '+((e&&(e.text||e.message))||'تأكدي من قالب template_manual'),false);
+    console.error('pay link email error:',e);
+    status.style.display='block';status.style.color='#e0ada7';
+    status.innerHTML='⚠ تعذّر إرسال الإيميل (تأكدي من قالب template_manual). الطلب صار بانتظار الدفع — انسخي الرابط وأرسليه يدوياً:'+linkBox;
   }finally{btn.disabled=false;btn.textContent='💳 إرسال رابط الدفع';}
 });
 
