@@ -86,14 +86,15 @@ Deno.serve(async () => {
 
     const booking = match && match[0];
 
+    // لا نستهلك التحويل إلا إذا طابق طلباً فعلاً — هكذا لو وصل الدفع قبل تجهيز الطلب يبقى قابلاً للمطابقة
+    if (!booking) continue;
+
     await sb.from("processed_payments").insert({
       tx_hash: tx.hash,
       amount: tx.amount,
-      booking_id: booking ? booking.id : null,
-      matched: !!booking,
+      booking_id: booking.id,
+      matched: true,
     });
-
-    if (!booking) continue;
 
     await sb.from("bookings").update({ status: "confirmed" }).eq("id", booking.id);
     const { day, time } = parseSlot(booking.time || "");
