@@ -1289,14 +1289,34 @@ document.addEventListener('click',e=>{if(!document.getElementById('ccWrap').cont
 (function loadConsultContent(tries){
   tries=tries||0;
   if(typeof sbClient==='undefined'||!sbClient){ if(tries<25)setTimeout(()=>loadConsultContent(tries+1),300); return; }
+  var esc=function(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+  var ICONS=['◉','◈','◎','◇','◆','◌','◍','●'];
   sbClient.from('page_sections').select('content').eq('section_key','consult_page').maybeSingle()
-    .then(({data})=>{
-      const c=(data&&data.content)||{};
-      Object.entries(c).forEach(([k,v])=>{
-        if(typeof v!=='string'||!v.trim())return;
-        document.querySelectorAll('[data-edit="'+k+'"]').forEach(el=>{el.textContent=v;});
-      });
-    }).catch(()=>{});
+    .then(function(r){
+      var c=(r&&r.data&&r.data.content)||{};
+      // العنوان والوصف
+      if(c.cp_hero_sub){document.querySelectorAll('[data-edit="cp_hero_sub"]').forEach(function(el){el.textContent=c.cp_hero_sub;});}
+      if(c.cp_hero_title){document.querySelectorAll('[data-edit="cp_hero_title"]').forEach(function(el){el.textContent=c.cp_hero_title;});}
+      // الباقات — إعادة بناء الشبكة من المصفوفة
+      if(Array.isArray(c.packages)&&c.packages.length){
+        var grid=document.querySelector('.packages-grid');
+        if(grid){
+          grid.innerHTML=c.packages.map(function(p,i){
+            var feats=(p.features||[]).map(function(f){return '<li>'+esc(f)+'</li>';}).join('');
+            var badge=p.badge?'<span class="pkg-for">'+esc(p.badge)+'</span>':'';
+            var nm=(p.name||'').replace(/'/g,"\\'");
+            return '<article class="package-card reveal visible">'+
+              '<div class="pkg-icon">'+ICONS[i%ICONS.length]+'</div>'+
+              '<h3 class="pkg-name">'+esc(p.name)+'</h3>'+badge+
+              '<div class="pkg-price"><span class="amount">'+esc(p.price)+'</span><span class="per">'+esc(p.per||'')+'</span></div>'+
+              '<p class="pkg-desc">'+esc(p.desc||'')+'</p>'+
+              '<ul class="pkg-list">'+feats+'</ul>'+
+              '<button class="btn btn-ghost" onclick="openIntakeModal(\''+nm+'\')">طلب هذا المسار</button>'+
+            '</article>';
+          }).join('');
+        }
+      }
+    }).catch(function(){});
 })();
 </script>
 </body>

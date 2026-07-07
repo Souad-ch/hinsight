@@ -948,53 +948,68 @@ async function saveSimplePage(key){
   st.textContent='✅ تم الحفظ — ستظهر التغييرات خلال لحظات';st.style.color='#a7d0b1';
 }
 
-// ── محرّر صفحة الاستشارات (مستقل) ──────────────
-const CP_PACKAGES=[
-  {n:1,name:'تقييم المتداول',        price:'$250',desc:'مراجعة طريقة التفكير، الأخطاء المتكررة، إدارة الخسارة والربح، ونمط اتخاذ القرار.'},
-  {n:2,name:'هندسة المخاطر',         price:'$400',desc:'بناء إطار واضح للمخاطرة: حجم الدخول، حدود الخسارة، التوقف، وتجنب الانتقام من السوق.'},
-  {n:3,name:'قراءة المشهد الاقتصادي',price:'$600',desc:'فهم الذهب، الدولار، الفائدة، النفط، السيولة، وتحويل المشهد إلى سيناريوهات متابعة.'},
-  {n:4,name:'عضوية VIP الشهرية',     price:'$1000',desc:'متابعة شهرية متكاملة مع جلسات دورية ودعم مستمر للمتداول الجاد.'},
-];
-let _cpBuilt=false;
-function buildCpFields(){
-  if(_cpBuilt)return;
+// ── محرّر صفحة الاستشارات (مستقل، باقات ديناميكية) ──
+function cpEsc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cpDefaultPkgs(){return[
+  {name:'تقييم المتداول',price:'$250',per:'/ ٣٠ دقيقة',badge:'مناسب كبداية',desc:'مراجعة طريقة التفكير، الأخطاء المتكررة، إدارة الخسارة والربح، ونمط اتخاذ القرار.',features:['تشخيص نقاط الضعف السلوكية','تحديد أسباب القرارات المتسرعة','اقتراح إطار متابعة تعليمي']},
+  {name:'هندسة المخاطر',price:'$400',per:'/ ٣٠ دقيقة',badge:'الأكثر أهمية',desc:'بناء إطار واضح للمخاطرة: حجم الدخول، حدود الخسارة، التوقف، وتجنب الانتقام من السوق.',features:['مراجعة نسبة المخاطرة المناسبة','حدود يومية وأسبوعية للتوقف','قواعد التعامل مع الخسائر المتتالية']},
+  {name:'قراءة المشهد الاقتصادي',price:'$600',per:'/ ٤٥ دقيقة',badge:'للسياق الأكبر',desc:'فهم الذهب، الدولار، الفائدة، النفط، السيولة، وتحويل المشهد إلى سيناريوهات متابعة.',features:['قراءة المؤثرات الكبرى','تحديد ما يستحق المراقبة','فصل الضجيج عن الإشارة']},
+  {name:'عضوية VIP الشهرية',price:'$1000',per:'/ ٤ جلسات شهرياً',badge:'اشتراك شهري',desc:'عضوية متابعة شهرية للمتداول الجاد، تتضمن ٤ جلسات منظمة لمراجعة تطور القرار وإدارة المخاطر.',features:['٤ جلسات متابعة شهرياً','مراجعة الالتزام بخطة المخاطر','أولوية في جدولة المواعيد']},
+];}
+let cpPkgs=[];
+function cpSyncFromDOM(){
+  const cards=document.querySelectorAll('#cpPackages .cp-pkg-card');
+  cpPkgs=[...cards].map(card=>{
+    const g=k=>{const el=card.querySelector('[data-k="'+k+'"]');return el?el.value:'';};
+    return{name:g('name'),price:g('price'),per:g('per'),badge:g('badge'),desc:g('desc'),
+      features:g('features').split('\n').map(x=>x.trim()).filter(Boolean)};
+  });
+}
+function cpRenderPkgs(){
   const wrap=document.getElementById('cpPackages');
-  wrap.innerHTML=CP_PACKAGES.map(p=>`
-    <div class="section-card">
-      <div class="section-card-title">📦 الباقة ${p.n}</div>
+  wrap.innerHTML=cpPkgs.map((p,i)=>`
+    <div class="section-card cp-pkg-card">
+      <div class="section-card-title">📦 الباقة ${i+1}
+        <button type="button" onclick="cpDel(${i})" style="float:left;background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:3px 12px;cursor:pointer;font-size:0.78rem;">🗑 حذف</button>
+      </div>
       <div class="cp-pkg-grid">
-        <div><label class="cp-lbl">الاسم</label><input class="input cp-inp" id="cp_pkg${p.n}_name" placeholder="${p.name}"/></div>
-        <div><label class="cp-lbl">السعر</label><input class="input cp-inp" id="cp_pkg${p.n}_price" placeholder="${p.price}"/></div>
+        <div><label class="cp-lbl">الاسم</label><input class="input cp-inp" data-k="name" value="${cpEsc(p.name)}"/></div>
+        <div><label class="cp-lbl">السعر</label><input class="input cp-inp" data-k="price" value="${cpEsc(p.price)}"/></div>
+        <div><label class="cp-lbl">المدة</label><input class="input cp-inp" data-k="per" value="${cpEsc(p.per)}"/></div>
+        <div><label class="cp-lbl">شارة (اختياري)</label><input class="input cp-inp" data-k="badge" value="${cpEsc(p.badge)}"/></div>
       </div>
       <label class="cp-lbl">الوصف</label>
-      <textarea class="input cp-inp" id="cp_pkg${p.n}_desc" rows="2" placeholder="${p.desc}"></textarea>
-    </div>`).join('');
-  _cpBuilt=true;
-  document.getElementById('cpSaveBtn').addEventListener('click',saveConsultPage);
+      <textarea class="input cp-inp" data-k="desc" rows="2">${cpEsc(p.desc)}</textarea>
+      <label class="cp-lbl">المميزات (سطر لكل ميزة)</label>
+      <textarea class="input cp-inp" data-k="features" rows="3">${cpEsc((p.features||[]).join('\n'))}</textarea>
+    </div>`).join('')+
+    `<button type="button" class="btn btn-ghost" onclick="cpAdd()" style="width:auto;padding:11px 26px;">➕ إضافة باقة</button>`;
 }
+function cpAdd(){cpSyncFromDOM();cpPkgs.push({name:'باقة جديدة',price:'$0',per:'/ ٣٠ دقيقة',badge:'',desc:'',features:[]});cpRenderPkgs();}
+function cpDel(i){cpSyncFromDOM();cpPkgs.splice(i,1);cpRenderPkgs();}
+let _cpBound=false;
 async function loadConsultPage(){
-  buildCpFields();
   const st=document.getElementById('cpStatus');st.textContent='⏳ جارٍ التحميل...';st.style.color='var(--muted)';
   const{data}=await sb.from('page_sections').select('content').eq('section_key','consult_page').maybeSingle();
   const c=(data&&data.content)||{};
-  ['cp_hero_title','cp_hero_sub'].forEach(k=>{const el=document.getElementById(k);if(el)el.value=c[k]||'';});
-  CP_PACKAGES.forEach(p=>['name','price','desc'].forEach(f=>{
-    const el=document.getElementById(`cp_pkg${p.n}_${f}`);if(el)el.value=c[`cp_pkg${p.n}_${f}`]||'';
-  }));
+  document.getElementById('cp_hero_title').value=c.cp_hero_title||'';
+  document.getElementById('cp_hero_sub').value=c.cp_hero_sub||'';
+  cpPkgs=(Array.isArray(c.packages)&&c.packages.length)?c.packages:cpDefaultPkgs();
+  cpRenderPkgs();
+  if(!_cpBound){document.getElementById('cpSaveBtn').addEventListener('click',saveConsultPage);_cpBound=true;}
   st.textContent='';
 }
 async function saveConsultPage(){
   const st=document.getElementById('cpStatus');st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
-  const content={};
-  ['cp_hero_title','cp_hero_sub'].forEach(k=>{const v=document.getElementById(k).value.trim();if(v)content[k]=v;});
-  CP_PACKAGES.forEach(p=>['name','price','desc'].forEach(f=>{
-    const v=document.getElementById(`cp_pkg${p.n}_${f}`).value.trim();if(v)content[`cp_pkg${p.n}_${f}`]=v;
-  }));
+  cpSyncFromDOM();
+  const content={packages:cpPkgs.filter(p=>p.name&&p.name.trim())};
+  const ht=document.getElementById('cp_hero_title').value.trim();if(ht)content.cp_hero_title=ht;
+  const hs=document.getElementById('cp_hero_sub').value.trim();if(hs)content.cp_hero_sub=hs;
   const{error}=await sb.from('page_sections').upsert(
     {section_key:'consult_page',section_name:'صفحة الاستشارات',section_type:'page',order_index:99,visible:true,content,updated_at:new Date().toISOString()},
     {onConflict:'section_key'});
-  if(error){st.textContent='⚠ خطأ: '+error.message;st.style.color='var(--danger,#e0ada7)';return;}
-  st.textContent='✅ تم الحفظ — ستظهر التغييرات على صفحة الاستشارات خلال لحظات';st.style.color='#a7d0b1';
+  if(error){st.textContent='⚠ خطأ: '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✅ تم الحفظ ('+content.packages.length+' باقة) — ستظهر على صفحة الاستشارات خلال لحظات';st.style.color='#a7d0b1';
 }
 
 // TOAST
