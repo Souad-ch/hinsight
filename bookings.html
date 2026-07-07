@@ -640,6 +640,7 @@ const EJS_PUBLIC_KEY='6NHm0wz_2eclb5bbW';
 const EJS_SERVICE_ID='service_c8o89cr';
 // قالب رسالة عامة: أنشئيه في EmailJS بالحقول {{to_email}} {{to_name}} {{subject}} {{message}}
 const EJS_MANUAL_TEMPLATE_ID='template_1e1hk15'; // نعيد استخدام القالب الجاهز الشغّال
+const EJS_PAY_TEMPLATE_ID='template_pay'; // قالب مستقل لرابط الدفع (زر قابل للضغط)
 if(window.emailjs)emailjs.init(EJS_PUBLIC_KEY);
 
 // ── AUTH ──
@@ -1174,12 +1175,11 @@ ${link}
   const linkBox=`<div style="margin-top:8px;font-size:12px"><a href="${link}" target="_blank" style="color:#a7d0b1;word-break:break-all">${link}</a> <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}');this.textContent='✔ نُسخ'" style="cursor:pointer;margin-inline-start:6px">نسخ</button></div>`;
   // 3) حاولي إرسال الإيميل (اختياري — لو القالب غير موجود يبقى الرابط ظاهراً)
   try{
-    await emailjs.send(EJS_SERVICE_ID,EJS_MANUAL_TEMPLATE_ID,{
+    await emailjs.send(EJS_SERVICE_ID,EJS_PAY_TEMPLATE_ID,{
       to_email:b.client_email,email:b.client_email,
       to_name:b.client_name||'',name:b.client_name||'',
-      status_line:'رابط الدفع — أكملي الدفع لتثبيت الحجز',
-      subject:'إتمام دفع استشارتك — Hanadi Insights ('+amount+'$)',
-      message:body,consultation_type:b.consultation_type||'',request_code:code,
+      pay_link:link,amount:amount,
+      consultation_type:b.consultation_type||'',request_code:code,
       appt_date:b.date||'',appt_time:b.time||'',reply_to:''
     });
     status.style.display='block';status.style.color='#a7d0b1';
