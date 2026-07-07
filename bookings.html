@@ -753,20 +753,31 @@ function renderDetail(){
     prepEl.innerHTML=block('🎯 الهدف من الجلسة',prep.goal)+block('❓ أسئلة الزبون',prep.questions)+block('⚠ تحديات يواجهها',prep.concerns);
     prepCard.style.display='block';
   }else{prepCard.style.display='none';}
-  // مربع تأكيد الدفع — يعرض رقم العملية إن وُجد في processed_payments
+  // مربع حالة الدفع — يظهر دائماً: تم الدفع / بانتظار الدفع
   (function(){
     const box=document.getElementById('dPayBox');const info=document.getElementById('dPayInfo');
+    const lbl=box?box.querySelector('.msg-label'):null;
     if(!box)return;box.style.display='none';
     sb.from('processed_payments').select('tx_hash,amount,created_at').eq('booking_id',b.id).eq('matched',true).order('created_at',{ascending:false}).limit(1)
       .then(({data})=>{
-        const p=data&&data[0];if(!p)return;
-        const when=p.created_at?new Date(p.created_at).toLocaleString('ar-EG'):'';
-        const short=p.tx_hash?p.tx_hash.slice(0,12)+'…'+p.tx_hash.slice(-8):'';
-        info.innerHTML=`المبلغ: <b>${p.amount||b.pay_amount||'—'} USDT</b><br>`+
-          `رقم العملية (TXID): <span style="font-family:monospace;direction:ltr;display:inline-block;word-break:break-all;color:#a7d0b1" title="${esc(p.tx_hash||'')}">${esc(p.tx_hash||'')}</span>`+
-          (when?`<br><span style="font-size:.75rem;color:var(--text-dim)">${esc(when)}</span>`:'')+
-          `<br><a href="https://tronscan.org/#/transaction/${encodeURIComponent(p.tx_hash||'')}" target="_blank" style="color:var(--gold);font-size:.78rem">عرض على Tronscan ↗</a>`;
-        box.style.display='block';
+        const p=data&&data[0];
+        if(p){
+          // تم الدفع — أخضر + رقم العملية
+          box.style.borderColor='rgba(136,174,148,.4)';box.style.background='linear-gradient(145deg,rgba(136,174,148,.1),rgba(12,11,15,.34))';
+          if(lbl){lbl.textContent='✅ تم تأكيد الدفع';lbl.style.color='#a7d0b1';}
+          const when=p.created_at?new Date(p.created_at).toLocaleString('ar-EG'):'';
+          info.innerHTML=`المبلغ: <b>${p.amount||b.pay_amount||'—'} USDT</b><br>`+
+            `رقم العملية (TXID): <span style="font-family:monospace;direction:ltr;display:inline-block;word-break:break-all;color:#a7d0b1" title="${esc(p.tx_hash||'')}">${esc(p.tx_hash||'')}</span>`+
+            (when?`<br><span style="font-size:.75rem;color:var(--text-dim)">${esc(when)}</span>`:'')+
+            `<br><a href="https://tronscan.org/#/transaction/${encodeURIComponent(p.tx_hash||'')}" target="_blank" style="color:var(--gold);font-size:.78rem">عرض على Tronscan ↗</a>`;
+          box.style.display='block';
+        }else if(b.status==='awaiting_payment'){
+          // بانتظار الدفع — أصفر
+          box.style.borderColor='rgba(201,178,123,.4)';box.style.background='linear-gradient(145deg,rgba(201,178,123,.1),rgba(12,11,15,.34))';
+          if(lbl){lbl.textContent='⏳ بانتظار الدفع';lbl.style.color='var(--gold)';}
+          info.innerHTML=`المبلغ المطلوب: <b>${b.pay_amount||'—'} USDT</b><br><span style="font-size:.8rem;color:var(--text-dim)">تم إرسال رابط الدفع — لم يصل التحويل بعد. سيتأكد تلقائياً خلال دقائق من وصول الدفعة.</span>`;
+          box.style.display='block';
+        }
       });
   })();
   const created=b.created_at?new Date(b.created_at).toLocaleString('ar-EG'):'';
