@@ -802,6 +802,7 @@ async function setStatus(status){
   if(error){toast('تعذّر التحديث');return;}
   b.status=status;renderList();renderDetail();updateMetrics();
   if(status==='cancelled'){ await unlockBookingSlot(b); }
+  if(status==='confirmed'){ await lockBookingSlot(b); }
   // إذا تأكيد: تحقّق إذا الزبون VIP وزِد عداد جلساته
   if(status==='confirmed'&&b.client_email){ await incrementVipSession(b.client_email); }
   toast('تم تحديث الحالة: '+stOf(status)[0]);
@@ -818,6 +819,24 @@ async function incrementVipSession(email){
   }catch(e){console.warn('vip increment:',e);}
 }
 // يستخرج اليوم والوقت من حقل الموعد المخزّن ("اليوم — الوقت") ويحذف القفل المطابق
+function nextDateForDay(arabicDay){
+  const map={"الأحد":0,"الاثنين":1,"الإثنين":1,"الثلاثاء":2,"الأربعاء":3,"الخميس":4,"الجمعة":5,"السبت":6};
+  const t=map[arabicDay]; if(t===undefined)return null;
+  const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()+((t-d.getDay()+7)%7));
+  return d.toISOString().slice(0,10);
+}
+async function lockBookingSlot(b){
+  try{
+    const raw=(b.time||''); const parts=raw.split('—').map(x=>x.trim());
+    let day='',time='';
+    if(parts.length>=2){day=parts[0];time=parts.slice(1).join(' ').trim();}else{time=raw.trim();}
+    if(!day||!time)return;
+    const slot_date=nextDateForDay(day);
+    const ins=await sb.from('slot_locks').insert({day,time,slot_date});
+    if(ins.error && /slot_date/.test(ins.error.message||'')){ await sb.from('slot_locks').insert({day,time}); }
+    loadSlots();
+  }catch(e){console.warn('lock slot:',e);}
+}
 async function unlockBookingSlot(b){
   try{
     const raw=(b.time||'');
