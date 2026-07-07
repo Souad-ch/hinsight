@@ -411,6 +411,10 @@ a{text-decoration:none;color:inherit}
               <div class="msg-label">رسالة العميل / التفاصيل</div>
               <p class="msg-text" id="dMessage">—</p>
             </div>
+            <div class="msg-card" id="dPayBox" style="display:none;border-color:rgba(136,174,148,.4);background:linear-gradient(145deg,rgba(136,174,148,.1),rgba(12,11,15,.34))">
+              <div class="msg-label" style="color:#a7d0b1">✅ تم تأكيد الدفع</div>
+              <div id="dPayInfo" style="font-size:.84rem;color:var(--text);line-height:1.9"></div>
+            </div>
             <div class="msg-card" id="dPrepCard" style="display:none;border-color:rgba(201,178,123,.3);background:linear-gradient(145deg,rgba(201,178,123,.08),rgba(12,11,15,.34))">
               <div class="msg-label" style="color:var(--gold)">📝 تحضير الزبون للجلسة (VIP)</div>
               <div id="dPrep"></div>
@@ -748,6 +752,22 @@ function renderDetail(){
     prepEl.innerHTML=block('🎯 الهدف من الجلسة',prep.goal)+block('❓ أسئلة الزبون',prep.questions)+block('⚠ تحديات يواجهها',prep.concerns);
     prepCard.style.display='block';
   }else{prepCard.style.display='none';}
+  // مربع تأكيد الدفع — يعرض رقم العملية إن وُجد في processed_payments
+  (function(){
+    const box=document.getElementById('dPayBox');const info=document.getElementById('dPayInfo');
+    if(!box)return;box.style.display='none';
+    sb.from('processed_payments').select('tx_hash,amount,created_at').eq('booking_id',b.id).eq('matched',true).order('created_at',{ascending:false}).limit(1)
+      .then(({data})=>{
+        const p=data&&data[0];if(!p)return;
+        const when=p.created_at?new Date(p.created_at).toLocaleString('ar-EG'):'';
+        const short=p.tx_hash?p.tx_hash.slice(0,12)+'…'+p.tx_hash.slice(-8):'';
+        info.innerHTML=`المبلغ: <b>${p.amount||b.pay_amount||'—'} USDT</b><br>`+
+          `رقم العملية (TXID): <span style="font-family:monospace;direction:ltr;display:inline-block;word-break:break-all;color:#a7d0b1" title="${esc(p.tx_hash||'')}">${esc(p.tx_hash||'')}</span>`+
+          (when?`<br><span style="font-size:.75rem;color:var(--text-dim)">${esc(when)}</span>`:'')+
+          `<br><a href="https://tronscan.org/#/transaction/${encodeURIComponent(p.tx_hash||'')}" target="_blank" style="color:var(--gold);font-size:.78rem">عرض على Tronscan ↗</a>`;
+        box.style.display='block';
+      });
+  })();
   const created=b.created_at?new Date(b.created_at).toLocaleString('ar-EG'):'';
   // تحقّق إذا زبون VIP وأضف شارة
   sb.from('vip_subscriptions').select('status,sessions_used,sessions_total').ilike('client_email',b.client_email||'').eq('status','active').limit(1).then(({data})=>{
