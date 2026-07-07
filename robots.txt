@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /bookings.html
+Disallow: /preview.html
+
+Sitemap: https://hanadiabdullah.com/sitemap.xml
