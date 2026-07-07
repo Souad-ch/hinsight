@@ -76,15 +76,23 @@ Deno.serve(async () => {
       .maybeSingle();
     if (seen.data) continue;
 
-    const { data: match } = await sb
+    // مطابقة بهامش سماح: يقبل أي مبلغ قريب من المطلوب (مثلاً 0.99 بدل 1)
+    // النافذة: 3% أو 0.05 أيهما أكبر (يغطي رسوم الشبكة والتقريب)
+    const tol = Math.max(tx.amount * 0.03, 0.05);
+    const { data: cands } = await sb
       .from("bookings")
-      .select("id,time")
+      .select("id,time,pay_amount")
       .eq("status", "awaiting_payment")
-      .eq("pay_amount", tx.amount)
-      .order("id", { ascending: true })
-      .limit(1);
+      .gte("pay_amount", tx.amount - tol)
+      .lte("pay_amount", tx.amount + tol)
+      .order("id", { ascending: true });
 
-    const booking = match && match[0];
+    // اختَر الطلب الأقرب مبلغاً للمبلغ الوارد
+    let booking: any = null, best = Infinity;
+    for (const c of cands || []) {
+      const d = Math.abs(Number(c.pay_amount) - tx.amount);
+      if (d < best) { best = d; booking = c; }
+    }
 
     // لا نستهلك التحويل إلا إذا طابق طلباً فعلاً — هكذا لو وصل الدفع قبل تجهيز الطلب يبقى قابلاً للمطابقة
     if (!booking) continue;
