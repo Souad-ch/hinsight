@@ -258,6 +258,8 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .cons-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
 /* بطاقات الاستشارات تظهر فقط في صفحة الاستشارات الكاملة — مخفية دائماً في الرئيسية */
 #consultations .cons-grid{display:none!important;}
+/* محاذاة النصوص من الطرفين حتى تتساوى الأسطر */
+.about-text,.brand-desc,.method-desc,.hub-desc,.card-desc,.cons-note,.section-subtitle,.hero-text,.art-modal-body p{text-align:justify;text-justify:inter-word;}
 .cons-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:44px 36px;display:flex;flex-direction:column;gap:22px;transition:var(--tr);position:relative;overflow:hidden;}
 .cons-card::after{content:'';position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(270deg,var(--accent),var(--accent-dim));transform:scaleX(0);transform-origin:right;transition:var(--tr);}
 .cons-card:hover{transform:translateY(-6px);box-shadow:0 28px 60px rgba(0,0,0,0.5),0 0 40px rgba(143,185,150,0.07);}

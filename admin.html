@@ -429,6 +429,7 @@
       <div class="side-link" onclick="window.location.href='bookings.html'"><span class="side-icon">📅</span>الحجوزات</div>
       <div class="side-label">الموقع</div>
       <div class="side-link" data-panel="builder"><span class="side-icon">🎨</span>مدير الصفحة</div>
+      <div class="side-link" data-panel="consult-page"><span class="side-icon">🛡️</span>صفحة الاستشارات</div>
       <div class="side-link" data-panel="theme"><span class="side-icon">🎭</span>القالب والألوان</div>
       <div class="side-label">أخرى</div>
       <div class="side-link" data-panel="subscribers"><span class="side-icon">📧</span>المشتركون</div>
@@ -804,9 +805,33 @@
         </div>
       </div>
 
+      <!-- CONSULTATIONS PAGE EDITOR (مستقل) -->
+      <div class="panel" id="panel-consult-page">
+        <div class="panel-title">صفحة الاستشارات</div>
+        <div class="panel-sub">تعديل محتوى صفحة الاستشارات مباشرة — العنوان والباقات الأربعة</div>
+        <div class="section-card">
+          <div class="section-card-title">🎯 العنوان الرئيسي (الهيرو)</div>
+          <label class="cp-lbl">العنوان</label>
+          <input class="input cp-inp" id="cp_hero_title" placeholder="عنوان صفحة الاستشارات"/>
+          <label class="cp-lbl">الوصف</label>
+          <textarea class="input cp-inp" id="cp_hero_sub" rows="2" placeholder="وصف قصير"></textarea>
+        </div>
+        <div id="cpPackages"></div>
+        <button class="btn btn-gold" id="cpSaveBtn" style="width:auto;padding:13px 34px;margin-top:8px;">💾 حفظ التغييرات</button>
+        <div id="cpStatus" style="margin-top:12px;font-size:0.85rem;"></div>
+      </div>
+
     </main>
   </div>
 </div>
+
+<style>
+.cp-lbl{display:block;font-size:0.78rem;color:var(--cream-dim);margin:14px 0 6px;}
+.cp-inp{width:100%;background:rgba(12,11,15,.6);border:1px solid var(--ink-border);border-radius:8px;padding:11px 13px;color:var(--cream);font-family:var(--font-ar);font-size:0.9rem;}
+.cp-inp:focus{border-color:var(--gold);outline:none;}
+.cp-pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:640px){.cp-pkg-grid{grid-template-columns:1fr;}}
+</style>
 
 <div class="toast" id="toast"></div>
 
@@ -867,6 +892,56 @@ function loadPanel(name){
   if(name==='theme')       loadTheme();
   if(name==='blog')        loadBlogArticles();
   if(name==='new-blog')    resetBlogEditor();
+  if(name==='consult-page')loadConsultPage();
+}
+
+// ── محرّر صفحة الاستشارات (مستقل) ──────────────
+const CP_PACKAGES=[
+  {n:1,name:'تقييم المتداول',        price:'$250',desc:'مراجعة طريقة التفكير، الأخطاء المتكررة، إدارة الخسارة والربح، ونمط اتخاذ القرار.'},
+  {n:2,name:'هندسة المخاطر',         price:'$400',desc:'بناء إطار واضح للمخاطرة: حجم الدخول، حدود الخسارة، التوقف، وتجنب الانتقام من السوق.'},
+  {n:3,name:'قراءة المشهد الاقتصادي',price:'$600',desc:'فهم الذهب، الدولار، الفائدة، النفط، السيولة، وتحويل المشهد إلى سيناريوهات متابعة.'},
+  {n:4,name:'عضوية VIP الشهرية',     price:'$1000',desc:'متابعة شهرية متكاملة مع جلسات دورية ودعم مستمر للمتداول الجاد.'},
+];
+let _cpBuilt=false;
+function buildCpFields(){
+  if(_cpBuilt)return;
+  const wrap=document.getElementById('cpPackages');
+  wrap.innerHTML=CP_PACKAGES.map(p=>`
+    <div class="section-card">
+      <div class="section-card-title">📦 الباقة ${p.n}</div>
+      <div class="cp-pkg-grid">
+        <div><label class="cp-lbl">الاسم</label><input class="input cp-inp" id="cp_pkg${p.n}_name" placeholder="${p.name}"/></div>
+        <div><label class="cp-lbl">السعر</label><input class="input cp-inp" id="cp_pkg${p.n}_price" placeholder="${p.price}"/></div>
+      </div>
+      <label class="cp-lbl">الوصف</label>
+      <textarea class="input cp-inp" id="cp_pkg${p.n}_desc" rows="2" placeholder="${p.desc}"></textarea>
+    </div>`).join('');
+  _cpBuilt=true;
+  document.getElementById('cpSaveBtn').addEventListener('click',saveConsultPage);
+}
+async function loadConsultPage(){
+  buildCpFields();
+  const st=document.getElementById('cpStatus');st.textContent='⏳ جارٍ التحميل...';st.style.color='var(--muted)';
+  const{data}=await sb.from('page_sections').select('content').eq('section_key','consult_page').maybeSingle();
+  const c=(data&&data.content)||{};
+  ['cp_hero_title','cp_hero_sub'].forEach(k=>{const el=document.getElementById(k);if(el)el.value=c[k]||'';});
+  CP_PACKAGES.forEach(p=>['name','price','desc'].forEach(f=>{
+    const el=document.getElementById(`cp_pkg${p.n}_${f}`);if(el)el.value=c[`cp_pkg${p.n}_${f}`]||'';
+  }));
+  st.textContent='';
+}
+async function saveConsultPage(){
+  const st=document.getElementById('cpStatus');st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  const content={};
+  ['cp_hero_title','cp_hero_sub'].forEach(k=>{const v=document.getElementById(k).value.trim();if(v)content[k]=v;});
+  CP_PACKAGES.forEach(p=>['name','price','desc'].forEach(f=>{
+    const v=document.getElementById(`cp_pkg${p.n}_${f}`).value.trim();if(v)content[`cp_pkg${p.n}_${f}`]=v;
+  }));
+  const{error}=await sb.from('page_sections').upsert(
+    {section_key:'consult_page',section_name:'صفحة الاستشارات',section_type:'page',order_index:99,visible:true,content,updated_at:new Date().toISOString()},
+    {onConflict:'section_key'});
+  if(error){st.textContent='⚠ خطأ: '+error.message;st.style.color='var(--danger,#e0ada7)';return;}
+  st.textContent='✅ تم الحفظ — ستظهر التغييرات على صفحة الاستشارات خلال لحظات';st.style.color='#a7d0b1';
 }
 
 // TOAST
@@ -1668,6 +1743,7 @@ async function loadBuilder(){
   const el=document.getElementById('pbSectionsList');
   el.innerHTML='<div style="padding:32px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);">⏳ جارٍ التحميل...</div>';
   let{data,error}=await sb.from('page_sections').select('*').order('order_index',{ascending:true});
+  if(data)data=data.filter(s=>s.section_key!=='consult_page'); // صفحة الاستشارات لها قسم مستقل
   if(error||!data||!data.length){
     el.innerHTML=`<div style="padding:24px 16px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);line-height:1.9;">
       لا توجد سيكشنات بعد.<br>اضغط <strong style="color:var(--gold);">⟳ افتراضي</strong> في الأعلى لإنشائها.

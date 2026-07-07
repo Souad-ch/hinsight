@@ -363,6 +363,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
 .nav-links a,.section-label,.hero-label,.card-tag,.brand-num,.method-num,
 .timeline-year,.logo-sub,.read-more-btn{text-shadow:0 0 14px rgba(188,217,192,0.35);}
 .section-title,.hero-title,.testi-name,.cons-card h3,.insight-card h3{text-shadow:0 0 22px rgba(143,185,150,0.25);}
+.pkg-desc,.step-text,.receive-text,.section-subtitle,.elig-card p,.receive-text{text-align:justify;text-justify:inter-word;}
 </style>
 </head>
 <body>
@@ -394,7 +395,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         <span class="section-label en">Consultations</span>
         <h1 class="section-title">استشارات تحليلية تساعدك على فهم قرارك <br><span>قبل أن يختبره السوق</span></h1>
         <div class="green-line"></div>
-        <p class="section-subtitle">مسار استشاري مهني مع هنادي للمتداول الجاد: تشخيص لطريقة التفكير، مراجعة للمخاطر، وقراءة للسياق الاقتصادي بعيداً عن ضجيج التوصيات السريعة.</p>
+        <p class="section-subtitle" data-edit="cp_hero_sub">مسار استشاري مهني مع هنادي للمتداول الجاد: تشخيص لطريقة التفكير، مراجعة للمخاطر، وقراءة للسياق الاقتصادي بعيداً عن ضجيج التوصيات السريعة.</p>
         <div class="hero-actions">
           <button class="btn btn-green" onclick="openIntakeModal('')">تقديم طلب استشارة</button>
           <a class="btn btn-outline" href="#services">اكتشف المسار المناسب لك</a>
@@ -471,10 +472,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
       <article class="package-card reveal" data-service="diagnostic">
         <span class="pkg-code">Trader Diagnostic</span>
         <div class="pkg-icon">◉</div>
-        <h3 class="pkg-name">تقييم المتداول</h3>
+        <h3 class="pkg-name" data-edit="cp_pkg1_name">تقييم المتداول</h3>
         <span class="pkg-for">مناسب كبداية</span>
-        <div class="pkg-price"><span class="amount">$250</span><span class="per">/ ٣٠ دقيقة</span></div>
-        <p class="pkg-desc">مراجعة طريقة التفكير، الأخطاء المتكررة، إدارة الخسارة والربح، ونمط اتخاذ القرار.</p>
+        <div class="pkg-price"><span class="amount" data-edit="cp_pkg1_price">$250</span><span class="per">/ ٣٠ دقيقة</span></div>
+        <p class="pkg-desc" data-edit="cp_pkg1_desc">مراجعة طريقة التفكير، الأخطاء المتكررة، إدارة الخسارة والربح، ونمط اتخاذ القرار.</p>
         <ul class="pkg-list">
           <li>تشخيص نقاط الضعف السلوكية</li>
           <li>تحديد أسباب القرارات المتسرعة</li>
@@ -488,10 +489,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         <span class="featured-ribbon">Recommended</span>
         <span class="pkg-code">Risk Architecture</span>
         <div class="pkg-icon">◈</div>
-        <h3 class="pkg-name">هندسة المخاطر</h3>
+        <h3 class="pkg-name" data-edit="cp_pkg2_name">هندسة المخاطر</h3>
         <span class="pkg-for">الأكثر أهمية للمتداول الجاد</span>
-        <div class="pkg-price"><span class="amount">$400</span><span class="per">/ ٣٠ دقيقة</span></div>
-        <p class="pkg-desc">بناء إطار واضح للمخاطرة: حجم الدخول، حدود الخسارة، التوقف، وتجنب الانتقام من السوق.</p>
+        <div class="pkg-price"><span class="amount" data-edit="cp_pkg2_price">$400</span><span class="per">/ ٣٠ دقيقة</span></div>
+        <p class="pkg-desc" data-edit="cp_pkg2_desc">بناء إطار واضح للمخاطرة: حجم الدخول، حدود الخسارة، التوقف، وتجنب الانتقام من السوق.</p>
         <ul class="pkg-list">
           <li>مراجعة نسبة المخاطرة المناسبة</li>
           <li>حدود يومية وأسبوعية للتوقف</li>
@@ -504,10 +505,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
       <article class="package-card reveal" data-service="macro">
         <span class="pkg-code">Macro Context</span>
         <div class="pkg-icon">◎</div>
-        <h3 class="pkg-name">قراءة المشهد الاقتصادي</h3>
+        <h3 class="pkg-name" data-edit="cp_pkg3_name">قراءة المشهد الاقتصادي</h3>
         <span class="pkg-for">للمهتم بالسياق الأكبر</span>
-        <div class="pkg-price"><span class="amount">$600</span><span class="per">/ ٤٥ دقيقة</span></div>
-        <p class="pkg-desc">فهم الذهب، الدولار، الفائدة، النفط، السيولة، وتحويل المشهد إلى سيناريوهات متابعة.</p>
+        <div class="pkg-price"><span class="amount" data-edit="cp_pkg3_price">$600</span><span class="per">/ ٤٥ دقيقة</span></div>
+        <p class="pkg-desc" data-edit="cp_pkg3_desc">فهم الذهب، الدولار، الفائدة، النفط، السيولة، وتحويل المشهد إلى سيناريوهات متابعة.</p>
         <ul class="pkg-list">
           <li>قراءة المؤثرات الكبرى</li>
           <li>تحديد ما يستحق المراقبة</li>
@@ -521,10 +522,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
         <span class="featured-ribbon vip-ribbon">Premium Membership</span>
         <span class="pkg-code">VIP Monthly Access</span>
         <div class="pkg-icon">◇</div>
-        <h3 class="pkg-name">عضوية VIP الشهرية</h3>
+        <h3 class="pkg-name" data-edit="cp_pkg4_name">عضوية VIP الشهرية</h3>
         <span class="pkg-for">اشتراك شهري انتقائي</span>
-        <div class="pkg-price"><span class="amount">$1000</span><span class="per">/ ٤ جلسات شهرياً</span></div>
-        <p class="pkg-desc">عضوية متابعة شهرية للمتداول الجاد، تتضمن ٤ جلسات منظمة (٤٥ دقيقة لكل جلسة) لمراجعة تطور القرار والالتزام بإدارة المخاطر.</p>
+        <div class="pkg-price"><span class="amount" data-edit="cp_pkg4_price">$1000</span><span class="per">/ ٤ جلسات شهرياً</span></div>
+        <p class="pkg-desc" data-edit="cp_pkg4_desc">عضوية متابعة شهرية للمتداول الجاد، تتضمن ٤ جلسات منظمة (٤٥ دقيقة لكل جلسة) لمراجعة تطور القرار والالتزام بإدارة المخاطر.</p>
         <ul class="pkg-list">
           <li>٤ جلسات متابعة خلال الشهر — ٤٥ دقيقة لكل جلسة</li>
           <li>مراجعة الالتزام بخطة المخاطر</li>
@@ -1283,6 +1284,20 @@ document.getElementById('ccSearch').addEventListener('input',function(){
   renderCC(q?CC_DATA.filter(c=>c.name.includes(q)||c.code.includes(q)||c.flag.includes(q)):CC_DATA);
 });
 document.addEventListener('click',e=>{if(!document.getElementById('ccWrap').contains(e.target))closeCC();});
+
+// ── تحميل محتوى صفحة الاستشارات من لوحة التحكم ──
+(function loadConsultContent(tries){
+  tries=tries||0;
+  if(typeof sbClient==='undefined'||!sbClient){ if(tries<25)setTimeout(()=>loadConsultContent(tries+1),300); return; }
+  sbClient.from('page_sections').select('content').eq('section_key','consult_page').maybeSingle()
+    .then(({data})=>{
+      const c=(data&&data.content)||{};
+      Object.entries(c).forEach(([k,v])=>{
+        if(typeof v!=='string'||!v.trim())return;
+        document.querySelectorAll('[data-edit="'+k+'"]').forEach(el=>{el.textContent=v;});
+      });
+    }).catch(()=>{});
+})();
 </script>
 </body>
 </html>
