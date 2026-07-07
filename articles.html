@@ -189,8 +189,8 @@ a{text-decoration:none;color:inherit;}
 <div class="hero-bg-text">ARTICLES</div>
 <div class="container" style="position:relative;z-index:1;padding-top:16px;">
 <div class="hero-label en">Blog & Articles</div>
-<h1 class="hero-title">أرشيف <span>المقالات</span></h1>
-<p class="hero-sub">مقالات تحليلية تربط الاقتصاد بالواقع — مكتوبة بأسلوب يقرأه المتداول والمهتم على حد سواء.</p>
+<h1 class="hero-title" data-edit="title">أرشيف <span>المقالات</span></h1>
+<p class="hero-sub" data-edit="sub">مقالات تحليلية تربط الاقتصاد بالواقع — مكتوبة بأسلوب يقرأه المتداول والمهتم على حد سواء.</p>
 </div>
 </div>
 
@@ -366,6 +366,17 @@ async function loadContactCta(){
   }catch(e){}
 }
 loadContactCta();
+</script>
+
+<script>
+(function loadPageContent(t){t=t||0;
+  if(typeof sbClient==='undefined'||!sbClient){if(t<25)setTimeout(()=>loadPageContent(t+1),300);return;}
+  sbClient.from('page_sections').select('content').eq('section_key','articles_page').maybeSingle()
+    .then(({data})=>{const c=(data&&data.content)||{};
+      if(c.title){document.querySelectorAll('[data-edit="title"]').forEach(el=>el.textContent=c.title);}
+      if(c.sub){document.querySelectorAll('[data-edit="sub"]').forEach(el=>el.textContent=c.sub);}
+    }).catch(()=>{});
+})();
 </script>
 </body>
 </html>
