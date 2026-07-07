@@ -1182,6 +1182,8 @@ ${link}
 بعد إتمام الدفع سيتم تثبيت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.`;
   // 1) علّمي الطلب كبانتظار الدفع + خزّني المبلغ (ليطابقه النظام تلقائياً) — مستقلّ عن الإيميل
   try{await sb.from('bookings').update({status:'awaiting_payment',pay_amount:amount}).eq('id',b.id);}catch(e){console.error('status update:',e);}
+  // حدّثي النسخة المحلية وأعيدي رسم التفاصيل حتى يظهر مربع "بانتظار الدفع" فوراً
+  b.status='awaiting_payment';b.pay_amount=amount;renderDetail();
   // 2) اعرضي الرابط دائماً حتى يمكن نسخه يدوياً
   const linkBox=`<div style="margin-top:8px;font-size:12px"><a href="${link}" target="_blank" style="color:#a7d0b1;word-break:break-all">${link}</a> <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}');this.textContent='✔ نُسخ'" style="cursor:pointer;margin-inline-start:6px">نسخ</button></div>`;
   // 3) حاولي إرسال الإيميل (اختياري — لو القالب غير موجود يبقى الرابط ظاهراً)
