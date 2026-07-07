@@ -639,7 +639,7 @@ const sb=supabase.createClient('https://ozxwyyeyxmpkhsygntoy.supabase.co','sb_pu
 const EJS_PUBLIC_KEY='6NHm0wz_2eclb5bbW';
 const EJS_SERVICE_ID='service_c8o89cr';
 // قالب رسالة عامة: أنشئيه في EmailJS بالحقول {{to_email}} {{to_name}} {{subject}} {{message}}
-const EJS_MANUAL_TEMPLATE_ID='template_manual';
+const EJS_MANUAL_TEMPLATE_ID='template_1e1hk15'; // نعيد استخدام القالب الجاهز الشغّال
 if(window.emailjs)emailjs.init(EJS_PUBLIC_KEY);
 
 // ── AUTH ──
@@ -1121,7 +1121,9 @@ document.getElementById('emailMessage').addEventListener('click',async()=>{
     await emailjs.send(EJS_SERVICE_ID,EJS_MANUAL_TEMPLATE_ID,{
       to_email:b.client_email,email:b.client_email,
       to_name:b.client_name||'',name:b.client_name||'',
-      subject:subject,message:txt,reply_to:''
+      status_line:subject,subject:subject,message:txt,
+      consultation_type:b.consultation_type||'',request_code:(b.message||'').match(/HN-REQUEST-\d+/)?.[0]||'',
+      appt_date:b.date||'',appt_time:b.time||'',reply_to:''
     });
     showS('✅ تم إرسال الإيميل إلى '+b.client_email,true);
   }catch(e){
@@ -1175,8 +1177,10 @@ ${link}
     await emailjs.send(EJS_SERVICE_ID,EJS_MANUAL_TEMPLATE_ID,{
       to_email:b.client_email,email:b.client_email,
       to_name:b.client_name||'',name:b.client_name||'',
+      status_line:'رابط الدفع — أكملي الدفع لتثبيت الحجز',
       subject:'إتمام دفع استشارتك — Hanadi Insights ('+amount+'$)',
-      message:body,reply_to:''
+      message:body,consultation_type:b.consultation_type||'',request_code:code,
+      appt_date:b.date||'',appt_time:b.time||'',reply_to:''
     });
     status.style.display='block';status.style.color='#a7d0b1';
     status.innerHTML='✅ تم إرسال رابط الدفع ('+amount+'$) إلى '+b.client_email+linkBox;
