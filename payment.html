@@ -263,7 +263,8 @@ async function finalizePaid(method,ref){
     to_name:booking.client_name||'',to_email:booking.client_email,name:booking.client_name||'',
     consultation_type:booking.consultation_type||'',session:booking.consultation_type||'',
     request_code:REQ_CODE,appt_date:parseSlot(booking).day,appt_time:parseSlot(booking).time,
-    message:`تم تأكيد دفعتك (${AMOUNT}$) وتثبيت موعدك. شكراً لك.`,reply_to:ADMIN_EMAIL }); }catch(e){}
+    status_line:'تم تأكيد الدفع وتثبيت موعدك ✓',
+    message:`✅ تم تأكيد دفعتك (${AMOUNT}$) وتثبيت موعدك نهائياً. موعدك الآن محجوز ومؤكَّد. شكراً لثقتك، نراك في موعدك.`,reply_to:ADMIN_EMAIL }); }catch(e){}
 }
 function showSuccess(title,text){
   document.getElementById('payCard').classList.add('hidden');
