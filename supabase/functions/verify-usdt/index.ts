@@ -6,7 +6,7 @@
 // ════════════════════════════════════════════════════════════
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const WALLET = "TKvBio7SAkXMWsS7hELWc1DMGu5g7yj3uk";
+const WALLET = "TJecHP1xkkXCWWrRRUZyYYkCNSS1DT4Yr9";
 const USDT_CONTRACT = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
 
 function nextDateForDay(arabicDay: string): string | null {
