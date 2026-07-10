@@ -362,18 +362,37 @@ a{text-decoration:none;color:inherit}
           </div>
           <div style="padding:20px 22px 24px;display:grid;gap:16px">
             <div class="info-grid">
-              <div class="info-box"><div class="info-label">أيام الاستشارات</div><div class="info-value">السبت / الثلاثاء / الخميس</div></div>
-              <div class="info-box"><div class="info-label">الأوقات المتاحة</div><div class="info-value" style="direction:ltr">6:00 — 9:00 م</div></div>
-              <div class="info-box"><div class="info-label">Buffer بين الجلسات</div><div class="info-value">30 دقيقة</div></div>
-              <div class="info-box"><div class="info-label">طريقة الحجز</div><div class="info-value">طلب → مراجعة → تأكيد</div></div>
+              <div class="info-box"><div class="info-label">أيام الاستشارات</div><div class="info-value" id="setDays">السبت / الثلاثاء / الخميس</div></div>
+              <div class="info-box"><div class="info-label">الأوقات المتاحة</div><div class="info-value" id="setTimes" style="direction:ltr">6:00 — 9:00 م</div></div>
+              <div class="info-box"><div class="info-label">Buffer بين الجلسات</div><div class="info-value" id="setBuffer">30 دقيقة</div></div>
+              <div class="info-box"><div class="info-label">طريقة الحجز</div><div class="info-value" id="setMethod">طلب → مراجعة → تأكيد</div></div>
             </div>
             <div class="template-card">
-              <div><h3 class="template-title">قواعد القبول</h3><p class="template-desc">يتم توضيح أو رفض الطلبات التي تبحث عن توصيات شراء/بيع مباشرة، إدارة حسابات، أو وعود أرباح.</p></div>
-              <button class="btn btn-ghost" style="width:auto" data-template="rules">عرض القواعد</button>
+              <div><h3 class="template-title">قواعد القبول</h3><p class="template-desc" id="setRules">يتم توضيح أو رفض الطلبات التي تبحث عن توصيات شراء/بيع مباشرة، إدارة حسابات، أو وعود أرباح.</p></div>
+              <button class="btn btn-ghost" style="width:auto" onclick="openModal('قواعد القبول',_settings.rules||'')">عرض</button>
             </div>
             <div class="template-card">
-              <div><h3 class="template-title">قنوات التواصل</h3><p class="template-desc">واتساب للتأكيدات السريعة، الإيميل للملخصات الرسمية.</p></div>
-              <button class="btn btn-ghost" style="width:auto" data-template="channels">عرض القنوات</button>
+              <div><h3 class="template-title">قنوات التواصل</h3><p class="template-desc" id="setChannels">واتساب للتأكيدات السريعة، الإيميل للملخصات الرسمية.</p></div>
+              <button class="btn btn-ghost" style="width:auto" onclick="openModal('قنوات التواصل',_settings.channels||'')">عرض</button>
+            </div>
+            <button class="btn btn-green" style="width:auto;padding:11px 26px" onclick="showSettingsForm()">✏️ تعديل الإعدادات</button>
+            <div id="settingsForm" style="display:none;background:rgba(12,11,15,.5);border:1px solid var(--line);border-radius:12px;padding:18px;gap:10px">
+              <label class="cp-lbl" style="display:block;font-size:.78rem;color:var(--accent-light);margin:6px 0 4px">أيام الاستشارات</label>
+              <input id="stDays" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-ar)"/>
+              <label class="cp-lbl" style="display:block;font-size:.78rem;color:var(--accent-light);margin:10px 0 4px">الأوقات المتاحة</label>
+              <input id="stTimes" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-ar)"/>
+              <label class="cp-lbl" style="display:block;font-size:.78rem;color:var(--accent-light);margin:10px 0 4px">Buffer بين الجلسات</label>
+              <input id="stBuffer" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-ar)"/>
+              <label class="cp-lbl" style="display:block;font-size:.78rem;color:var(--accent-light);margin:10px 0 4px">طريقة الحجز</label>
+              <input id="stMethod" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-ar)"/>
+              <label class="cp-lbl" style="display:block;font-size:.78rem;color:var(--accent-light);margin:10px 0 4px">قواعد القبول</label>
+              <textarea id="stRules" rows="4" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-ar);line-height:1.8"></textarea>
+              <label class="cp-lbl" style="display:block;font-size:.78rem;color:var(--accent-light);margin:10px 0 4px">قنوات التواصل</label>
+              <textarea id="stChannels" rows="3" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-ar);line-height:1.8"></textarea>
+              <div style="display:flex;gap:8px;margin-top:12px">
+                <button class="btn btn-green" style="width:auto" onclick="saveSettings()">💾 حفظ</button>
+                <button class="btn btn-ghost" style="width:auto" onclick="document.getElementById('settingsForm').style.display='none'">إلغاء</button>
+              </div>
             </div>
           </div>
         </section>
@@ -1182,6 +1201,66 @@ async function delTpl(id){
   try{await sb.from('msg_templates').delete().eq('id',id);toast('تم الحذف');loadTemplates();}catch(e){toast('تعذّر الحذف');}
 }
 loadTemplates();
+
+// ── إعدادات تشغيل الاستشارات (قابلة للتعديل) ──
+let _settings={
+  days:'السبت / الثلاثاء / الخميس',
+  times:'6:00 — 9:00 م',
+  buffer:'30 دقيقة',
+  method:'طلب → مراجعة → تأكيد',
+  rules:`قواعد قبول الطلبات:
+
+طلبات مناسبة:
+- العميل يريد فهم أخطائه.
+- العميل يريد ضبط إدارة المخاطر.
+- العميل يريد قراءة السياق الاقتصادي.
+
+طلبات تحتاج توضيح أو رفض:
+- طلب توصيات شراء وبيع مباشرة.
+- طلب إدارة حساب.
+- طلب أرباح مضمونة.`,
+  channels:`قنوات التواصل المقترحة:
+
+- WhatsApp: تأكيدات سريعة وتذكير قبل الموعد.
+- Email: رسائل رسمية وملخصات ما بعد الاستشارة.`
+};
+function applySettings(){
+  const set=(id,v)=>{const el=document.getElementById(id);if(el&&v)el.textContent=v;};
+  set('setDays',_settings.days);set('setTimes',_settings.times);set('setBuffer',_settings.buffer);set('setMethod',_settings.method);
+  const r=document.getElementById('setRules');if(r&&_settings.rules)r.textContent=_settings.rules.split('\n')[0];
+  const c=document.getElementById('setChannels');if(c&&_settings.channels)c.textContent=_settings.channels.split('\n')[0];
+}
+async function loadSettings(){
+  try{
+    const {data}=await sb.from('page_sections').select('content').eq('section_key','consult_settings').maybeSingle();
+    if(data&&data.content)_settings=Object.assign(_settings,data.content);
+  }catch(e){}
+  applySettings();
+}
+function showSettingsForm(){
+  document.getElementById('stDays').value=_settings.days||'';
+  document.getElementById('stTimes').value=_settings.times||'';
+  document.getElementById('stBuffer').value=_settings.buffer||'';
+  document.getElementById('stMethod').value=_settings.method||'';
+  document.getElementById('stRules').value=_settings.rules||'';
+  document.getElementById('stChannels').value=_settings.channels||'';
+  const f=document.getElementById('settingsForm');f.style.display='block';f.scrollIntoView({behavior:'smooth'});
+}
+async function saveSettings(){
+  _settings={
+    days:document.getElementById('stDays').value.trim(),
+    times:document.getElementById('stTimes').value.trim(),
+    buffer:document.getElementById('stBuffer').value.trim(),
+    method:document.getElementById('stMethod').value.trim(),
+    rules:document.getElementById('stRules').value.trim(),
+    channels:document.getElementById('stChannels').value.trim(),
+  };
+  try{
+    await sb.from('page_sections').upsert({section_key:'consult_settings',section_name:'إعدادات الاستشارات',section_type:'page',order_index:98,visible:true,content:_settings,updated_at:new Date().toISOString()},{onConflict:'section_key'});
+    applySettings();document.getElementById('settingsForm').style.display='none';toast('تم حفظ الإعدادات ✓');
+  }catch(e){toast('تعذّر الحفظ');}
+}
+loadSettings();
 document.querySelectorAll('[data-template]').forEach(btn=>btn.addEventListener('click',()=>{
   const key=btn.dataset.template;const b=selBooking();
   if(['received','confirm','more','reject'].includes(key)&&!b)return toast('اختاري طلباً أولاً');
