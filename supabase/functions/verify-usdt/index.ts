@@ -81,15 +81,18 @@ Deno.serve(async () => {
     const tol = Math.max(tx.amount * 0.03, 0.05);
     const { data: cands } = await sb
       .from("bookings")
-      .select("id,time,pay_amount")
+      .select("id,time,pay_amount,created_at")
       .eq("status", "awaiting_payment")
       .gte("pay_amount", tx.amount - tol)
       .lte("pay_amount", tx.amount + tol)
       .order("id", { ascending: true });
 
-    // اختَر الطلب الأقرب مبلغاً للمبلغ الوارد
+    // اختَر الطلب الأقرب مبلغاً — بشرط أن يكون التحويل قد وصل بعد إنشاء الطلب
+    // (يمنع مطابقة دفعة قديمة مع طلب جديد بنفس المبلغ)
     let booking: any = null, best = Infinity;
     for (const c of cands || []) {
+      const createdMs = c.created_at ? new Date(c.created_at).getTime() : 0;
+      if (tx.ts < createdMs - 60000) continue; // التحويل أقدم من الطلب → تجاهله
       const d = Math.abs(Number(c.pay_amount) - tx.amount);
       if (d < best) { best = d; booking = c; }
     }
