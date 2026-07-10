@@ -1211,7 +1211,7 @@ document.getElementById('sendPayBtn').addEventListener('click',async()=>{
 // ── إرسال إيميل عبر Resend (Edge Function) ──
 async function sendMail(to,subject,html,replyTo){
   try{
-    const {data,error}=await sb.functions.invoke('send-email',{body:{to,subject,html,reply_to:replyTo||'info@hanadiabdullah.com'}});
+    const {data,error}=await sb.functions.invoke('rapid-task',{body:{to,subject,html,reply_to:replyTo||'info@hanadiabdullah.com'}});
     if(error){console.error('sendMail error:',error);return false;}
     if(data&&data.id)return true;
     console.warn('sendMail response:',data);return !!(data&&!data.error);
