@@ -387,6 +387,15 @@
     .style-name{font-size:0.85rem;color:var(--cream);font-weight:600;}
     .style-sub{font-size:0.65rem;color:var(--muted);margin-top:3px;font-family:var(--font-mono);}
     .apply-all-label{font-size:0.85rem;color:var(--cream);}
+    /* تحسينات تابلت/موبايل */
+    @media(max-width:1024px){.pb-body{grid-template-columns:1fr;overflow:auto}}
+    @media(max-width:900px){.pb-body{grid-template-columns:1fr}.editor-grid{grid-template-columns:1fr}.stats-row,.stats-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){.stats-row,.stats-grid{grid-template-columns:1fr}}
+    /* طبقة أمان responsive */
+    html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    body{overflow-x:hidden;max-width:100vw}
+    img,svg,video,iframe{max-width:100%;height:auto}
+    table,input,textarea,select,button{max-width:100%}
   </style>
 </head>
 <body>

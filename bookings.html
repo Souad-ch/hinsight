@@ -199,7 +199,11 @@ a{text-decoration:none;color:inherit}
   .nav-item{justify-content:center;padding:12px}.nav-item i{margin:0}
   .dashboard-grid{grid-template-columns:1fr}.detail-panel{position:relative;top:auto}
 }
-@media(max-width:920px){.metrics{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start;flex-direction:column}}
+@media(max-width:920px){.metrics{grid-template-columns:repeat(2,1fr)}.topbar{align-items:flex-start;flex-direction:column}
+  .app{display:block}
+  .sidebar{position:relative;height:auto;flex-direction:row;justify-content:flex-start;gap:8px;overflow-x:auto;border-left:0;border-bottom:1px solid var(--line)}
+  .nav{display:flex}
+}
 @media(max-width:680px){
   .app{display:block}
   .sidebar{position:relative;height:auto;flex-direction:row;justify-content:space-between;overflow:auto;border-left:0;border-bottom:1px solid var(--line)}
