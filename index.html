@@ -1392,14 +1392,19 @@ loadLatestArticles();
 
 // جلب أحدث 3 مقالات (content_type='article') من Supabase
 let BLOG_ARTICLES=[];
-async function loadLatestBlogPosts(){
-if(!sbClient)return;
+async function loadLatestBlogPosts(tries){
+tries=tries||0;
+const grid=document.getElementById('articlesPreviewGrid');
+if(!sbClient){ if(tries<25)return setTimeout(()=>loadLatestBlogPosts(tries+1),300); if(grid)grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:#e0ada7;font-size:0.85rem;">⚠ لم يُحمّل الاتصال بقاعدة البيانات</div>'; return; }
 try{
 const {data,error}=await sbClient.from('articles').select('*').eq('published',true).eq('content_type','article').order('created_at',{ascending:false}).limit(3);
-const grid=document.getElementById('articlesPreviewGrid');
 if(!grid)return;
-if(error||!data||!data.length){
-  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;">لا توجد مقالات منشورة بعد.</div>';
+if(error){
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:#e0ada7;font-size:0.82rem;">⚠ خطأ: '+(error.message||JSON.stringify(error))+'</div>';
+  return;
+}
+if(!data||!data.length){
+  grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;">لا توجد مقالات منشورة بعد. (نتيجة الاستعلام: 0 عنصر)</div>';
   return;
 }
 BLOG_ARTICLES=data;
