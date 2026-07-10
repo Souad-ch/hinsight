@@ -990,36 +990,14 @@ iNext.addEventListener('click',async()=>{
   if(dbg){dbg.style.display=sbErrors.length?'block':'none';dbg.textContent=sbErrors.length?'⚠ تشخيص قاعدة البيانات: '+sbErrors.join(' | '):'';}
 
 
-  // Admin email
+  // إيميلات عبر Resend (من info@) — استلام الطلب للزبون + إشعار الأدمن
   try{
-    if(window.emailjs){
-      await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
-        from_name:name,phone:phone,from_email:email,
-        session:type,consultation_type:type,
-        appointment:`${iState.day} — ${iState.time}`,
-        request_code:reqCode,
-        message:`رقم الطلب: ${reqCode} | مستوى: ${exp} | سوق: ${market} | تحدي: ${challenge}${goal?' | هدف: '+goal:''}`,
-        date:iState.day,time:iState.time,day:iState.day,to_email:ADMIN_EMAIL,reply_to:email
-      });
-    }
-  }catch(e){console.warn('emailjs admin:',e);}
-
-  // Confirmation email
-  try{
-    if(window.emailjs){
-      await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
-        to_name:name,name:name,client_name:name,
-        to_email:email,email:email,
-        consultation_type:type,session:type,type:type,
-        phone:phone,message:`⚠️ موعدك محجوز مبدئياً فقط ولم يُثبَّت بعد. لتثبيت الحجز نهائياً يرجى إكمال الدفع عبر الرابط الذي سيصلك. بعد تأكيد الدفع سيتم تثبيت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.`,
-        status_line:'استلمنا طلبك — بانتظار الدفع',
-        appt_date:iState.day,appt_time:iState.time,
-        request_code:reqCode,
-        date:iState.day,time:iState.time,day:iState.day,
-        reply_to:ADMIN_EMAIL
-      });
-    }
-  }catch(e){console.warn('emailjs confirm:',e);}
+    const when2=`${iState.day} — ${iState.time}`;
+    await cSendMail(email,'استلمنا طلبك — بانتظار الدفع | Hanadi Insights',
+      cRequestHTML({name,type,when:when2,code:reqCode}));
+    await cSendMail(ADMIN_EMAIL,'طلب استشارة جديد — '+reqCode,
+      cAdminHTML({name,email,phone,type,when:when2,code:reqCode,exp,market,challenge,goal}),email);
+  }catch(e){console.warn('resend mail:',e);}
 
   document.getElementById('iRequestCode').textContent=reqNum;
   iState.step=5;iUpdateUI();
@@ -1291,6 +1269,53 @@ document.getElementById('ccSearch').addEventListener('input',function(){
   renderCC(q?CC_DATA.filter(c=>c.name.includes(q)||c.code.includes(q)||c.flag.includes(q)):CC_DATA);
 });
 document.addEventListener('click',e=>{if(!document.getElementById('ccWrap').contains(e.target))closeCC();});
+
+// ── إرسال الإيميلات عبر Resend (من info@) ──
+async function cSendMail(to,subject,html,replyTo){
+  try{
+    if(typeof sbClient==='undefined'||!sbClient)return false;
+    const {data,error}=await sbClient.functions.invoke('rapid-task',{body:{to,subject,html,reply_to:replyTo||'info@hanadiabdullah.com'}});
+    return !error&&!!(data&&(data.id||!data.error));
+  }catch(e){console.warn('cSendMail:',e);return false;}
+}
+function _mailShell(sub,inner){
+  return `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;background:#0C0B0F;padding:28px 12px;margin:0">
+  <div style="max-width:520px;width:100%;margin:0 auto;background:#171A18;border:1px solid rgba(143,185,150,0.28);border-radius:14px;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#9DC4A3,#6B8A71);padding:22px 24px;text-align:center">
+      <div style="color:#0C0B0F;font-size:20px;font-weight:800;letter-spacing:1px">Hanadi Insights</div>
+      <div style="color:#0C0B0F;font-size:12px;opacity:0.85;margin-top:4px">${sub}</div>
+    </div>
+    <div style="padding:26px 22px">${inner}</div>
+    <div style="background:#0C0B0F;padding:14px;text-align:center;border-top:1px solid rgba(143,185,150,0.15)">
+      <div style="color:#7A887B;font-size:11px">© Hanadi Insights — جميع الحقوق محفوظة</div>
+    </div>
+  </div></div>`;
+}
+function _detailBox(rows){
+  return `<div style="background:#0C0B0F;border:1px solid rgba(143,185,150,0.22);border-radius:10px;padding:16px 18px;margin-top:8px">
+    <table style="width:100%;color:#CBD4CC;font-size:14px;line-height:2.1">${rows}</table></div>`;
+}
+function _row(label,val,accent){return `<tr><td style="opacity:0.7;padding:2px 0">${label}</td><td style="text-align:left;color:${accent||'#F7F9F7'};font-weight:${accent?'700':'400'}">${val||'—'}</td></tr>`;}
+function cRequestHTML(o){
+  return _mailShell('استلام الطلب',
+    `<p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">مرحباً ${o.name}،</p>
+     <p style="color:#D2E6D5;font-size:15px;line-height:1.9;margin:0 0 18px">✅ استلمنا طلب استشارتك بنجاح.</p>
+     ${_detailBox(_row('📋 نوع الاستشارة',o.type)+_row('📅 الموعد المبدئي',o.when)+_row('🔖 رمز طلبك',o.code,'#9DC4A3'))}
+     <div style="background:rgba(201,178,123,0.1);border:1px solid rgba(201,178,123,0.4);border-radius:10px;padding:14px 16px;margin-top:16px;color:#e6d3a3;font-size:13.5px;line-height:1.8">
+       ⚠️ موعدك محجوز <b>مبدئياً</b> ولم يُثبَّت بعد. سيصلك رابط الدفع، وبعد إتمامه يُثبَّت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.
+     </div>
+     <p style="color:#7A887B;font-size:12px;margin:18px 0 0;text-align:center">📩 إن لم تجد رسائلنا في الوارد، تحقّق من مجلد الرسائل غير المرغوبة (Spam).</p>`);
+}
+function cAdminHTML(o){
+  return _mailShell('طلب استشارة جديد',
+    `<p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">طلب استشارة جديد 📩</p>
+     ${_detailBox(
+        _row('👤 الاسم',o.name)+_row('📧 البريد',o.email)+_row('📱 الهاتف',o.phone)+
+        _row('📋 الاستشارة',o.type)+_row('📅 الموعد',o.when)+_row('🔖 الرمز',o.code,'#9DC4A3')+
+        _row('📊 المستوى',o.exp)+_row('💹 السوق',o.market)+_row('⚠️ التحدي',o.challenge)+(o.goal?_row('🎯 الهدف',o.goal):'')
+     )}
+     <p style="color:#7A887B;font-size:12px;margin:16px 0 0;text-align:center">افتحي لوحة الحجوزات لإرسال رابط الدفع.</p>`);
+}
 
 // ── تحميل محتوى صفحة الاستشارات من لوحة التحكم ──
 (function loadConsultContent(tries){
