@@ -854,18 +854,14 @@ async function refreshSlotAvailability(){
   const hint=document.getElementById('iSlotHint');
   if(!sbClient||!iState.day){return;}
   if(hint)hint.textContent='جارٍ التحقق من المواعيد المتاحة ليوم '+iState.day+'…';
-  const targetDate=nextDateForDay(iState.day);
-  // تنظيف الأقفال المنتهية (مواعيد مضت) حتى تعود متاحة تلقائياً
-  try{ if(sbClient&&targetDate)await sbClient.from('slot_locks').delete().lt('slot_date',targetDate); }catch(e){}
+  const todayStr=new Date().toISOString().slice(0,10);
+  // تنظيف الأقفال المنتهية (تاريخها قبل اليوم) حتى تعود متاحة تلقائياً
+  try{ if(sbClient)await sbClient.from('slot_locks').delete().lt('slot_date',todayStr); }catch(e){}
   try{
-    let data,error;
-    if(targetDate){
-      ({data,error}=await sbClient.from('slot_locks').select('time,slot_date').eq('day',iState.day).eq('slot_date',targetDate));
-      // إذا عمود slot_date غير موجود بعد، ارجع لقراءة باليوم فقط
-      if(error&&/slot_date/.test(error.message||'')){
-        ({data,error}=await sbClient.from('slot_locks').select('time').eq('day',iState.day));
-      }
-    }else{
+    // نعتبر الموعد محجوزاً إذا وُجد قفل لليوم تاريخه اليوم أو في المستقبل
+    let {data,error}=await sbClient.from('slot_locks').select('time,slot_date').eq('day',iState.day).gte('slot_date',todayStr);
+    // إذا عمود slot_date غير موجود بعد، ارجع لقراءة باليوم فقط
+    if(error&&/slot_date/.test(error.message||'')){
       ({data,error}=await sbClient.from('slot_locks').select('time').eq('day',iState.day));
     }
     if(error){
