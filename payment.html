@@ -393,7 +393,11 @@ document.getElementById('chatSend').addEventListener('click',async()=>{
   }
   inp.value='';
   const btn=document.getElementById('chatSend');btn.disabled=true;
-  try{await sb.from('support_messages').insert({session_code:REQ_CODE,sender:'customer',text});}
+  try{
+    await sb.from('support_messages').insert({session_code:REQ_CODE,sender:'customer',text});
+    // رد البوت الذكي (مقيّد بالموقع) — يتوقف تلقائياً إذا حُوّلت المحادثة لموظف
+    sb.functions.invoke('support-ai',{body:{session_code:REQ_CODE,message:text}}).catch(e=>console.warn('ai:',e));
+  }
   catch(e){console.warn('chat:',e);}
   finally{btn.disabled=false;inp.focus();}
 });
