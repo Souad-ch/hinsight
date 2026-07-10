@@ -1334,7 +1334,7 @@ document.getElementById('sendPayBtn').addEventListener('click',async()=>{
   if(!baseAmount){showS('⚠ أدخلي المبلغ أولاً.',false);return;}
   const amount=String(baseAmount); // مبلغ نظيف بدون فواصل
   const code=reqCodeOf(b)||('HN-REQUEST-'+(b.id||''));
-  const link=location.origin+location.pathname.replace(/bookings\.html$/,'')+'payment.html?code='+encodeURIComponent(code)+'&amount='+amount;
+  const link=location.origin+'/payment?code='+encodeURIComponent(code)+'&amount='+amount;
   const btn=document.getElementById('sendPayBtn');btn.disabled=true;btn.textContent='جارٍ الإرسال...';
   // 1) علّمي الطلب كبانتظار الدفع + خزّني المبلغ (ليطابقه النظام تلقائياً) — مستقلّ عن الإيميل
   try{await sb.from('bookings').update({status:'awaiting_payment',pay_amount:amount}).eq('id',b.id);}catch(e){console.error('status update:',e);}
@@ -1479,7 +1479,7 @@ function renderOpChat(code){
   const box=document.getElementById('opChatBox');
   document.getElementById('chatDetailCode').textContent=code||'اختر محادثة';
   const msgs=_sessions[code]||[];
-  const booking_link=code?`<a href="bookings.html" style="color:var(--accent-light);font-size:.72rem" target="_blank">الطلب ذو الصلة</a>`:'';
+  const booking_link=code?`<a href="/bookings" style="color:var(--accent-light);font-size:.72rem" target="_blank">الطلب ذو الصلة</a>`:'';
   document.getElementById('chatDetailMeta').innerHTML=msgs.length?`${msgs.length} رسائل — ${booking_link}`:'';
   if(!msgs.length){box.innerHTML='<div style="text-align:center;color:var(--text-muted);font-size:.82rem;margin:auto">لا توجد رسائل بعد</div>';return;}
   box.innerHTML='';
