@@ -859,6 +859,9 @@ a:hover>.hub-clickable{border-color:rgba(143,185,150,0.5);}
 <div class="card-footer"><span class="card-date en">25 May 2025</span><button class="read-more-btn">اقرأ التحليل <span class="arr">←</span></button></div>
 </div>
 </div>
+<div style="text-align:center;margin-top:44px;" class="reveal">
+<a href="/analyses" class="btn btn-outline">عرض جميع التحليلات →</a>
+</div>
 </div>
 </section>
 
@@ -1354,7 +1357,7 @@ function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 async function loadLatestArticles(){
 if(!sbClient)return;
 try{
-const {data,error}=await sbClient.from('articles').select('*').eq('published',true).order('created_at',{ascending:false}).limit(3);
+const {data,error}=await sbClient.from('articles').select('*').eq('published',true).not('content_type','eq','article').order('created_at',{ascending:false}).limit(3);
 if(error){console.warn('insights supabase:',error.message);return;}
 if(!data||!data.length)return;
 ARTICLES=data.map(r=>{
