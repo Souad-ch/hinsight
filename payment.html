@@ -204,6 +204,29 @@ async function pollPaymentStatus(){
     if(data&&data.length&&data[0].status==='confirmed'){
       _paidShown=true;
       showSuccess('تم تأكيد الدفع ✓','تم التحقق من تحويلك تلقائياً وتثبيت موعدك. ستصلك رسالة تأكيد على بريدك.');
+      // متابعة التأكيد التلقائي: قفل احتياطي للموعد + إيميل تثبيت الحجز للزبون
+      try{
+        if(booking){
+          const {day,time}=parseSlot(booking);
+          if(day&&time){
+            const {data:ex}=await sb.from('slot_locks').select('id').eq('day',day).eq('time',time).limit(1);
+            if(!ex||!ex.length){
+              const row={day,time,slot_date:nextDateForDay(day)};
+              const r=await sb.from('slot_locks').insert(row);
+              if(r.error&&/slot_date/.test(r.error.message||''))await sb.from('slot_locks').insert({day,time});
+            }
+          }
+          if(window.emailjs&&booking.client_email){
+            await emailjs.send(EJS_SERVICE,EJS_CONFIRM,{
+              to_name:booking.client_name||'',to_email:booking.client_email,name:booking.client_name||'',
+              consultation_type:booking.consultation_type||'',
+              request_code:REQ_CODE,appt_date:day,appt_time:time,
+              status_line:'تم تثبيت حجزك ✓',
+              message:`✅ تم تأكيد دفعتك وتثبيت موعدك: ${booking.time||''}. موعدك الآن محجوز ومؤكَّد. شكراً لثقتك، نراك في موعدك.`,
+              reply_to:ADMIN_EMAIL });
+          }
+        }
+      }catch(e){console.warn('confirm followup:',e);}
     }
   }catch(e){}
 }
