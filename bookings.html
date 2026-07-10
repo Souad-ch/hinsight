@@ -1187,41 +1187,64 @@ document.getElementById('sendPayBtn').addEventListener('click',async()=>{
   const amount=String(baseAmount); // مبلغ نظيف بدون فواصل
   const code=reqCodeOf(b)||('HN-REQUEST-'+(b.id||''));
   const link=location.origin+location.pathname.replace(/bookings\.html$/,'')+'payment.html?code='+encodeURIComponent(code)+'&amount='+amount;
-  if(!window.emailjs){showS('⚠ خدمة الإيميل غير محمّلة.',false);return;}
   const btn=document.getElementById('sendPayBtn');btn.disabled=true;btn.textContent='جارٍ الإرسال...';
-  const body=`مرحباً ${b.client_name||''}،
-
-تمت مراجعة طلب استشارتك (${b.consultation_type||''}) وتأكيد مبدئيته. لإتمام الحجز وتثبيت موعدك، يرجى إكمال الدفع (${amount}$) عبر الرابط التالي:
-
-${link}
-
-الدفع عبر USDT (TRC20)، أو التواصل مع الدعم لأي استفسار.
-رمز طلبك: ${code}
-
-بعد إتمام الدفع سيتم تثبيت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.`;
   // 1) علّمي الطلب كبانتظار الدفع + خزّني المبلغ (ليطابقه النظام تلقائياً) — مستقلّ عن الإيميل
   try{await sb.from('bookings').update({status:'awaiting_payment',pay_amount:amount}).eq('id',b.id);}catch(e){console.error('status update:',e);}
   // حدّثي النسخة المحلية وأعيدي رسم التفاصيل حتى يظهر مربع "بانتظار الدفع" فوراً
   b.status='awaiting_payment';b.pay_amount=amount;renderDetail();
   // 2) اعرضي الرابط دائماً حتى يمكن نسخه يدوياً
   const linkBox=`<div style="margin-top:8px;font-size:12px"><a href="${link}" target="_blank" style="color:#a7d0b1;word-break:break-all">${link}</a> <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}');this.textContent='✔ نُسخ'" style="cursor:pointer;margin-inline-start:6px">نسخ</button></div>`;
-  // 3) حاولي إرسال الإيميل (اختياري — لو القالب غير موجود يبقى الرابط ظاهراً)
-  try{
-    await emailjs.send(EJS_SERVICE_ID,EJS_PAY_TEMPLATE_ID,{
-      to_email:b.client_email,email:b.client_email,
-      to_name:b.client_name||'',name:b.client_name||'',
-      pay_link:link,amount:amount,
-      consultation_type:b.consultation_type||'',request_code:code,
-      appt_date:b.date||'',appt_time:b.time||'',reply_to:''
-    });
-    status.style.display='block';status.style.color='#a7d0b1';
+  // 3) أرسلي الإيميل عبر Resend (من info@hanadiabdullah.com)
+  const html=payEmailHTML({name:b.client_name||'',amount,link,type:b.consultation_type||'',date:b.date||'',time:b.time||'',code});
+  const ok=await sendMail(b.client_email,'إتمام دفع استشارتك — Hanadi Insights ('+amount+'$)',html);
+  status.style.display='block';
+  if(ok){
+    status.style.color='#a7d0b1';
     status.innerHTML='✅ تم إرسال رابط الدفع ('+amount+'$) إلى '+b.client_email+linkBox;
-  }catch(e){
-    console.error('pay link email error:',e);
-    status.style.display='block';status.style.color='#e0ada7';
-    status.innerHTML='⚠ تعذّر إرسال الإيميل (تأكدي من قالب template_manual). الطلب صار بانتظار الدفع — انسخي الرابط وأرسليه يدوياً:'+linkBox;
-  }finally{btn.disabled=false;btn.textContent='💳 إرسال رابط الدفع';}
+  }else{
+    status.style.color='#e0ada7';
+    status.innerHTML='⚠ تعذّر إرسال الإيميل — الطلب صار بانتظار الدفع، انسخي الرابط وأرسليه يدوياً:'+linkBox;
+  }
+  btn.disabled=false;btn.textContent='💳 إرسال رابط الدفع';
 });
+
+// ── إرسال إيميل عبر Resend (Edge Function) ──
+async function sendMail(to,subject,html,replyTo){
+  try{
+    const {data,error}=await sb.functions.invoke('send-email',{body:{to,subject,html,reply_to:replyTo||'info@hanadiabdullah.com'}});
+    if(error){console.error('sendMail error:',error);return false;}
+    if(data&&data.id)return true;
+    console.warn('sendMail response:',data);return !!(data&&!data.error);
+  }catch(e){console.error('sendMail exception:',e);return false;}
+}
+function payEmailHTML(o){
+  return `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;background:#0C0B0F;padding:32px 16px;margin:0">
+  <div style="max-width:520px;margin:0 auto;background:#171A18;border:1px solid rgba(143,185,150,0.28);border-radius:14px;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#9DC4A3,#6B8A71);padding:22px 28px;text-align:center">
+      <div style="color:#0C0B0F;font-size:20px;font-weight:800;letter-spacing:1px">Hanadi Insights</div>
+      <div style="color:#0C0B0F;font-size:12px;opacity:0.85;margin-top:4px">إتمام الدفع وتثبيت الموعد</div>
+    </div>
+    <div style="padding:28px">
+      <p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">مرحباً ${o.name}،</p>
+      <p style="color:#D2E6D5;font-size:15px;line-height:1.9;margin:0 0 22px">تمت مراجعة طلب استشارتك وتأكيد مبدئيته. لإتمام الحجز وتثبيت موعدك، يرجى إكمال الدفع عبر الزر التالي:</p>
+      <div style="text-align:center;margin:26px 0">
+        <a href="${o.link}" style="display:inline-block;background:linear-gradient(135deg,#9DC4A3,#6B8A71);color:#0C0B0F;font-size:16px;font-weight:800;text-decoration:none;padding:15px 44px;border-radius:10px">💳 إتمام الدفع (${o.amount}$)</a>
+      </div>
+      <div style="background:#0C0B0F;border:1px solid rgba(143,185,150,0.22);border-radius:10px;padding:18px 20px">
+        <table style="width:100%;color:#CBD4CC;font-size:14px;line-height:2.2">
+          <tr><td style="opacity:0.7">📋 نوع الاستشارة</td><td style="text-align:left;color:#F7F9F7">${o.type}</td></tr>
+          <tr><td style="opacity:0.7">📅 الموعد</td><td style="text-align:left;color:#F7F9F7">${o.time}</td></tr>
+          <tr><td style="opacity:0.7">🔖 رمز طلبك</td><td style="text-align:left;color:#9DC4A3;font-weight:700">${o.code}</td></tr>
+        </table>
+      </div>
+      <p style="color:#7A887B;font-size:12px;margin:20px 0 0;text-align:center">لو لم يعمل الزر، انسخي هذا الرابط:<br><span style="color:#9DC4A3;word-break:break-all">${o.link}</span></p>
+    </div>
+    <div style="background:#0C0B0F;padding:16px;text-align:center;border-top:1px solid rgba(143,185,150,0.15)">
+      <div style="color:#7A887B;font-size:11px">© Hanadi Insights</div>
+    </div>
+  </div>
+</div>`;
+}
 
 // ── DAILY REPORT ──
 document.getElementById('dailyBtn').addEventListener('click',()=>{
