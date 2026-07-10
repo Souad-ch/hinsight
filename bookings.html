@@ -339,22 +339,16 @@ a{text-decoration:none;color:inherit}
               <p class="panel-sub">رسائل مهنية يمكن إرسالها بعد تعديل بسيط حسب حالة العميل. تُملأ تلقائياً باسم الطلب المختار.</p>
             </div>
           </div>
-          <div class="templates">
-            <div class="template-card">
-              <div><h3 class="template-title">تأكيد استلام الطلب</h3><p class="template-desc">رسالة ترحيب بعد وصول الطلب.</p></div>
-              <button class="btn btn-ghost" style="width:auto" data-template="received">معاينة</button>
-            </div>
-            <div class="template-card">
-              <div><h3 class="template-title">تأكيد الموعد والتعليمات</h3><p class="template-desc">بعد تأكيد الحجز وتثبيت الوقت.</p></div>
-              <button class="btn btn-ghost" style="width:auto" data-template="confirm">معاينة</button>
-            </div>
-            <div class="template-card">
-              <div><h3 class="template-title">طلب معلومات إضافية</h3><p class="template-desc">عندما تكون التفاصيل ناقصة أو غير واضحة.</p></div>
-              <button class="btn btn-ghost" style="width:auto" data-template="more">معاينة</button>
-            </div>
-            <div class="template-card">
-              <div><h3 class="template-title">اعتذار مهذّب عن الموعد</h3><p class="template-desc">عند إلغاء أو تعذّر الموعد.</p></div>
-              <button class="btn btn-ghost" style="width:auto" data-template="reject">معاينة</button>
+          <div class="templates" id="tplList"><div style="padding:16px;color:var(--text-dim)">جارٍ التحميل…</div></div>
+          <button class="btn btn-green" style="width:auto;padding:11px 26px;margin:14px 22px 0" onclick="showTplForm(null)">➕ إضافة قالب</button>
+          <div id="tplForm" style="display:none;margin:16px 22px 0;background:rgba(12,11,15,.5);border:1px solid var(--line);border-radius:12px;padding:18px">
+            <input id="tplTitle" placeholder="عنوان القالب" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:11px 13px;color:var(--text);font-family:var(--font-ar);margin-bottom:10px"/>
+            <input id="tplDesc" placeholder="وصف قصير (اختياري)" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:11px 13px;color:var(--text);font-family:var(--font-ar);margin-bottom:10px"/>
+            <textarea id="tplBody" rows="7" placeholder="نص الرسالة…" style="width:100%;background:rgba(12,11,15,.7);border:1px solid var(--line);border-radius:8px;padding:11px 13px;color:var(--text);font-family:var(--font-ar);line-height:1.9"></textarea>
+            <div style="font-size:12px;color:var(--gold);margin:8px 0">المتغيّرات: <b>{{name}}</b> الاسم · <b>{{type}}</b> نوع الاستشارة · <b>{{time}}</b> الموعد · <b>{{date}}</b> التاريخ</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn btn-green" style="width:auto" onclick="saveTpl()">💾 حفظ</button>
+              <button class="btn btn-ghost" style="width:auto" onclick="document.getElementById('tplForm').style.display='none'">إلغاء</button>
             </div>
           </div>
         </section>
@@ -1128,6 +1122,66 @@ const TPL={
 - WhatsApp: تأكيدات سريعة وتذكير قبل الموعد.
 - Email: رسائل رسمية وملخصات ما بعد الاستشارة.`
 };
+
+// ── مدير قوالب الرسائل (ديناميكي من قاعدة البيانات) ──
+const TPL_DEFAULTS=[
+  {title:'تأكيد استلام الطلب',descr:'رسالة ترحيب بعد وصول الطلب',body:'مرحباً {{name}}،\n\nشكراً لإرسال طلب الاستشارة ({{type}}).\n\nتم استلام طلبك وسيتم مراجعته وتحديد الخطوة التالية قريباً. ستصلك تفاصيل تأكيد الموعد على بريدك.\n\nتنويه: الاستشارة تعليمية وتحليلية، ولا تتضمن توصيات شراء أو بيع مباشرة، ولا إدارة حساب، ولا ضمان أرباح.'},
+  {title:'تأكيد الموعد والتعليمات',descr:'بعد تأكيد الحجز وتثبيت الوقت',body:'مرحباً {{name}}،\n\nيسعدنا تأكيد موعد استشارتك:\nالجلسة: {{type}}\nالموعد: {{time}}\n\nيرجى الانضمام قبل الموعد بخمس دقائق. سيصلك رابط الاجتماع وتعليمات التحضير قبل الجلسة.'},
+  {title:'طلب معلومات إضافية',descr:'عندما تكون التفاصيل ناقصة',body:'مرحباً {{name}}،\n\nحتى نحدد المسار الأنسب لك، نحتاج توضيحاً حول:\n1. ما أكثر خطأ يتكرر معك أثناء التداول؟\n2. هل لديك قواعد مكتوبة لإدارة رأس المال؟\n3. هل تبحث عن فهم وتحليل أم توصيات دخول وخروج؟'},
+  {title:'اعتذار مهذّب عن الموعد',descr:'عند إلغاء أو تعذّر الموعد',body:'مرحباً {{name}}،\n\nنعتذر، تعذّر تثبيت الموعد المطلوب في هذا الوقت، وتم تحرير الوقت لإتاحته من جديد.\n\nيمكنك إعادة اختيار موعد آخر متاح من صفحة الاستشارات. شكراً لتفهمك.'},
+];
+let _tpls=[],_tplEditId=null;
+function fillTpl(body,b){b=b||{};return (body||'').replace(/{{name}}/g,b.client_name||'').replace(/{{type}}/g,b.consultation_type||'استشارة').replace(/{{time}}/g,b.time||b.date||'سيتم تأكيده').replace(/{{date}}/g,b.date||'');}
+async function loadTemplates(){
+  try{
+    let {data,error}=await sb.from('msg_templates').select('*').order('order_index',{ascending:true});
+    if(error){renderTplFallback();return;}
+    if(!data||!data.length){
+      await sb.from('msg_templates').insert(TPL_DEFAULTS.map((t,i)=>({title:t.title,descr:t.descr,body:t.body,order_index:i})));
+      ({data}=await sb.from('msg_templates').select('*').order('order_index',{ascending:true}));
+    }
+    _tpls=data||[];renderTemplates(false);
+  }catch(e){renderTplFallback();}
+}
+function renderTplFallback(){_tpls=TPL_DEFAULTS.map((t,i)=>({id:'d'+i,...t}));renderTemplates(true);}
+function renderTemplates(readonly){
+  const el=document.getElementById('tplList');if(!el)return;
+  if(!_tpls.length){el.innerHTML='<div style="padding:16px;color:var(--text-dim)">لا قوالب بعد. أضيفي واحد.</div>';return;}
+  el.innerHTML=_tpls.map(t=>`
+    <div class="template-card">
+      <div><h3 class="template-title">${esc(t.title)}</h3><p class="template-desc">${esc(t.descr||'')}</p></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost" style="width:auto" onclick="previewTpl('${t.id}')">معاينة</button>
+        ${readonly?'':`<button class="btn btn-ghost" style="width:auto;padding:8px 12px" onclick="showTplForm('${t.id}')">✏️</button><button class="btn btn-danger" style="width:auto;padding:8px 12px" onclick="delTpl('${t.id}')">🗑</button>`}
+      </div>
+    </div>`).join('');
+}
+function previewTpl(id){const t=_tpls.find(x=>String(x.id)===String(id));if(!t)return;openModal(t.title,fillTpl(t.body,selBooking()||{}));}
+function showTplForm(id){
+  _tplEditId=id;
+  const t=id?_tpls.find(x=>String(x.id)===String(id)):null;
+  document.getElementById('tplTitle').value=t?t.title:'';
+  document.getElementById('tplDesc').value=t?(t.descr||''):'';
+  document.getElementById('tplBody').value=t?t.body:'';
+  const f=document.getElementById('tplForm');f.style.display='block';f.scrollIntoView({behavior:'smooth'});
+}
+async function saveTpl(){
+  const title=document.getElementById('tplTitle').value.trim();
+  const descr=document.getElementById('tplDesc').value.trim();
+  const body=document.getElementById('tplBody').value.trim();
+  if(!title||!body){toast('العنوان والنص مطلوبين');return;}
+  try{
+    if(_tplEditId&&String(_tplEditId).charAt(0)!=='d')await sb.from('msg_templates').update({title,descr,body}).eq('id',_tplEditId);
+    else await sb.from('msg_templates').insert({title,descr,body,order_index:_tpls.length});
+    document.getElementById('tplForm').style.display='none';toast('تم الحفظ ✓');loadTemplates();
+  }catch(e){toast('تعذّر الحفظ — تأكدي من إنشاء جدول msg_templates');}
+}
+async function delTpl(id){
+  if(String(id).charAt(0)==='d'){toast('أنشئي جدول القوالب أولاً');return;}
+  if(!confirm('حذف هذا القالب؟'))return;
+  try{await sb.from('msg_templates').delete().eq('id',id);toast('تم الحذف');loadTemplates();}catch(e){toast('تعذّر الحذف');}
+}
+loadTemplates();
 document.querySelectorAll('[data-template]').forEach(btn=>btn.addEventListener('click',()=>{
   const key=btn.dataset.template;const b=selBooking();
   if(['received','confirm','more','reject'].includes(key)&&!b)return toast('اختاري طلباً أولاً');
