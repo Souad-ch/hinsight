@@ -707,7 +707,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;b
                 <option>لا أعرف أين المشكلة</option>
               </select>
             </div>
-            <div class="field full"><label>ما الهدف الذي تريد الوصول إليه؟</label>
+            <div class="field full"><label>ما الهدف الذي تريد الوصول إليه؟ * <span style="font-size:.72rem;color:var(--text-muted)">(20 حرفاً على الأقل)</span></label>
               <textarea id="iGoal" placeholder="اكتب باختصار ما الذي ترغب بفهمه أو تحسينه من خلال الاستشارة..."></textarea>
             </div>
           </div>
@@ -916,11 +916,19 @@ function iValidate(){
     const name=document.getElementById('iName');
     const email=document.getElementById('iEmail');
     const phone=document.getElementById('iPhone');
+    const goal=document.getElementById('iGoal');
     const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
     let ok=true;
     [name,phone].forEach(i=>{i.style.borderColor=i.value.trim()?'':'#a8584e';if(!i.value.trim())ok=false;});
     email.style.borderColor=emailOk?'':'#a8584e';if(!emailOk)ok=false;
-    if(!ok){document.getElementById('briefFit').textContent='يرجى تعبئة جميع الحقول المطلوبة';return false;}
+    const goalOk=goal.value.trim().length>=20;
+    goal.style.borderColor=goalOk?'':'#a8584e';if(!goalOk)ok=false;
+    if(!ok){
+      document.getElementById('briefFit').textContent=!goalOk
+        ?'يرجى كتابة هدفك من الاستشارة (20 حرفاً على الأقل).'
+        :'يرجى تعبئة جميع الحقول المطلوبة.';
+      return false;
+    }
   }
   if(iState.step===3){
     if(!iState.day||!iState.time){document.getElementById('briefFit').textContent='يرجى اختيار اليوم والوقت';return false;}
