@@ -495,7 +495,10 @@ a{text-decoration:none;color:inherit}
                 <h2 class="panel-title">محادثات الدعم المباشر</h2>
                 <p class="panel-sub">رسائل الزبائن من صفحة الدفع — يصلك رد فور إرسالهم.</p>
               </div>
-              <button class="btn btn-ghost" id="refreshSupport" style="width:auto">🔄</button>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-ghost" id="toggleArchived" style="width:auto;font-size:.8rem">📥 المؤرشفة</button>
+                <button class="btn btn-ghost" id="refreshSupport" style="width:auto">🔄</button>
+              </div>
             </div>
             <div id="supportSessions" style="max-height:600px;overflow:auto">
               <div class="empty">لا توجد محادثات بعد.</div>
@@ -1437,10 +1440,12 @@ async function loadSupportSessions(){
   syncSupportBadge();
 }
 
+let _showArchived=false;
+function sessArchived(code){return !!(_sessions[code]&&_sessions[code][0]&&_sessions[code][0].archived);}
 function renderSessions(){
   const el=document.getElementById('supportSessions');
-  const codes=Object.keys(_sessions);
-  if(!codes.length){el.innerHTML='<div class="empty">لا توجد محادثات بعد. ستظهر هنا فور رسالة الزبون.</div>';return;}
+  let codes=Object.keys(_sessions).filter(c=>sessArchived(c)===_showArchived);
+  if(!codes.length){el.innerHTML='<div class="empty">'+(_showArchived?'لا محادثات مؤرشفة.':'لا توجد محادثات بعد. ستظهر هنا فور رسالة الزبون.')+'</div>';return;}
   codes.sort((a,b)=>{
     const la=_sessions[a].slice(-1)[0]?.created_at||'';
     const lb=_sessions[b].slice(-1)[0]?.created_at||'';
@@ -1451,8 +1456,11 @@ function renderSessions(){
     const last=msgs[msgs.length-1];
     const unread=_unread.has(code);
     const lastTime=last?new Date(last.created_at).toLocaleString('ar-EG'):'';
+    const actions=_showArchived
+      ? `<button onclick="event.stopPropagation();restoreSession('${escOp(code)}')" style="background:none;border:1px solid #a7d0b1;color:#a7d0b1;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:.72rem">↩ استرجاع</button>`
+      : `<button onclick="event.stopPropagation();archiveSession('${escOp(code)}')" style="background:none;border:1px solid var(--gold);color:var(--gold);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:.72rem">📥 أرشفة</button>`;
     return `<div class="session-card${code===_selSession?' active':''}" data-session="${escOp(code)}">
-      <div>
+      <div style="flex:1">
         <div class="client-line" style="margin-bottom:5px">
           <h3 class="client-name" style="font-family:var(--font-en);direction:ltr">${escOp(code)}</h3>
           ${unread?'<span class="status review" style="font-size:.62rem">رسالة جديدة</span>':''}
@@ -1461,6 +1469,10 @@ function renderSessions(){
         <div class="request-meta">
           <span class="chip">${msgs.length} رسالة</span>
           <span class="chip" style="direction:ltr">${escOp(lastTime)}</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          ${actions}
+          <button onclick="event.stopPropagation();deleteSession('${escOp(code)}')" style="background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:.72rem">🗑 حذف</button>
         </div>
       </div>
       ${unread?'<div class="unread-badge"></div>':''}
@@ -1474,6 +1486,26 @@ function renderSessions(){
     syncSupportBadge();
   }));
 }
+async function archiveSession(code){
+  try{await sb.from('support_messages').update({archived:true}).eq('session_code',code);
+    if(_selSession===code)_selSession=null;toast('تمت الأرشفة');loadSupportSessions();
+  }catch(e){toast('تعذّر — تأكدي من عمود archived');}
+}
+async function restoreSession(code){
+  try{await sb.from('support_messages').update({archived:false}).eq('session_code',code);toast('تم الاسترجاع');loadSupportSessions();}
+  catch(e){toast('تعذّر الاسترجاع');}
+}
+async function deleteSession(code){
+  if(!confirm('حذف هذه المحادثة نهائياً؟'))return;
+  try{await sb.from('support_messages').delete().eq('session_code',code);
+    if(_selSession===code)_selSession=null;toast('تم الحذف');loadSupportSessions();
+  }catch(e){toast('تعذّر الحذف');}
+}
+document.getElementById('toggleArchived').addEventListener('click',()=>{
+  _showArchived=!_showArchived;
+  document.getElementById('toggleArchived').textContent=_showArchived?'📨 النشطة':'📥 المؤرشفة';
+  _selSession=null;renderSessions();renderOpChat(null);
+});
 
 function renderOpChat(code){
   const box=document.getElementById('opChatBox');
