@@ -684,6 +684,21 @@ async function loadBookings(){
   if(_all.length&&!_selId)_selId=_all[0].id;
   renderList();renderDetail();updateMetrics();
 }
+// ── مراقبة تلقائية: تحدّث الحالات (مثل تأكيد الدفع) بدون إعادة تحميل يدوي ──
+setInterval(async ()=>{
+  try{
+    if(!_all.length)return;
+    const {data}=await sb.from('bookings').select('id,status');
+    if(!data)return;
+    let changed=false;
+    data.forEach(row=>{
+      const b=_all.find(x=>String(x.id)===String(row.id));
+      if(b&&(b.status||'pending')!==(row.status||'pending')){b.status=row.status;changed=true;}
+    });
+    if(data.length!==_all.length){await loadBookings();return;}
+    if(changed){renderList();renderDetail();updateMetrics();}
+  }catch(e){}
+},10000);
 function updateMetrics(){
   const c=s=>_all.filter(b=>(b.status||'pending')===s).length;
   document.getElementById('mPending').textContent=c('pending');
