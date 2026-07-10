@@ -1368,33 +1368,37 @@ async function sendMail(to,subject,html,replyTo){
     console.warn('sendMail response:',data);return !!(data&&!data.error);
   }catch(e){console.error('sendMail exception:',e);return false;}
 }
+function _mShell(sub,inner){
+  return `<div style="background:#0d0f0d;margin:0;padding:0;-webkit-font-smoothing:antialiased">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0d0f0d">
+    <tr><td align="center" style="padding:36px 14px">
+      <table role="presentation" cellpadding="0" cellspacing="0" dir="rtl" style="width:600px;max-width:100%;background:#171a17;border-radius:16px;overflow:hidden;font-family:Tahoma,Arial,sans-serif;box-shadow:0 12px 44px rgba(0,0,0,0.45)">
+        <tr><td style="height:4px;background:linear-gradient(90deg,#C8F57E,#9DC4A3,#6B8A71)"></td></tr>
+        <tr><td style="padding:38px 30px 18px;text-align:center">
+          <div style="font-family:Georgia,'Times New Roman',serif;font-size:27px;font-weight:700;color:#D2E6D5;letter-spacing:1px">Hanadi Insights</div>
+          <div style="font-size:12px;color:#9DC4A3;margin-top:8px">${sub}</div>
+          <div style="width:46px;height:2px;background:#6B8A71;margin:16px auto 0"></div>
+        </td></tr>
+        <tr><td style="padding:8px 30px 34px">${inner}</td></tr>
+        <tr><td style="padding:22px;text-align:center;background:#101210;border-top:1px solid rgba(143,185,150,0.12)">
+          <div style="color:#D2E6D5;font-size:13px;font-weight:700">Hanadi Insights</div>
+          <div style="color:#5f6b60;font-size:11px;margin-top:5px">منصة تحليل اقتصادي وأسواق عالمية — © جميع الحقوق محفوظة</div>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table></div>`;
+}
+function _mBox(rows){return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0d0f0d;border:1px solid rgba(143,185,150,0.2);border-radius:12px;margin-top:10px"><tr><td style="padding:16px 20px"><table width="100%" cellpadding="0" cellspacing="0" style="color:#CBD4CC;font-size:14px;line-height:2.2">${rows}</table></td></tr></table>`;}
+function _mRow(l,v,a){return `<tr><td style="color:#8a978b;padding:3px 0">${l}</td><td style="text-align:left;color:${a||'#F7F9F7'};font-weight:${a?'700':'500'}">${v||'—'}</td></tr>`;}
 function payEmailHTML(o){
-  return `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;background:#0C0B0F;padding:32px 16px;margin:0">
-  <div style="max-width:520px;margin:0 auto;background:#171A18;border:1px solid rgba(143,185,150,0.28);border-radius:14px;overflow:hidden">
-    <div style="background:linear-gradient(135deg,#9DC4A3,#6B8A71);padding:22px 28px;text-align:center">
-      <div style="color:#0C0B0F;font-size:20px;font-weight:800;letter-spacing:1px">Hanadi Insights</div>
-      <div style="color:#0C0B0F;font-size:12px;opacity:0.85;margin-top:4px">إتمام الدفع وتثبيت الموعد</div>
-    </div>
-    <div style="padding:28px">
-      <p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">مرحباً ${o.name}،</p>
-      <p style="color:#D2E6D5;font-size:15px;line-height:1.9;margin:0 0 22px">تمت مراجعة طلب استشارتك وتأكيد مبدئيته. لإتمام الحجز وتثبيت موعدك، يرجى إكمال الدفع عبر الزر التالي:</p>
-      <div style="text-align:center;margin:26px 0">
-        <a href="${o.link}" style="display:inline-block;background:linear-gradient(135deg,#9DC4A3,#6B8A71);color:#0C0B0F;font-size:16px;font-weight:800;text-decoration:none;padding:15px 44px;border-radius:10px">💳 إتمام الدفع (${o.amount}$)</a>
-      </div>
-      <div style="background:#0C0B0F;border:1px solid rgba(143,185,150,0.22);border-radius:10px;padding:18px 20px">
-        <table style="width:100%;color:#CBD4CC;font-size:14px;line-height:2.2">
-          <tr><td style="opacity:0.7">📋 نوع الاستشارة</td><td style="text-align:left;color:#F7F9F7">${o.type}</td></tr>
-          <tr><td style="opacity:0.7">📅 الموعد</td><td style="text-align:left;color:#F7F9F7">${o.time}</td></tr>
-          <tr><td style="opacity:0.7">🔖 رمز طلبك</td><td style="text-align:left;color:#9DC4A3;font-weight:700">${o.code}</td></tr>
-        </table>
-      </div>
-      <p style="color:#7A887B;font-size:12px;margin:20px 0 0;text-align:center">لو لم يعمل الزر، انسخي هذا الرابط:<br><span style="color:#9DC4A3;word-break:break-all">${o.link}</span></p>
-    </div>
-    <div style="background:#0C0B0F;padding:16px;text-align:center;border-top:1px solid rgba(143,185,150,0.15)">
-      <div style="color:#7A887B;font-size:11px">© Hanadi Insights</div>
-    </div>
-  </div>
-</div>`;
+  return _mShell('إتمام الدفع وتثبيت الموعد',
+    `<p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">مرحباً ${o.name}،</p>
+     <p style="color:#D2E6D5;font-size:15px;line-height:1.95;margin:0 0 8px">تمت مراجعة طلب استشارتك وتأكيد مبدئيته. لإتمام الحجز وتثبيت موعدك، يُرجى إكمال الدفع عبر الزر التالي:</p>
+     <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px 0">
+       <a href="${o.link}" style="display:inline-block;background:linear-gradient(135deg,#C8F57E,#9DC4A3);color:#0C0B0F;font-size:16px;font-weight:800;text-decoration:none;padding:15px 46px;border-radius:10px">💳 إتمام الدفع (${o.amount}$)</a>
+     </td></tr></table>
+     ${_mBox(_mRow('📋 نوع الاستشارة',o.type)+_mRow('📅 الموعد',o.time)+_mRow('🔖 رمز طلبك',o.code,'#9DC4A3'))}
+     <p style="color:#7A887B;font-size:12px;margin:20px 0 0;text-align:center">لو لم يعمل الزر، انسخي هذا الرابط:<br><span style="color:#9DC4A3;word-break:break-all">${o.link}</span></p>`);
 }
 
 // ── DAILY REPORT ──

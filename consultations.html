@@ -1279,23 +1279,30 @@ async function cSendMail(to,subject,html,replyTo){
   }catch(e){console.warn('cSendMail:',e);return false;}
 }
 function _mailShell(sub,inner){
-  return `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;background:#0C0B0F;padding:28px 12px;margin:0">
-  <div style="max-width:520px;width:100%;margin:0 auto;background:#171A18;border:1px solid rgba(143,185,150,0.28);border-radius:14px;overflow:hidden">
-    <div style="background:linear-gradient(135deg,#9DC4A3,#6B8A71);padding:22px 24px;text-align:center">
-      <div style="color:#0C0B0F;font-size:20px;font-weight:800;letter-spacing:1px">Hanadi Insights</div>
-      <div style="color:#0C0B0F;font-size:12px;opacity:0.85;margin-top:4px">${sub}</div>
-    </div>
-    <div style="padding:26px 22px">${inner}</div>
-    <div style="background:#0C0B0F;padding:14px;text-align:center;border-top:1px solid rgba(143,185,150,0.15)">
-      <div style="color:#7A887B;font-size:11px">© Hanadi Insights — جميع الحقوق محفوظة</div>
-    </div>
-  </div></div>`;
+  return `<div style="background:#0d0f0d;margin:0;padding:0;-webkit-font-smoothing:antialiased">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0d0f0d">
+    <tr><td align="center" style="padding:36px 14px">
+      <table role="presentation" cellpadding="0" cellspacing="0" dir="rtl" style="width:600px;max-width:100%;background:#171a17;border-radius:16px;overflow:hidden;font-family:Tahoma,Arial,sans-serif;box-shadow:0 12px 44px rgba(0,0,0,0.45)">
+        <tr><td style="height:4px;background:linear-gradient(90deg,#C8F57E,#9DC4A3,#6B8A71)"></td></tr>
+        <tr><td style="padding:38px 30px 18px;text-align:center">
+          <div style="font-family:Georgia,'Times New Roman',serif;font-size:27px;font-weight:700;color:#D2E6D5;letter-spacing:1px">Hanadi Insights</div>
+          <div style="font-size:12px;color:#9DC4A3;margin-top:8px">${sub}</div>
+          <div style="width:46px;height:2px;background:#6B8A71;margin:16px auto 0"></div>
+        </td></tr>
+        <tr><td style="padding:8px 30px 34px">${inner}</td></tr>
+        <tr><td style="padding:22px;text-align:center;background:#101210;border-top:1px solid rgba(143,185,150,0.12)">
+          <div style="color:#D2E6D5;font-size:13px;font-weight:700">Hanadi Insights</div>
+          <div style="color:#5f6b60;font-size:11px;margin-top:5px">منصة تحليل اقتصادي وأسواق عالمية — © جميع الحقوق محفوظة</div>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table></div>`;
 }
 function _detailBox(rows){
-  return `<div style="background:#0C0B0F;border:1px solid rgba(143,185,150,0.22);border-radius:10px;padding:16px 18px;margin-top:8px">
-    <table style="width:100%;color:#CBD4CC;font-size:14px;line-height:2.1">${rows}</table></div>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0d0f0d;border:1px solid rgba(143,185,150,0.2);border-radius:12px;margin-top:10px">
+    <tr><td style="padding:16px 20px"><table width="100%" cellpadding="0" cellspacing="0" style="color:#CBD4CC;font-size:14px;line-height:2.2">${rows}</table></td></tr></table>`;
 }
-function _row(label,val,accent){return `<tr><td style="opacity:0.7;padding:2px 0">${label}</td><td style="text-align:left;color:${accent||'#F7F9F7'};font-weight:${accent?'700':'400'}">${val||'—'}</td></tr>`;}
+function _row(label,val,accent){return `<tr><td style="color:#8a978b;padding:3px 0">${label}</td><td style="text-align:left;color:${accent||'#F7F9F7'};font-weight:${accent?'700':'500'}">${val||'—'}</td></tr>`;}
 function cRequestHTML(o){
   return _mailShell('استلام الطلب',
     `<p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">مرحباً ${o.name}،</p>
