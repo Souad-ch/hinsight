@@ -291,7 +291,9 @@ function renderArticles(){
   currentFiltered=filtered;
   countEl.innerHTML=`عرض <span>${filtered.length}</span> من <span>${ARTICLES.length}</span> مقال`;
   if(!filtered.length){
-    grid.innerHTML=`<div class="no-results"><div class="no-results-icon">🔍</div><div style="font-size:1.15rem;color:var(--text);margin-bottom:8px;">لا توجد نتائج</div><div style="font-size:0.9rem;color:var(--text-muted);">جربي كلمة بحث مختلفة أو صنفاً آخر</div></div>`;
+    grid.innerHTML=ARTICLES.length===0
+      ? `<div class="no-results"><div class="no-results-icon">📝</div><div style="font-size:1.15rem;color:var(--text);margin-bottom:8px;">لا توجد مقالات منشورة بعد</div><div style="font-size:0.9rem;color:var(--text-muted);">ستظهر المقالات هنا فور نشرها من لوحة التحكم.</div></div>`
+      : `<div class="no-results"><div class="no-results-icon">🔍</div><div style="font-size:1.15rem;color:var(--text);margin-bottom:8px;">لا توجد نتائج</div><div style="font-size:0.9rem;color:var(--text-muted);">جربي كلمة بحث مختلفة أو صنفاً آخر</div></div>`;
     return;
   }
   grid.innerHTML=filtered.map((a,i)=>`
@@ -354,10 +356,9 @@ async function loadFromSupabase(){
   try{
     const {data,error}=await sbClient.from('articles').select('*').eq('published',true).eq('content_type','article').order('created_at',{ascending:false});
     if(error){console.warn('articles supabase:',error.message);return;}
-    if(data&&data.length){
-      ARTICLES=data.map(mapRow);
-      renderArticles();
-    }
+    // استبدل دائماً بالبيانات الحقيقية (حتى لو فارغة) — لا بطاقات وهمية
+    ARTICLES=(data||[]).map(mapRow);
+    renderArticles();
   }catch(err){console.warn('articles load:',err);}
 }
 

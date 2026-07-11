@@ -358,10 +358,8 @@ async function loadFromSupabase(){
   try{
     const {data,error}=await sbClient.from('articles').select('*').eq('published',true).not('content_type','eq','article').order('created_at',{ascending:false});
     if(error){console.warn('articles supabase:',error.message);return;}
-    if(data&&data.length){
-      ARTICLES=data.map(mapRow);
-      renderArticles();
-    }
+    ARTICLES=(data||[]).map(mapRow);
+    renderArticles();
   }catch(err){console.warn('articles load:',err);}
 }
 
