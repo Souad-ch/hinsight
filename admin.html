@@ -852,12 +852,20 @@
         <div class="panel-title">الفوتر (أسفل الموقع)</div>
         <div class="panel-sub">تعديل نبذة الفوتر، روابط التواصل، حقوق النشر، والتنويه القانوني</div>
         <div class="section-card">
+          <div class="section-card-title">🖼️ اللوغو (اختياري)</div>
+          <label class="cp-lbl">رابط صورة اللوغو</label>
+          <input class="input cp-inp" id="ft_logo_url" dir="ltr" placeholder="https://... (اتركيه فارغاً لعرض الاسم النصي)"/>
+          <label class="cp-lbl">عرض اللوغو (بكسل)</label>
+          <input class="input cp-inp" id="ft_logo_width" type="number" placeholder="140"/>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">🔗 أيقونات التواصل</div>
+          <div id="ft_socials"></div>
+          <button type="button" class="btn btn-ghost" onclick="ftAddSocial()" style="width:auto;padding:10px 22px;margin-top:6px">➕ إضافة أيقونة</button>
+        </div>
+        <div class="section-card">
           <label class="cp-lbl">النبذة</label>
           <textarea class="input cp-inp" id="ft_desc" rows="2" placeholder="نبذة قصيرة"></textarea>
-          <label class="cp-lbl">رابط فيسبوك</label>
-          <input class="input cp-inp" id="ft_facebook" dir="ltr" placeholder="https://facebook.com/..."/>
-          <label class="cp-lbl">رابط انستغرام</label>
-          <input class="input cp-inp" id="ft_instagram" dir="ltr" placeholder="https://instagram.com/..."/>
           <label class="cp-lbl">حقوق النشر</label>
           <input class="input cp-inp" id="ft_copy" placeholder="© 2025 Hanadi Insights"/>
           <label class="cp-lbl">التنويه القانوني</label>
@@ -957,19 +965,41 @@ function loadPanel(name){
   if(name==='articles-page')loadSimplePage('articles_page');
   if(name==='footer-page')loadFooterPage();
 }
-// ── محرّر الفوتر ──
+// ── محرّر الفوتر (لوغو + أيقونات ديناميكية) ──
+const FT_PLATFORMS=[['facebook','فيسبوك'],['instagram','انستغرام'],['twitter','X (تويتر)'],['whatsapp','واتساب'],['telegram','تيليغرام'],['youtube','يوتيوب'],['tiktok','تيك توك'],['linkedin','لينكدإن'],['email','إيميل'],['website','موقع']];
+let ftSocials=[];
+function ftSync(){
+  ftSocials=[...document.querySelectorAll('#ft_socials .ft-srow')].map(r=>({
+    platform:r.querySelector('.ft-plat').value,
+    url:r.querySelector('.ft-url').value.trim()
+  }));
+}
+function ftRender(){
+  const box=document.getElementById('ft_socials');
+  box.innerHTML=ftSocials.map((s,i)=>`
+    <div class="ft-srow" style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+      <select class="input cp-inp ft-plat" style="flex:0 0 130px;margin:0">${FT_PLATFORMS.map(p=>`<option value="${p[0]}"${s.platform===p[0]?' selected':''}>${p[1]}</option>`).join('')}</select>
+      <input class="input cp-inp ft-url" dir="ltr" placeholder="https://..." value="${(s.url||'').replace(/"/g,'&quot;')}" style="flex:1;margin:0"/>
+      <button type="button" onclick="ftDel(${i})" style="background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:6px 10px;cursor:pointer">🗑</button>
+    </div>`).join('')||'<div style="color:var(--muted);font-size:.8rem;padding:6px">لا أيقونات. أضيفي واحدة.</div>';
+}
+function ftAddSocial(){ftSync();ftSocials.push({platform:'facebook',url:''});ftRender();}
+function ftDel(i){ftSync();ftSocials.splice(i,1);ftRender();}
 async function loadFooterPage(){
   const st=document.getElementById('ft_status');if(st){st.textContent='⏳ جارٍ التحميل...';st.style.color='var(--muted)';}
   const{data}=await sb.from('page_sections').select('content').eq('section_key','footer_content').maybeSingle();
   const c=(data&&data.content)||{};
   const g=(id,k)=>{const el=document.getElementById(id);if(el)el.value=c[k]||'';};
-  g('ft_desc','desc');g('ft_facebook','facebook');g('ft_instagram','instagram');g('ft_copy','copy');g('ft_legal','legal');
+  g('ft_desc','desc');g('ft_copy','copy');g('ft_legal','legal');g('ft_logo_url','logo_url');g('ft_logo_width','logo_width');
+  ftSocials=Array.isArray(c.socials)?c.socials:[{platform:'facebook',url:''},{platform:'instagram',url:''}];
+  ftRender();
   if(st)st.textContent='';
 }
 async function saveFooterPage(){
   const st=document.getElementById('ft_status');st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  ftSync();
   const v=id=>document.getElementById(id).value.trim();
-  const content={desc:v('ft_desc'),facebook:v('ft_facebook'),instagram:v('ft_instagram'),copy:v('ft_copy'),legal:v('ft_legal')};
+  const content={desc:v('ft_desc'),copy:v('ft_copy'),legal:v('ft_legal'),logo_url:v('ft_logo_url'),logo_width:v('ft_logo_width'),socials:ftSocials.filter(s=>s.url)};
   const{error}=await sb.from('page_sections').upsert({section_key:'footer_content',section_name:'الفوتر',section_type:'page',order_index:97,visible:true,content,updated_at:new Date().toISOString()},{onConflict:'section_key'});
   if(error){st.textContent='⚠ خطأ: '+error.message;st.style.color='#e0ada7';return;}
   st.textContent='✅ تم الحفظ — ستظهر التغييرات في الفوتر خلال لحظات';st.style.color='#a7d0b1';
