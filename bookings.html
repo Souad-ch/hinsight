@@ -433,8 +433,12 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
               <div class="info-box"><div class="info-label">الوقت</div><div class="info-value" id="dTime">—</div></div>
             </div>
             <div class="msg-card">
-              <div class="msg-label">رسالة العميل / التفاصيل</div>
-              <p class="msg-text" id="dMessage">—</p>
+              <div class="msg-label">✍️ بريف العميل</div>
+              <p class="msg-text" id="dBrief">—</p>
+            </div>
+            <div class="msg-card">
+              <div class="msg-label">📋 تفاصيل الطلب</div>
+              <div id="dDetails"></div>
             </div>
             <div class="msg-card" id="dPayBox" style="display:none;border-color:rgba(136,174,148,.4);background:linear-gradient(145deg,rgba(136,174,148,.1),rgba(12,11,15,.34))">
               <div class="msg-label" style="color:#a7d0b1">✅ تم تأكيد الدفع</div>
@@ -787,7 +791,27 @@ function renderDetail(){
   document.getElementById('dEmail').textContent=b.client_email||'—';
   document.getElementById('dDate').textContent=b.date||'—';
   document.getElementById('dTime').textContent=b.time||'—';
-  document.getElementById('dMessage').textContent=b.message||'—';
+  // فصل البريف (الهدف) عن تفاصيل الطلب (رقم/هاتف/مستوى/سوق/تحدي)
+  (function(){
+    const raw=b.message||'';
+    const parts=raw.split('|').map(x=>x.trim()).filter(Boolean);
+    const skip=['اليوم المطلوب','الموعد'];
+    let goal='';const rows=[];
+    parts.forEach(p=>{
+      if(/^HN-REQUEST-/.test(p)){rows.push(['رقم الطلب',p]);return;}
+      const m=p.match(/^([^:：]+)[:：]\s*(.*)$/);
+      if(m){
+        const label=m[1].trim(),val=m[2].trim();
+        if(label==='هدف'){goal=val;return;}
+        if(skip.includes(label))return;
+        rows.push([label,val]);
+      }
+    });
+    const de=document.getElementById('dDetails');
+    if(de)de.innerHTML=rows.map(([l,v])=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line)"><span style="color:var(--text-dim);font-size:.78rem">${esc(l)}</span><span style="color:var(--text);font-size:.85rem;text-align:left;word-break:break-word">${esc(v)}</span></div>`).join('')||'<span style="color:var(--text-muted);font-size:.82rem">—</span>';
+    const be=document.getElementById('dBrief');
+    if(be)be.textContent=goal||'— لم يكتب العميل بريفاً —';
+  })();
   // تحضير الزبون للجلسة (محفوظ بحقل notes كـ JSON)
   const prepCard=document.getElementById('dPrepCard');const prepEl=document.getElementById('dPrep');
   let prep=null;if(b.notes){try{prep=JSON.parse(b.notes);}catch(e){}}
