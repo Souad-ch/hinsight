@@ -998,9 +998,9 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <div class="container">
 <div class="section-head reveal" style="text-align:center;margin-bottom:60px;">
   <div style="font-family:var(--font-en);font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent-light);margin-bottom:18px;">HANADI INSIGHTS</div>
-  <h2 style="font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.01em;line-height:1.1;color:var(--text);margin-bottom:20px;">أسئلة قبل الاستشارة</h2>
+  <h2 data-edit="notes_title" style="font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;letter-spacing:-.01em;line-height:1.1;color:var(--text);margin-bottom:20px;">أسئلة قبل الاستشارة</h2>
   <div style="width:40px;height:1px;background:var(--gold);margin:0 auto 20px;opacity:.6"></div>
-  <p style="color:var(--text-dim);font-size:.95rem;max-width:440px;margin:0 auto;">إجابات مختصرة توضّح فلسفة المنصة وحدود ما تقدمه.</p>
+  <p data-edit="notes_subtitle" style="color:var(--text-dim);font-size:.95rem;max-width:440px;margin:0 auto;">إجابات مختصرة توضّح فلسفة المنصة وحدود ما تقدمه.</p>
 </div>
 
 <div id="faqGrid">
@@ -1743,7 +1743,7 @@ async function loadPageSections(){
       // Keys are globally unique (<sectionkey>_<field>). Skip empty/whitespace to keep fallbacks.
       if(sec.content){
         Object.entries(sec.content).forEach(([key,val])=>{
-          if(typeof val!=='string'||!val.trim())return;
+          if(typeof val!=='string')return; // النص الفاضي يُطبَّق (= حذف) لأن الحقول تُعبّأ بالنص الحالي مسبقاً
           const t=domEl.querySelector('[data-edit="'+key+'"]');
           if(t)t.textContent=val;
         });
