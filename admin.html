@@ -441,6 +441,7 @@
       <div class="side-link" data-panel="consult-page"><span class="side-icon">🛡️</span>صفحة الاستشارات</div>
       <div class="side-link" data-panel="analyses-page"><span class="side-icon">📊</span>صفحة التحليلات</div>
       <div class="side-link" data-panel="articles-page"><span class="side-icon">📝</span>صفحة المقالات</div>
+      <div class="side-link" data-panel="footer-page"><span class="side-icon">🦶</span>الفوتر</div>
       <div class="side-link" data-panel="theme"><span class="side-icon">🎭</span>القالب والألوان</div>
       <div class="side-label">أخرى</div>
       <div class="side-link" data-panel="subscribers"><span class="side-icon">📧</span>المشتركون</div>
@@ -846,6 +847,26 @@
         </div>
       </div>
 
+      <!-- FOOTER EDITOR -->
+      <div class="panel" id="panel-footer-page">
+        <div class="panel-title">الفوتر (أسفل الموقع)</div>
+        <div class="panel-sub">تعديل نبذة الفوتر، روابط التواصل، حقوق النشر، والتنويه القانوني</div>
+        <div class="section-card">
+          <label class="cp-lbl">النبذة</label>
+          <textarea class="input cp-inp" id="ft_desc" rows="2" placeholder="نبذة قصيرة"></textarea>
+          <label class="cp-lbl">رابط فيسبوك</label>
+          <input class="input cp-inp" id="ft_facebook" dir="ltr" placeholder="https://facebook.com/..."/>
+          <label class="cp-lbl">رابط انستغرام</label>
+          <input class="input cp-inp" id="ft_instagram" dir="ltr" placeholder="https://instagram.com/..."/>
+          <label class="cp-lbl">حقوق النشر</label>
+          <input class="input cp-inp" id="ft_copy" placeholder="© 2025 Hanadi Insights"/>
+          <label class="cp-lbl">التنويه القانوني</label>
+          <textarea class="input cp-inp" id="ft_legal" rows="2" placeholder="المحتوى المنشور لأغراض تعليمية..."></textarea>
+          <button class="btn btn-gold" onclick="saveFooterPage()" style="width:auto;padding:12px 32px;margin-top:16px;">💾 حفظ</button>
+          <div id="ft_status" style="margin-top:10px;font-size:0.85rem;"></div>
+        </div>
+      </div>
+
       <!-- ARTICLES PAGE EDITOR -->
       <div class="panel" id="panel-articles-page">
         <div class="panel-title">صفحة المقالات</div>
@@ -934,6 +955,24 @@ function loadPanel(name){
   if(name==='consult-page')loadConsultPage();
   if(name==='analyses-page')loadSimplePage('analyses_page');
   if(name==='articles-page')loadSimplePage('articles_page');
+  if(name==='footer-page')loadFooterPage();
+}
+// ── محرّر الفوتر ──
+async function loadFooterPage(){
+  const st=document.getElementById('ft_status');if(st){st.textContent='⏳ جارٍ التحميل...';st.style.color='var(--muted)';}
+  const{data}=await sb.from('page_sections').select('content').eq('section_key','footer_content').maybeSingle();
+  const c=(data&&data.content)||{};
+  const g=(id,k)=>{const el=document.getElementById(id);if(el)el.value=c[k]||'';};
+  g('ft_desc','desc');g('ft_facebook','facebook');g('ft_instagram','instagram');g('ft_copy','copy');g('ft_legal','legal');
+  if(st)st.textContent='';
+}
+async function saveFooterPage(){
+  const st=document.getElementById('ft_status');st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  const v=id=>document.getElementById(id).value.trim();
+  const content={desc:v('ft_desc'),facebook:v('ft_facebook'),instagram:v('ft_instagram'),copy:v('ft_copy'),legal:v('ft_legal')};
+  const{error}=await sb.from('page_sections').upsert({section_key:'footer_content',section_name:'الفوتر',section_type:'page',order_index:97,visible:true,content,updated_at:new Date().toISOString()},{onConflict:'section_key'});
+  if(error){st.textContent='⚠ خطأ: '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✅ تم الحفظ — ستظهر التغييرات في الفوتر خلال لحظات';st.style.color='#a7d0b1';
 }
 
 // ── محرّر بسيط (عنوان + وصف) لصفحات مستقلة ──
@@ -1824,7 +1863,7 @@ async function loadBuilder(){
   const el=document.getElementById('pbSectionsList');
   el.innerHTML='<div style="padding:32px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);">⏳ جارٍ التحميل...</div>';
   let{data,error}=await sb.from('page_sections').select('*').order('order_index',{ascending:true});
-  if(data)data=data.filter(s=>!['consult_page','analyses_page','articles_page'].includes(s.section_key)); // صفحات مستقلة
+  if(data)data=data.filter(s=>!['consult_page','analyses_page','articles_page','footer_content','consult_settings'].includes(s.section_key)); // صفحات/أقسام مستقلة
   if(error||!data||!data.length){
     el.innerHTML=`<div style="padding:24px 16px;text-align:center;font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);line-height:1.9;">
       لا توجد سيكشنات بعد.<br>اضغط <strong style="color:var(--gold);">⟳ افتراضي</strong> في الأعلى لإنشائها.
