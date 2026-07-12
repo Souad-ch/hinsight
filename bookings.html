@@ -1335,20 +1335,17 @@ document.getElementById('emailMessage').addEventListener('click',async()=>{
   const txt=document.getElementById('messagePreview').textContent;
   const subject=document.getElementById('emailSubject').value.trim()||'رسالة من Hanadi Insights';
   const btn=document.getElementById('emailMessage');btn.disabled=true;btn.textContent='جارٍ الإرسال...';
-  try{
-    await emailjs.send(EJS_SERVICE_ID,EJS_MANUAL_TEMPLATE_ID,{
-      to_email:b.client_email,email:b.client_email,
-      to_name:b.client_name||'',name:b.client_name||'',
-      status_line:subject,subject:subject,message:txt,
-      consultation_type:b.consultation_type||'',request_code:(b.message||'').match(/HN-REQUEST-\d+/)?.[0]||'',
-      appt_date:b.date||'',appt_time:b.time||'',reply_to:''
-    });
-    showS('✅ تم إرسال الإيميل إلى '+b.client_email,true);
-  }catch(e){
-    console.error('email send error:',e);
-    showS('⚠ تعذّر الإرسال: '+((e&&(e.text||e.message))||'تعذّر إرسال الرسالة، حاولي مجدداً'),false);
-  }finally{btn.disabled=false;btn.textContent='✉ إرسال عبر الإيميل';}
+  const ok=await sendMail(b.client_email,subject,msgEmailHTML({name:b.client_name||'',subject,message:txt}));
+  if(ok)showS('✅ تم إرسال الإيميل إلى '+b.client_email,true);
+  else showS('⚠ تعذّر الإرسال، حاولي مجدداً',false);
+  btn.disabled=false;btn.textContent='✉ إرسال عبر الإيميل';
 });
+function _esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function msgEmailHTML(o){
+  return _mShell('رسالة من Hanadi Insights',
+    `<p style="color:#f2ede3;font-size:16px;margin:0 0 14px;font-weight:600">مرحباً ${_esc(o.name)}،</p>
+     <p style="color:#c3cabf;font-size:15px;line-height:1.95;margin:0;white-space:pre-line">${_esc(o.message)}</p>`);
+}
 
 // ── إرسال رابط الدفع ──
 // إظهار حقل المبلغ المخصص عند اختيار "مبلغ مخصص"

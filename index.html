@@ -1510,6 +1510,40 @@ setTimeout(fixAllah,2500);
   }catch(e){}
 })();
 
+// ── إرسال الإيميلات عبر Resend (موحّد من info@) ──
+async function sendMail(to,subject,html,replyTo){
+  try{
+    if(!sbClient)return false;
+    const {data,error}=await sbClient.functions.invoke('rapid-task',{body:{to,subject,html,reply_to:replyTo||'info@hanadiabdullah.com'}});
+    return !error&&!!(data&&(data.id||!data.error));
+  }catch(e){console.warn('sendMail:',e);return false;}
+}
+function _esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function _mShell(sub,inner){
+  return `<div style="background:#0C0B0F;margin:0;padding:0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0C0B0F"><tr><td align="center" style="padding:36px 14px">
+  <table role="presentation" cellpadding="0" cellspacing="0" dir="rtl" style="width:600px;max-width:100%;background:#16130f;border:1px solid rgba(201,178,123,0.22);border-radius:16px;overflow:hidden;font-family:Tahoma,Arial,sans-serif;box-shadow:0 14px 48px rgba(0,0,0,0.55)">
+    <tr><td style="height:3px;background:linear-gradient(90deg,#c9b27b,#9FBBA4,#c9b27b)"></td></tr>
+    <tr><td style="padding:40px 34px 8px;text-align:center"><div style="font-family:Georgia,serif;font-size:27px;font-weight:600;color:#c9b27b;letter-spacing:1px">Hanadi Insights</div><div style="font-size:11px;color:#9FBBA4;margin-top:9px;letter-spacing:2px;text-transform:uppercase">${sub}</div><div style="width:42px;height:1px;background:#c9b27b;margin:17px auto 0;opacity:.7"></div></td></tr>
+    <tr><td style="padding:14px 34px 34px">${inner}</td></tr>
+    <tr><td style="padding:22px;text-align:center;background:#0a0a0c;border-top:1px solid rgba(201,178,123,0.14)"><div style="font-family:Georgia,serif;color:#c9b27b;font-size:14px">Hanadi Insights</div><div style="color:#6a7268;font-size:11px;margin-top:5px">منصة تحليل اقتصادي وأسواق عالمية — © جميع الحقوق محفوظة</div></td></tr>
+  </table></td></tr></table></div>`;
+}
+function _mBox(rows){return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(201,178,123,0.05);border:1px solid rgba(201,178,123,0.18);border-radius:12px;margin-top:14px"><tr><td style="padding:18px 22px"><table width="100%" cellpadding="0" cellspacing="0" style="color:#cbd4cc;font-size:14px;line-height:2.3">${rows}</table></td></tr></table>`;}
+function _mRow(l,v,a){return `<tr><td style="color:#8a978b;padding:3px 0">${l}</td><td style="text-align:left;color:${a||'#DDDEDD'};font-weight:${a?'700':'500'}">${_esc(v)||'—'}</td></tr>`;}
+function reqEmailHTML(o){
+  return _mShell('استلام الطلب',
+    `<p style="color:#f2ede3;font-size:16px;margin:0 0 14px;font-weight:600">مرحباً ${_esc(o.name)}،</p>
+     <p style="color:#c3cabf;font-size:15px;line-height:1.95;margin:0 0 4px">تم استلام طلبك بنجاح. سنراجعه ونرسل لك تفاصيل الدفع لتثبيت موعدك.</p>
+     ${_mBox(_mRow('النوع',o.type)+_mRow('الموعد',o.when))}
+     <div style="background:rgba(201,178,123,0.08);border:1px solid rgba(201,178,123,0.32);border-radius:10px;padding:15px 18px;margin-top:16px;color:#d9c18f;font-size:13.5px;line-height:1.9">موعدك محجوز <b>مبدئياً</b>. سيصلك رابط الدفع، وبعد إتمامه يُثبَّت موعدك تلقائياً.</div>
+     <p style="color:#6a7268;font-size:12px;margin:18px 0 0;text-align:center">إن لم تجد رسائلنا في الوارد، تحقّق من مجلد الرسائل غير المرغوبة (Spam).</p>`);
+}
+function adminNotifyHTML(o){
+  return _mShell('طلب جديد',
+    `<p style="color:#f2ede3;font-size:16px;margin:0 0 8px;font-weight:600">${_esc(o.title||'طلب جديد')}</p>
+     ${_mBox(_mRow('الاسم',o.name)+_mRow('البريد',o.email)+_mRow('الهاتف',o.phone)+_mRow('النوع',o.type)+_mRow('الموعد',o.when)+(o.message?_mRow('ملاحظة',o.message):''))}`);
+}
+
 // ── PAGE SECTIONS LOADER ──
 // Maps section_key → {el: DOM selector, updates: [{field, selector, fn}]}
 const _SEC_MAP={
@@ -2188,26 +2222,12 @@ body:JSON.stringify({name,phone,email:email||'',type:'حجز موعد عبر ا�
 }
 }catch(e){console.warn('sheets:',e);}
 
-// 4) إيميل لهنادي
+// 4) إيميلات (عبر Resend من info@)
 try{
-if(window.emailjs&&EJS_PUBLIC_KEY){
-await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
-from_name:name,phone:phone,from_email:email||'لم يُدخل',
-session:'حجز موعد عبر التقويم',
-message:'حجز موعد جديد: '+dateStr+' — '+slotLabel,
-date:dateStr,consultation_type:'حجز موعد عبر التقويم',
-to_email:ADMIN_EMAIL,reply_to:email||ADMIN_EMAIL
-});
-// تأكيد للزبون (إن أدخل بريداً)
+const when=dateStr+' — '+slotLabel;
+await sendMail(ADMIN_EMAIL,'حجز موعد جديد',adminNotifyHTML({title:'حجز موعد عبر التقويم',name,email:email||'—',phone,type:'حجز موعد',when}),email||ADMIN_EMAIL);
 if(email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
-to_name:name,name:name,client_name:name,
-to_email:email,email:email,
-consultation_type:'حجز موعد',session:'حجز موعد',type:'حجز موعد',
-phone:phone,message:'حجز موعد: '+dateStr+' — '+slotLabel,
-date:dateStr+' — '+slotLabel,reply_to:ADMIN_EMAIL
-});
-}
+await sendMail(email,'استلمنا حجزك — Hanadi Insights',reqEmailHTML({name,type:'حجز موعد',when}));
 }
 }catch(e){console.warn('booking email:',e);}
 
@@ -2459,30 +2479,13 @@ async function sendConsRequest(){
         body:JSON.stringify({name,phone,email,type,message:msg,created_at:new Date().toISOString()})});
     }
   }catch(e){}
-  // 3) إيميل لهنادي (المدير)
+  // 3) إيميلات (عبر Resend من info@)
   try{
-    if(window.emailjs&&EJS_PUBLIC_KEY){
-      await emailjs.send(EJS_SERVICE_ID,EJS_TEMPLATE_ID,{
-        from_name:name,phone:phone,from_email:email,
-        session:type,consultation_type:type,
-        message:'طلب استشارة جديد ('+type+')'+(msg?' — '+msg:''),
-        date:dateStr,to_email:ADMIN_EMAIL,reply_to:email
-      });
+    await sendMail(ADMIN_EMAIL,'طلب استشارة جديد',adminNotifyHTML({title:'طلب استشارة جديد',name,email,phone,type,when:dateStr,message:msg}),email);
+    if(email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      await sendMail(email,'استلمنا طلبك — Hanadi Insights',reqEmailHTML({name,type,when:dateStr}));
     }
-  }catch(e){console.warn('emailjs admin:',e);}
-  // 4) إيميل تأكيد للزبون — مستقل عن إيميل المدير
-  try{
-    if(window.emailjs&&EJS_PUBLIC_KEY){
-      await emailjs.send(EJS_SERVICE_ID,EJS_CONFIRM_TEMPLATE_ID,{
-        to_name:name,name:name,client_name:name,
-        to_email:email,email:email,
-        consultation_type:type,session:type,type:type,
-        phone:phone,message:msg||type,date:dateStr,
-        reply_to:ADMIN_EMAIL
-      });
-      console.log('✅ confirmation email sent to',email);
-    }
-  }catch(e){console.warn('emailjs customer confirm:',e);}
+  }catch(e){console.warn('booking email:',e);}
   document.getElementById('consFormWrap').style.display='none';
   document.getElementById('consSuccessWrap').style.display='';
   btn.disabled=false;btn.innerHTML='إرسال الطلب ←';

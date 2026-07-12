@@ -211,6 +211,12 @@ function _mShell(sub,inner){
 }
 function _mBox(rows){return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:rgba(201,178,123,0.05);border:1px solid rgba(201,178,123,0.18);border-radius:12px;margin-top:14px"><tr><td style="padding:18px 22px"><table width="100%" cellpadding="0" cellspacing="0" style="color:#cbd4cc;font-size:14px;line-height:2.3">${rows}</table></td></tr></table>`;}
 function _mRow(l,v,a){return `<tr><td style="color:#8a978b;padding:3px 0">${l}</td><td style="text-align:left;color:${a||'#DDDEDD'};font-weight:${a?'700':'500'}">${v||'—'}</td></tr>`;}
+function adminNotifyHTML(o){
+  return _mShell('إشعار الإدارة',
+    `<p style="color:#f2ede3;font-size:16px;margin:0 0 8px;font-weight:600">${o.title||''}</p>
+     <p style="color:#c3cabf;font-size:14px;line-height:1.9;margin:0">${o.message||''}</p>
+     ${_mBox(_mRow('الاسم',o.name)+_mRow('البريد',o.email)+_mRow('الهاتف',o.phone)+_mRow('الاستشارة',o.type)+_mRow('الموعد',o.appt)+_mRow('الرمز',o.code,'#9FBBA4'))}`);
+}
 function confirmEmailHTML(o){
   return _mShell('تأكيد الحجز',
     `<p style="color:#f2ede3;font-size:16px;margin:0 0 14px;font-weight:600">مرحباً ${o.name}،</p>
@@ -314,13 +320,12 @@ async function finalizePaid(method,ref){
       }
     }
   }catch(e){console.warn('lock:',e);}
-  // 3) إيميل للإدارة
-  try{ if(window.emailjs)await emailjs.send(EJS_SERVICE,EJS_ADMIN,{
-    from_name:booking&&booking.client_name||'زبون',from_email:booking&&booking.client_email||'',
-    phone:booking&&booking.client_phone||'',session:booking&&booking.consultation_type||'',
-    request_code:REQ_CODE,appointment:booking&&booking.time||'',
-    message:`✅ تم الدفع — الطريقة: ${method} — المبلغ: ${AMOUNT}$ — المرجع: ${ref} — الطلب: ${REQ_CODE}`,
-    to_email:ADMIN_EMAIL,reply_to:booking&&booking.client_email||ADMIN_EMAIL }); }catch(e){}
+  // 3) إيميل للإدارة (عبر Resend)
+  try{ await sendMail(ADMIN_EMAIL,'✅ تم الدفع — '+REQ_CODE,adminNotifyHTML({
+    title:'تم استلام الدفع',message:`الطريقة: ${method} — المبلغ: ${AMOUNT}$ — المرجع: ${ref}`,
+    name:booking&&booking.client_name,email:booking&&booking.client_email,phone:booking&&booking.client_phone,
+    type:booking&&booking.consultation_type,appt:booking&&booking.time,code:REQ_CODE
+  }),booking&&booking.client_email); }catch(e){}
   // 4) إيميل تأكيد للزبون (عبر Resend من info@)
   try{ if(booking&&booking.client_email)await sendMail(booking.client_email,'تم تثبيت حجزك ✓ — Hanadi Insights',
     confirmEmailHTML({name:booking.client_name||'',type:booking.consultation_type||'',day:parseSlot(booking).day,time:parseSlot(booking).time,code:REQ_CODE})); }catch(e){}
@@ -426,12 +431,11 @@ document.getElementById('shamBtn').addEventListener('click',async()=>{
   try{
     // تسجيل قيد المراجعة (لا يقفل الموعد إلا بعد تأكيد الإدارة من اللوحة)
     if(booking)await sb.from('bookings').update({status:'pending'}).eq('id',booking.id);
-    if(window.emailjs)await emailjs.send(EJS_SERVICE,EJS_ADMIN,{
-      from_name:booking&&booking.client_name||nm,from_email:booking&&booking.client_email||'',
-      phone:booking&&booking.client_phone||'',session:booking&&booking.consultation_type||'',
-      request_code:REQ_CODE,appointment:booking&&booking.time||'',
-      message:`🟡 دفع شام كاش بانتظار التحقق — المبلغ: ${AMOUNT}$ — رقم التحويل: ${ref} — المُحوِّل: ${nm} — الطلب: ${REQ_CODE}`,
-      to_email:ADMIN_EMAIL,reply_to:booking&&booking.client_email||ADMIN_EMAIL });
+    await sendMail(ADMIN_EMAIL,'🟡 دفع شام كاش بانتظار التحقق — '+REQ_CODE,adminNotifyHTML({
+      title:'دفع شام كاش بانتظار التحقق',message:`المبلغ: ${AMOUNT}$ — رقم التحويل: ${ref} — المُحوِّل: ${nm}`,
+      name:booking&&booking.client_name||nm,email:booking&&booking.client_email,phone:booking&&booking.client_phone,
+      type:booking&&booking.consultation_type,appt:booking&&booking.time,code:REQ_CODE
+    }),booking&&booking.client_email);
     showSuccess('تم استلام إثبات الدفع','وصلنا إثبات تحويلك عبر شام كاش وسيتم التحقق منه يدوياً وتأكيد حجزك قريباً. رمز طلبك مرجعك للمتابعة.');
   }catch(e){
     res.className='result err';res.textContent='⚠ تعذّر الإرسال. حاول مجدداً أو تواصل مع الدعم.';
