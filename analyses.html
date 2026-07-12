@@ -449,7 +449,7 @@ loadContactCta();
     if(!(window.supabase&&window.supabase.createClient)){if(tries++<40)return setTimeout(init,300);return;}
     var c=window.supabase.createClient(SB,KEY);
     c.from('page_sections').select('content').eq('section_key','whatsapp_settings').maybeSingle().then(function(r){
-      var s=r&&r.data&&r.data.content;if(!s||!s.enabled||s.floatBtn===false)return;
+      var s=r&&r.data&&r.data.content;if(!s||!s.enabled||!s.floatBtn||!s.number)return;
       var num=String(s.number||'').replace(/[^0-9]/g,'');if(!num)return;
       var msg=encodeURIComponent(s.welcomeMsg||'مرحباً، أود الاستفسار عن الاستشارات.');
       var a=document.createElement('a');
