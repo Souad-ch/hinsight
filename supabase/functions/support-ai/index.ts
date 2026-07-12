@@ -34,8 +34,14 @@ const SYSTEM = `أنت "مساعد هنادي" — بوت الدعم الفني 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   try {
+    console.log("[support-ai] request received; OPENAI_KEY set:", OPENAI_KEY ? `yes (len ${OPENAI_KEY.length})` : "NO — المفتاح غير موجود");
     const { session_code, message } = await req.json();
+    console.log("[support-ai] session_code:", session_code, "| message:", message);
     if (!session_code || !message) return json({ error: "missing session_code/message" }, 400);
+    if (!OPENAI_KEY) {
+      console.error("[support-ai] OPENAI_KEY is empty — أضِف السيكرت باسم OPENAI_KEY في Edge Functions → Secrets");
+      return json({ error: "no_openai_key", detail: "OPENAI_KEY secret is not set on the function" }, 200);
+    }
     const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     // سجل المحادثة
@@ -70,11 +76,18 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ model: "gpt-4o-mini", messages: chat, temperature: 0.3, max_tokens: 400 }),
     });
     const d = await r.json();
-    if (!r.ok) return json({ error: "openai", detail: d }, 200);
+    console.log("[support-ai] OpenAI status:", r.status);
+    if (!r.ok) {
+      console.error("[support-ai] OpenAI error:", JSON.stringify(d));
+      return json({ error: "openai", detail: d }, 200);
+    }
     const reply = d?.choices?.[0]?.message?.content?.trim() || "عذراً، تعذّر الرد الآن، وسيتواصل معك أحد المختصين.";
-    await sb.from("support_messages").insert({ session_code, sender: "bot", text: reply });
+    const ins = await sb.from("support_messages").insert({ session_code, sender: "bot", text: reply });
+    if (ins.error) console.error("[support-ai] insert reply failed:", JSON.stringify(ins.error));
+    console.log("[support-ai] reply sent OK");
     return json({ reply });
   } catch (e) {
+    console.error("[support-ai] exception:", String(e), (e as any)?.stack || "");
     return json({ error: String(e) }, 500);
   }
 });
