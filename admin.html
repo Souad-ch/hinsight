@@ -1089,7 +1089,7 @@ function stBar(label,value,max,extra){
 }
 async function loadStats(){
   let data=[];
-  try{const r=await sb.from('bookings').select('consultation_type,status,created_at');data=r.data||[];}catch(e){}
+  try{const r=await sb.from('bookings').select('consultation_type,status,created_at,pay_amount');data=r.data||[];}catch(e){}
   const now=new Date(),mStart=new Date(now.getFullYear(),now.getMonth(),1);
   let revenue=0,revMonth=0,confirmed=0;
   const byType={},byStatus={};
@@ -1098,7 +1098,9 @@ async function loadStats(){
     byStatus[st]=(byStatus[st]||0)+1;
     if(isConfirmed(b.status)){
       confirmed++;
-      const p=priceOf(b.consultation_type);revenue+=p;
+      // المبلغ الفعلي المدفوع (يشمل المبالغ المخصّصة) وإلا سعر الباقة الثابت
+      const p=(parseFloat(String(b.pay_amount||'').replace(/[^0-9.]/g,''))||0)||priceOf(b.consultation_type);
+      revenue+=p;
       if(b.created_at&&new Date(b.created_at)>=mStart)revMonth+=p;
       const k=b.consultation_type||'غير محدد';byType[k]=(byType[k]||0)+p;
     }
