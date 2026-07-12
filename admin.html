@@ -447,6 +447,7 @@
       <div class="side-link" data-panel="whatsapp-page"><span class="side-icon">💚</span>واتساب</div>
       <div class="side-link" data-panel="theme"><span class="side-icon">🎭</span>القالب والألوان</div>
       <div class="side-label">أخرى</div>
+      <div class="side-link" data-panel="stats"><span class="side-icon">📊</span>الإحصائيات</div>
       <div class="side-link" data-panel="subscribers"><span class="side-icon">📧</span>المشتركون</div>
       <div class="side-link" data-panel="analytics-page"><span class="side-icon">📈</span>Google Analytics</div>
       <div class="side-link" onclick="window.open('/','_blank')"><span class="side-icon">🌐</span>الموقع</div>
@@ -901,6 +902,26 @@
         </div>
       </div>
 
+      <!-- STATS DASHBOARD -->
+      <div class="panel" id="panel-stats">
+        <div class="panel-title">الإحصائيات</div>
+        <div class="panel-sub">ملخّص أداء الحجوزات والإيرادات — يشمل كل الحجوزات المؤكَّدة</div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-box-num" id="st-revenue">—</div><div class="stat-box-label">الإيرادات المؤكَّدة ($)</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="st-revenue-month">—</div><div class="stat-box-label">إيرادات هذا الشهر ($)</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="st-confirmed">—</div><div class="stat-box-label">حجوزات مؤكَّدة</div></div>
+          <div class="stat-box"><div class="stat-box-num" id="st-rate">—</div><div class="stat-box-label">معدّل التأكيد</div></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">الاستشارات حسب النوع</div>
+          <div id="st-bytype" style="display:flex;flex-direction:column;gap:14px;margin-top:6px"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">حالة الطلبات</div>
+          <div id="st-status" style="display:flex;flex-direction:column;gap:14px;margin-top:6px"></div>
+        </div>
+      </div>
+
       <!-- GOOGLE ANALYTICS EDITOR -->
       <div class="panel" id="panel-analytics-page">
         <div class="panel-title">Google Analytics</div>
@@ -1045,6 +1066,62 @@ function loadPanel(name){
   if(name==='payments-page')loadPaymentMethods();
   if(name==='whatsapp-page')loadWhatsapp();
   if(name==='analytics-page')loadAnalytics();
+  if(name==='stats')loadStats();
+}
+// ── لوحة الإحصائيات ──
+function priceOf(type){
+  const t=String(type||'');
+  if(/VIP|في اي بي|عضوية/i.test(t))return 1000;
+  if(/مشهد|اقتصاد/i.test(t))return 600;
+  if(/مخاطر|هندسة/i.test(t))return 400;
+  if(/تقييم|متداول/i.test(t))return 250;
+  return 0;
+}
+function isConfirmed(s){return String(s||'').toLowerCase()==='confirmed';}
+function stBar(label,value,max,extra){
+  const pct=max>0?Math.round((value/max)*100):0;
+  return `<div>
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;color:var(--cream)">
+      <span>${label}</span><span style="color:var(--gold-bright)">${value}${extra||''}</span></div>
+    <div style="height:9px;background:rgba(120,144,124,.1);border-radius:6px;overflow:hidden">
+      <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent,#78907C),var(--gold,#c9b27b));border-radius:6px"></div></div>
+  </div>`;
+}
+async function loadStats(){
+  let data=[];
+  try{const r=await sb.from('bookings').select('consultation_type,status,created_at');data=r.data||[];}catch(e){}
+  const now=new Date(),mStart=new Date(now.getFullYear(),now.getMonth(),1);
+  let revenue=0,revMonth=0,confirmed=0;
+  const byType={},byStatus={};
+  data.forEach(b=>{
+    const st=String(b.status||'pending').toLowerCase();
+    byStatus[st]=(byStatus[st]||0)+1;
+    if(isConfirmed(b.status)){
+      confirmed++;
+      const p=priceOf(b.consultation_type);revenue+=p;
+      if(b.created_at&&new Date(b.created_at)>=mStart)revMonth+=p;
+      const k=b.consultation_type||'غير محدد';byType[k]=(byType[k]||0)+p;
+    }
+  });
+  const total=data.length;
+  const rate=total?Math.round((confirmed/total)*100):0;
+  document.getElementById('st-revenue').textContent=revenue.toLocaleString('en-US');
+  document.getElementById('st-revenue-month').textContent=revMonth.toLocaleString('en-US');
+  document.getElementById('st-confirmed').textContent=confirmed;
+  document.getElementById('st-rate').textContent=rate+'%';
+  // حسب النوع (بالإيراد)
+  const typeEntries=Object.entries(byType).sort((a,b)=>b[1]-a[1]);
+  const maxT=typeEntries.length?typeEntries[0][1]:0;
+  document.getElementById('st-bytype').innerHTML=typeEntries.length
+    ? typeEntries.map(([k,v])=>stBar(k,v,maxT,' $')).join('')
+    : '<div style="color:var(--muted);font-size:.85rem">لا توجد حجوزات مؤكَّدة بعد.</div>';
+  // حسب الحالة (بالعدد)
+  const stLabels={confirmed:'مؤكَّد',pending:'قيد المراجعة',cancelled:'ملغى',canceled:'ملغى'};
+  const stEntries=Object.entries(byStatus).sort((a,b)=>b[1]-a[1]);
+  const maxS=stEntries.length?Math.max(...stEntries.map(e=>e[1])):0;
+  document.getElementById('st-status').innerHTML=stEntries.length
+    ? stEntries.map(([k,v])=>stBar(stLabels[k]||k,v,maxS)).join('')
+    : '<div style="color:var(--muted);font-size:.85rem">لا توجد طلبات بعد.</div>';
 }
 // ── Google Analytics ──
 async function loadAnalytics(){
