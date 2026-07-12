@@ -455,11 +455,23 @@ document.getElementById('chatSend').addEventListener('click',async()=>{
   try{
     await sb.from('support_messages').insert({session_code:REQ_CODE,sender:'customer',text});
     // رد البوت الذكي (مقيّد بالموقع) — يتوقف تلقائياً إذا حُوّلت المحادثة لموظف
-    sb.functions.invoke('support-ai',{body:{session_code:REQ_CODE,message:text}}).catch(e=>console.warn('ai:',e));
+    try{
+      const {data,error}=await sb.functions.invoke('support-ai',{body:{session_code:REQ_CODE,message:text}});
+      if(error){botNote('تعذّر الاتصال بالمساعد الآن. اكتب «موظف» لتحويلك لمختص.');console.warn('ai invoke error:',error);}
+      else if(data&&data.error){botNote('المساعد الذكي غير مُفعّل حالياً. اكتب «موظف» ليردّ عليك مختص.');console.warn('ai backend error:',data.detail||data.error);}
+      // الرد الناجح يظهر تلقائياً عبر التحديث اللحظي (realtime)
+    }catch(e){botNote('تعذّر الوصول للمساعد. اكتب «موظف» لتحويلك لمختص.');console.warn('ai:',e);}
   }
   catch(e){console.warn('chat:',e);}
   finally{btn.disabled=false;inp.focus();}
 });
+// ملاحظة محلية من البوت (لا تُحفظ في قاعدة البيانات) لإظهار حالة/خطأ للعميل
+function botNote(txt){
+  if(chatBox.querySelector('.chat-empty'))chatBox.innerHTML='';
+  const d=document.createElement('div');d.className='chat-bubble operator';
+  d.innerHTML='<span class="chat-sender">مساعد هنادي</span>'+escChat(txt);
+  chatBox.appendChild(d);chatBox.scrollTop=chatBox.scrollHeight;
+}
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('chatSend').click();});
 loadChatHistory();initChatRealtime();
 
