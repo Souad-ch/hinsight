@@ -4,7 +4,13 @@
 // ════════════════════════════════════════════════════════════
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const OPENAI_KEY = Deno.env.get("OPENAI_KEY") ?? "";
+// يقبل عدة تسميات شائعة للمفتاح تفادياً لخطأ الاسم
+const OPENAI_KEY =
+  Deno.env.get("OPENAI_KEY") ??
+  Deno.env.get("OPENAI_API_KEY") ??
+  Deno.env.get("OPEN_AI_KEY") ??
+  Deno.env.get("OPENAI") ??
+  "";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
