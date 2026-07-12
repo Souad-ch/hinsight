@@ -1483,9 +1483,13 @@ setTimeout(fixAllah,2500);
     if(Array.isArray(c.socials)&&c.socials.length){
       const box=document.getElementById('footerSocials');
       if(box){
-        box.innerHTML=c.socials.filter(s=>s.url&&SOCIAL_ICONS[s.platform]).map(s=>
-          '<a href="'+s.url+'" target="_blank" rel="noopener" class="social-link" title="'+SOCIAL_ICONS[s.platform].label+'"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'+SOCIAL_ICONS[s.platform].svg+'</svg></a>'
-        ).join('');
+        box.innerHTML=c.socials.filter(s=>s.url&&SOCIAL_ICONS[s.platform]).map(s=>{
+          let url=(s.url||'').trim();
+          if(s.platform==='email'){ url='mailto:'+url.replace(/^mailto:/i,''); }
+          else if(!/^(https?:|mailto:|tel:)/i.test(url)){ url=url.includes('@')?'mailto:'+url:'https://'+url; }
+          const isMail=/^mailto:/i.test(url);
+          return '<a href="'+url+'"'+(isMail?'':' target="_blank" rel="noopener"')+' class="social-link" title="'+SOCIAL_ICONS[s.platform].label+'"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">'+SOCIAL_ICONS[s.platform].svg+'</svg></a>';
+        }).join('');
       }
     }
   }catch(e){}
