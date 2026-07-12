@@ -1346,7 +1346,7 @@ document.getElementById('emailMessage').addEventListener('click',async()=>{
     showS('✅ تم إرسال الإيميل إلى '+b.client_email,true);
   }catch(e){
     console.error('email send error:',e);
-    showS('⚠ تعذّر الإرسال: '+((e&&(e.text||e.message))||'تأكدي من إنشاء القالب template_manual في EmailJS'),false);
+    showS('⚠ تعذّر الإرسال: '+((e&&(e.text||e.message))||'تعذّر إرسال الرسالة، حاولي مجدداً'),false);
   }finally{btn.disabled=false;btn.textContent='✉ إرسال عبر الإيميل';}
 });
 
