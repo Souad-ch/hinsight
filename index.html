@@ -776,7 +776,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <div class="timeline-item"><span class="timeline-year en" data-edit="about_tl4_year">Today</span><p class="timeline-title" data-edit="about_tl4_title">منصة تحليل اقتصادي وأسواق عالمية</p></div>
 </div>
 </div>
-<div class="about-photo reveal delay-2"><img id="aboutPhotoImg" src="images/hanadi.jpg" alt="هنادي عبدالله" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:6px;"/><div class="portrait-word" style="display:none"><span class="en" data-edit="about_portrait_name">Hanadi</span><small data-edit="about_portrait_role">Market Analyst · Trading Expert</small></div></div>
+<div class="about-photo reveal delay-2"><img id="aboutPhotoImg" src="images/hanadi.jpg" alt="هنادي عبدالله" onerror="if(this.src.indexOf('hanadi.jpg')<0)this.src='images/hanadi.jpg';" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:6px;"/></div>
 </div>
 </div>
 </section>
@@ -1519,10 +1519,9 @@ const _SEC_MAP={
     el:'#about',
     updates:[
       {field:'image_url',sel:'.about-photo',fn:(el,v)=>{
-        if(!v)return;
-        const img=el.querySelector('img')||document.createElement('img');
-        img.src=v;img.alt='هنادي';img.style.cssText='width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:6px;';
-        el.style.position='relative';el.innerHTML='';el.appendChild(img);
+        if(!v||!String(v).trim())return; // فارغ → أبقِ الصورة الافتراضية
+        const img=el.querySelector('#aboutPhotoImg')||el.querySelector('img');
+        if(img){img.onerror=function(){this.src='images/hanadi.jpg';};img.src=v;}
       }}
     ]
   },
