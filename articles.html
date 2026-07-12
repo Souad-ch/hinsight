@@ -164,6 +164,27 @@ img,svg,video,iframe{max-width:100%;height:auto}
 table{max-width:100%}
 input,textarea,select,button{max-width:100%}
 h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
+
+/* ===== FOOTER (موحّد مع الرئيسية) ===== */
+#footer{background:var(--card);border-top:1px solid var(--line);padding:72px 0 36px;margin-top:70px;position:relative;z-index:1;}
+#footer .footer-top{display:grid;grid-template-columns:1.8fr 1fr 1fr;gap:56px;margin-bottom:56px;}
+#footer .footer-brand .logo{display:block;margin-bottom:4px;}
+#footer .footer-brand .logo-main{font-size:1.1rem;}
+#footer .footer-brand .logo-sub{font-size:0.6rem;color:var(--text-muted);letter-spacing:0.14em;text-transform:uppercase;display:block;margin-top:2px;}
+#footer .footer-brand p{font-size:0.85rem;color:var(--text-muted);line-height:1.8;margin-top:14px;max-width:280px;}
+#footer .footer-col h4{font-size:0.72rem;font-family:var(--font-en);letter-spacing:0.18em;text-transform:uppercase;color:var(--accent-light);margin-bottom:22px;}
+#footer .footer-col ul{list-style:none;}
+#footer .footer-col ul li{margin-bottom:12px;}
+#footer .footer-col ul a{font-size:0.88rem;color:var(--text-muted);transition:var(--tr);}
+#footer .footer-col ul a:hover{color:var(--accent-light);}
+#footer .social-links{display:flex;gap:10px;margin-top:24px;}
+#footer .social-link{width:38px;height:38px;background:var(--bg);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:var(--tr);}
+#footer .social-link svg{width:16px;height:16px;fill:currentColor;}
+#footer .social-link:hover{border-color:var(--accent);color:var(--accent-light);transform:translateY(-3px);}
+#footer .footer-bottom{border-top:1px solid var(--line);padding-top:28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+#footer .footer-copy{font-family:var(--font-en);font-size:0.75rem;color:var(--text-muted);}
+#footer .footer-legal{font-size:0.78rem;color:var(--text-muted);max-width:500px;text-align:center;}
+@media(max-width:760px){#footer .footer-top{grid-template-columns:1fr;gap:32px;}#footer .footer-bottom{flex-direction:column;text-align:center;}}
 </style>
 </head>
 <body>
@@ -256,9 +277,38 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 </div>
 </section>
 
-<footer class="mini-footer">
+<footer id="footer">
 <div class="container">
-<p>© 2025 Hanadi Insights — <a href="/" style="color:var(--accent-light);">العودة للرئيسية</a></p>
+<div class="footer-top">
+<div class="footer-brand">
+<div class="logo"><span class="logo-main en">Hanadi Insights</span><span class="logo-sub en">Strategic Market Analysis</span></div>
+<p id="footerDesc">منصة شخصية لتحليل الأسواق تربط السياسة والاقتصاد والسيولة وإدارة المخاطر بمنهجية هنادي.</p>
+<div class="social-links" id="footerSocials"></div>
+</div>
+<div class="footer-col">
+<h4>روابط سريعة</h4>
+<ul>
+<li><a href="/">الرئيسية</a></li>
+<li><a href="/#about">عن هنادي</a></li>
+<li><a href="/#method">المنهجية</a></li>
+<li><a href="/analyses">التحليلات</a></li>
+<li><a href="/articles">المقالات</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h4>استكشف المزيد</h4>
+<ul>
+<li><a href="/#consultations">الاستشارات</a></li>
+<li><a href="/#reports">التقارير</a></li>
+<li><a href="/#notes">الأسئلة الشائعة</a></li>
+<li><a href="/#newsletter">النشرة البريدية</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span class="footer-copy en" id="footerCopy">© 2025 Hanadi Insights</span>
+<p class="footer-legal" id="footerLegal">المحتوى المنشور لأغراض تعليمية وتحليلية ولا يُعد توصية استثمارية مباشرة.</p>
+</div>
 </div>
 </footer>
 
@@ -409,6 +459,52 @@ loadContactCta();
       a.addEventListener('mouseleave',function(){a.style.transform='scale(1)';});
       a.innerHTML='<svg width="30" height="30" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.359.101 11.892c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.882 11.882 0 005.71 1.454h.006c6.585 0 11.946-5.359 11.949-11.893a11.821 11.821 0 00-3.48-8.46"/></svg>';
       document.body.appendChild(a);
+    },function(){});
+  }
+  init();
+})();
+</script>
+
+<script>
+(function(){
+  var SB="https://ozxwyyeyxmpkhsygntoy.supabase.co",KEY="sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG",tries=0;
+  const SOCIAL_ICONS={
+ facebook:{label:'فيسبوك',svg:'<path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.09 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.69.24 2.69.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.09 24 18.1 24 12.07z"/>'},
+ instagram:{label:'انستغرام',svg:'<path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.64-.07-4.85s.01-3.58.07-4.85C2.4 3.93 3.92 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0zm0 5.84a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32zM12 16a4 4 0 110-8 4 4 0 010 8zm6.41-11.85a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88z"/>'},
+ twitter:{label:'X (تويتر)',svg:'<path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.49l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41z"/>'},
+ whatsapp:{label:'واتساب',svg:'<path d="M17.5 14.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.29.17-1.42-.07-.13-.27-.2-.57-.35zM12 2C6.48 2 2 6.48 2 12c0 1.77.46 3.42 1.27 4.86L2 22l5.28-1.24A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/>'},
+ telegram:{label:'تيليغرام',svg:'<path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.86 8.78c-.14.62-.51.77-1.03.48l-2.85-2.1-1.37 1.32c-.15.15-.28.28-.57.28l.2-2.9 5.28-4.77c.23-.2-.05-.32-.35-.11l-6.53 4.11-2.81-.88c-.61-.19-.62-.61.13-.9l10.98-4.23c.51-.19.96.12.79.9z"/>'},
+ youtube:{label:'يوتيوب',svg:'<path d="M23.5 6.2a3.02 3.02 0 00-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.51A3.02 3.02 0 00.5 6.2C0 8.08 0 12 0 12s0 3.92.5 5.8a3.02 3.02 0 002.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 002.12-2.14C24 15.92 24 12 24 12s0-3.92-.5-5.8zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/>'},
+ tiktok:{label:'تيك توك',svg:'<path d="M16.6 5.82a4.28 4.28 0 01-1.05-2.82h-3.3v13.4a2.59 2.59 0 01-2.58 2.5 2.59 2.59 0 01-2.58-2.6 2.59 2.59 0 013.4-2.46V10.5a5.92 5.92 0 00-6.7 5.87 5.9 5.9 0 005.9 5.9 5.9 5.9 0 005.88-5.9V9.01a7.57 7.57 0 004.44 1.42V7.13a4.28 4.28 0 01-3.4-1.31z"/>'},
+ linkedin:{label:'لينكدإن',svg:'<path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.73v20.54C0 23.22.8 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .78 23.2 0 22.22 0z"/>'},
+ email:{label:'إيميل',svg:'<path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>'},
+ website:{label:'موقع',svg:'<path d="M12 2a10 10 0 100 20 10 10 0 000-20zm6.93 6h-2.95a15.7 15.7 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14a7.96 7.96 0 010-4h3.38a16.5 16.5 0 000 4H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A8 8 0 015.08 16zm2.95-8H5.08a8 8 0 014.33-3.56A15.7 15.7 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82A15.7 15.7 0 0112 19.96zM14.34 14H9.66a14.8 14.8 0 010-4h4.68a14.8 14.8 0 010 4zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8 8 0 01-4.33 3.56zM16.36 14a16.5 16.5 0 000-4h3.38a7.96 7.96 0 010 4h-3.38z"/>'}
+};
+  function init(){
+    if(!(window.supabase&&window.supabase.createClient)){if(tries++<40)return setTimeout(init,300);return;}
+    var c=window.supabase.createClient(SB,KEY);
+    c.from("page_sections").select("content").eq("section_key","footer_content").maybeSingle().then(function(r){
+      var d=(r&&r.data&&r.data.content)||{},set=function(id,v){var e=document.getElementById(id);if(e&&v)e.textContent=v;};
+      set("footerDesc",d.desc);set("footerCopy",d.copy);set("footerLegal",d.legal);
+      var box=document.getElementById("footerSocials");
+      if(box&&Array.isArray(d.socials)){
+        box.innerHTML=d.socials.filter(function(s){return s.url&&SOCIAL_ICONS[s.platform];}).map(function(s){
+          var url=(s.url||"").trim();
+          if(s.platform==="email")url="mailto:"+url.replace(/^mailto:/i,"");
+          else if(!/^(https?:|mailto:|tel:)/i.test(url))url=url.indexOf("@")>-1?"mailto:"+url:"https://"+url;
+          var mail=/^mailto:/i.test(url);
+          return "<a href=\""+url+"\""+(mail?"":" target=\"_blank\" rel=\"noopener\"")+" class=\"social-link\" title=\""+SOCIAL_ICONS[s.platform].label+"\"><svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">"+SOCIAL_ICONS[s.platform].svg+"</svg></a>";
+        }).join("");
+      }
+      c.from("page_sections").select("content").eq("section_key","whatsapp_settings").maybeSingle().then(function(w){
+        var s=w&&w.data&&w.data.content;if(!s||!s.enabled||!s.number||!box)return;
+        var num=String(s.number).replace(/[^0-9]/g,"");if(!num||box.querySelector("[data-wa]"))return;
+        var msg=encodeURIComponent(s.welcomeMsg||"مرحباً، أود الاستفسار عن الاستشارات.");
+        var a=document.createElement("a");a.href="https://wa.me/"+num+"?text="+msg;a.target="_blank";a.rel="noopener";
+        a.className="social-link";a.title="WhatsApp";a.setAttribute("data-wa","1");
+        a.innerHTML="<svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">"+SOCIAL_ICONS.whatsapp.svg+"</svg>";
+        box.appendChild(a);
+      },function(){});
     },function(){});
   }
   init();
