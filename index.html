@@ -1469,8 +1469,13 @@ setTimeout(fixAllah,2500);
   if(!sbClient)return;
   try{
     const {data}=await sbClient.from('page_sections').select('content').eq('section_key','about_photo').maybeSingle();
-    const url=data&&data.content&&data.content.url;
-    if(url){const img=document.getElementById('aboutPhotoImg');if(img)img.src=url;}
+    const url=data&&data.content&&data.content.url&&String(data.content.url).trim();
+    if(url&&/^https?:\/\//i.test(url)){
+      // لا نبدّل الصورة الأصلية إلا إذا نجح تحميل الرابط البديل فعلاً
+      const test=new Image();
+      test.onload=function(){const img=document.getElementById('aboutPhotoImg');if(img)img.src=url;};
+      test.src=url;
+    }
   }catch(e){}
 })();
 
@@ -1519,9 +1524,11 @@ const _SEC_MAP={
     el:'#about',
     updates:[
       {field:'image_url',sel:'.about-photo',fn:(el,v)=>{
-        if(!v||!String(v).trim())return; // فارغ → أبقِ الصورة الافتراضية
+        v=v&&String(v).trim();
+        if(!v||!/^https?:\/\//i.test(v))return; // فارغ أو غير صالح → أبقِ الصورة الافتراضية
         const img=el.querySelector('#aboutPhotoImg')||el.querySelector('img');
-        if(img){img.onerror=function(){this.src='images/hanadi.jpg';};img.src=v;}
+        if(!img)return;
+        const test=new Image();test.onload=function(){img.src=v;};test.src=v; // بدّل فقط إذا نجح التحميل
       }}
     ]
   },
