@@ -106,44 +106,13 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
         <div class="amount-code" id="reqCode">—</div>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" data-pane="usdt"><span class="ti">₮</span>USDT</div>
-        <div class="tab" data-pane="sham" style="display:none"><span class="ti">💳</span>شام كاش</div>
+      <div class="tabs" id="tabsRow">
+        <!-- تُبنى تبويبات طرق الدفع ديناميكياً من لوحة التحكم -->
         <div class="tab" data-pane="support"><span class="ti">💬</span>الدعم</div>
       </div>
 
-      <!-- USDT -->
-      <div class="pane active" id="pane-usdt">
-        <span class="net-badge">شبكة Tron (TRC20) — USDT فقط</span>
-        <img class="qr" id="qrImg" alt="QR"/>
-        <span class="label">عنوان المحفظة</span>
-        <div class="addr-row">
-          <div class="addr" id="usdtAddr">TJecHP1xkkXCWWrRRUZyYYkCNSS1DT4Yr9</div>
-          <button class="btn-copy" id="copyAddr">نسخ</button>
-        </div>
-        <div class="note">⚠ أرسل <b id="amtUsdt2">—</b> USDT فقط عبر شبكة <b>TRC20</b> إلى العنوان أعلاه. أي شبكة أخرى تؤدي لفقدان المبلغ.</div>
-        <span class="label">بعد التحويل، الصق رقم العملية (Transaction Hash / TXID)</span>
-        <input class="input" id="txid" placeholder="مثال: a1b2c3..." />
-        <button class="btn btn-gold" id="verifyBtn" style="width:100%">تحقّق تلقائي من الدفع</button>
-        <div class="result" id="usdtResult"></div>
-      </div>
-
-      <!-- SHAM CASH (مخفي حالياً — لإظهاره: احذفي display:none من التاب أعلاه وهنا) -->
-      <div class="pane" id="pane-sham" style="display:none">
-        <div class="steps">
-          <div>① حوّل المبلغ المطلوب عبر <b>شام كاش</b> إلى الحساب التالي:</div>
-        </div>
-        <span class="label">بيانات حساب شام كاش</span>
-        <div class="addr-row">
-          <div class="addr" id="shamAcc" style="direction:rtl;font-family:var(--font-ar)">— سيتم تزويدك بالبيانات قريباً —</div>
-          <button class="btn-copy" id="copySham">نسخ</button>
-        </div>
-        <div class="steps"><div>② بعد التحويل، أدخل رقم عملية التحويل واسم المُحوِّل ليتم التحقق يدوياً وتأكيد حجزك.</div></div>
-        <input class="input" id="shamRef" placeholder="رقم عملية التحويل" />
-        <input class="input ar" id="shamName" placeholder="اسم المُحوِّل" />
-        <button class="btn btn-gold" id="shamBtn" style="width:100%">إرسال إثبات الدفع</button>
-        <div class="result" id="shamResult"></div>
-      </div>
+      <!-- طرق الدفع تُبنى ديناميكياً هنا -->
+      <div id="methodPanes"></div>
 
       <!-- SUPPORT / LIVE CHAT -->
       <div class="pane" id="pane-support">
@@ -171,15 +140,11 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 // ── CONFIG ──
 const SB_URL='https://ozxwyyeyxmpkhsygntoy.supabase.co';
 const SB_KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG';
 const sb=supabase.createClient(SB_URL,SB_KEY);
-const EJS_PUBLIC='6NHm0wz_2eclb5bbW',EJS_SERVICE='service_c8o89cr';
-const EJS_ADMIN='template_llcycmu',EJS_CONFIRM='template_1e1hk15';
-if(window.emailjs)emailjs.init(EJS_PUBLIC);
 const ADMIN_EMAIL='info@hanadiabdullah.com';
 // ── إرسال عبر Resend (Edge Function) ──
 async function sendMail(to,subject,html,replyTo){
@@ -218,8 +183,13 @@ function confirmEmailHTML(o){
      ${_mBox(_mRow('نوع الاستشارة',o.type)+_mRow('الموعد',(o.day||'')+' — '+(o.time||''))+_mRow('رمز طلبك',o.code,'#9FBBA4'))}
      <p style="color:#8a948b;font-size:12px;margin:22px 0 0">للاستفسار، ردّي على هذا الإيميل مباشرةً.</p>`);
 }
-const USDT_ADDR='TJecHP1xkkXCWWrRRUZyYYkCNSS1DT4Yr9';
-const USDT_CONTRACT='TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'; // عقد USDT على Tron
+// ── طرق الدفع الافتراضية (تُستخدم إن لم تُحفظ طرق من لوحة التحكم) ──
+const DEFAULT_METHODS=[
+  {id:'usdt',enabled:true,type:'crypto',label:'USDT',icon:'₮',network:'TRC20',
+   address:'TJecHP1xkkXCWWrRRUZyYYkCNSS1DT4Yr9',contract:'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+   note:'أرسل المبلغ عبر شبكة TRC20 فقط. أي شبكة أخرى تؤدي لفقدان المبلغ.',autoVerify:true}
+];
+let METHODS=DEFAULT_METHODS.slice();
 
 // ── URL PARAMS ──
 const P=new URLSearchParams(location.search);
@@ -229,8 +199,6 @@ let booking=null;
 
 document.getElementById('reqCode').textContent=REQ_CODE;
 document.getElementById('amtUsd').textContent=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
-document.getElementById('amtUsdt2').textContent=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
-document.getElementById('qrImg').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data='+encodeURIComponent(USDT_ADDR);
 
 // ── جلب بيانات الحجز عبر رمز الطلب ──
 (async function loadBooking(){
@@ -272,18 +240,97 @@ async function pollPaymentStatus(){
 }
 setInterval(pollPaymentStatus,12000);
 
-// ── TABS ──
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  document.getElementById('pane-'+t.dataset.pane).classList.add('active');
-}));
-
 // ── COPY ──
 function copy(text,btn){navigator.clipboard?.writeText(text).then(()=>{const o=btn.textContent;btn.textContent='✓';setTimeout(()=>btn.textContent=o,1200);});}
-document.getElementById('copyAddr').addEventListener('click',e=>copy(USDT_ADDR,e.target));
-document.getElementById('copySham').addEventListener('click',e=>copy(document.getElementById('shamAcc').textContent.trim(),e.target));
+function escH(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+const amtTxt=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
+
+// ── بناء تبويبات وطرق الدفع ديناميكياً ──
+function renderMethods(){
+  const active=METHODS.filter(m=>m&&m.enabled!==false&&m.address!==''||m&&m.type==='gateway');
+  const list=METHODS.filter(m=>m&&m.enabled!==false);
+  const tabsRow=document.getElementById('tabsRow');
+  const panesWrap=document.getElementById('methodPanes');
+  const supportTab=tabsRow.querySelector('[data-pane="support"]');
+  // نظّف التبويبات القديمة (عدا الدعم) والألواح
+  tabsRow.querySelectorAll('.tab').forEach(t=>{if(t!==supportTab)t.remove();});
+  panesWrap.innerHTML='';
+  list.forEach((m,i)=>{
+    const tab=document.createElement('div');
+    tab.className='tab'+(i===0?' active':'');
+    tab.dataset.pane=m.id;
+    tab.innerHTML=`<span class="ti">${escH(m.icon||'💳')}</span>${escH(m.label||'دفع')}`;
+    tabsRow.insertBefore(tab,supportTab);
+    const pane=document.createElement('div');
+    pane.className='pane'+(i===0?' active':'');
+    pane.id='pane-'+m.id;
+    pane.innerHTML=paneHTML(m);
+    panesWrap.appendChild(pane);
+  });
+  // إن لم تُفعّل أي طريقة، اعرض رسالة
+  if(!list.length){panesWrap.innerHTML='<div class="pane active"><div class="note">لا توجد طريقة دفع متاحة حالياً. تواصل مع الدعم.</div></div>';}
+  wireMethodEvents();
+}
+function paneHTML(m){
+  const qr=(m.address&&(m.type==='crypto'||m.type==='manual'))
+    ? `<img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=${encodeURIComponent(m.address)}" alt="QR"/>`:'';
+  if(m.type==='gateway'){
+    return `<div class="note">${escH(m.note||'ادفع بأمان عبر بوابة الدفع. بعد إتمام الدفع سيتم مراجعة طلبك وتأكيده.')}</div>
+      <a class="btn btn-gold" href="${escH(m.link||'#')}" target="_blank" rel="noopener" style="width:100%;text-align:center;display:block;box-sizing:border-box">ادفع الآن — ${amtTxt}$</a>
+      <div class="steps"><div>بعد إتمام الدفع عبر البوابة، احتفظ برمز طلبك <b>${escH(REQ_CODE)}</b> للمتابعة.</div></div>`;
+  }
+  const netBadge=m.network?`<span class="net-badge">شبكة ${escH(m.network)} — ${escH(m.label||'')}</span>`:'';
+  const auto=(m.type==='crypto'&&m.autoVerify!==false);
+  return `${netBadge}${qr}
+    <span class="label">${escH(m.addrLabel||(m.type==='crypto'?'عنوان المحفظة':'بيانات الحساب'))}</span>
+    <div class="addr-row">
+      <div class="addr" data-copy>${escH(m.address||'—')}</div>
+      <button class="btn-copy" data-copybtn>نسخ</button>
+    </div>
+    <div class="note">⚠ أرسل <b>${amtTxt}${m.type==='crypto'?' '+escH(m.label||''):' $'}</b> ${escH(m.note||'')}</div>
+    ${auto
+      ? `<span class="label">بعد التحويل، الصق رقم العملية (Transaction Hash / TXID)</span>
+         <input class="input" data-txid placeholder="مثال: a1b2c3..." />
+         <button class="btn btn-gold" data-verify style="width:100%">تحقّق تلقائي من الدفع</button>`
+      : `<div class="steps"><div>بعد التحويل، أدخل رقم عملية التحويل${m.askName!==false?' واسم المُحوِّل':''} ليتم التحقق يدوياً وتأكيد حجزك.</div></div>
+         <input class="input" data-ref placeholder="رقم عملية التحويل" />
+         ${m.askName!==false?'<input class="input ar" data-name placeholder="اسم المُحوِّل" />':''}
+         <button class="btn btn-gold" data-manual style="width:100%">إرسال إثبات الدفع</button>`}
+    <div class="result" data-result></div>`;
+}
+function wireMethodEvents(){
+  // تبويبات
+  document.querySelectorAll('#tabsRow .tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const p=document.getElementById('pane-'+t.dataset.pane);if(p)p.classList.add('active');
+  });
+  // نسخ
+  document.querySelectorAll('[data-copybtn]').forEach(b=>b.onclick=e=>{
+    const addr=b.parentElement.querySelector('[data-copy]');copy((addr&&addr.textContent||'').trim(),e.target);
+  });
+  // تحقق تلقائي (كريبتو)
+  document.querySelectorAll('[data-verify]').forEach(btn=>{
+    const pane=btn.closest('.pane');const m=METHODS.find(x=>'pane-'+x.id===pane.id);
+    btn.onclick=()=>verifyCrypto(m,pane,btn);
+  });
+  // إرسال يدوي
+  document.querySelectorAll('[data-manual]').forEach(btn=>{
+    const pane=btn.closest('.pane');const m=METHODS.find(x=>'pane-'+x.id===pane.id);
+    btn.onclick=()=>submitManual(m,pane,btn);
+  });
+}
+// ── جلب طرق الدفع من لوحة التحكم ──
+(async function loadMethods(){
+  try{
+    const {data}=await sb.from('page_sections').select('content').eq('section_key','payment_methods').maybeSingle();
+    if(data&&data.content&&Array.isArray(data.content.methods)&&data.content.methods.length){
+      METHODS=data.content.methods;
+    }
+  }catch(e){console.warn('load methods:',e);}
+  renderMethods();
+})();
 
 // ── حساب اليوم/الوقت وتاريخ الموعد لقفله ──
 function parseSlot(b){
@@ -333,13 +380,14 @@ function showSuccess(title,text){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── USDT: تحقق تلقائي عبر Tronscan ──
-document.getElementById('verifyBtn').addEventListener('click',async()=>{
-  const txid=document.getElementById('txid').value.trim();
-  const res=document.getElementById('usdtResult');const btn=document.getElementById('verifyBtn');
+// ── تحقق تلقائي من الدفع عبر Tronscan (لطرق الكريبتو) ──
+async function verifyCrypto(m,pane,btn){
+  const txid=(pane.querySelector('[data-txid]').value||'').trim();
+  const res=pane.querySelector('[data-result]');
   res.className='result';res.style.display='none';
   if(!txid){res.className='result err';res.textContent='⚠ الرجاء لصق رقم العملية (TXID) أولاً.';return;}
   if(!AMOUNT){res.className='result err';res.textContent='⚠ المبلغ غير محدد في الرابط. تواصل مع الدعم.';return;}
+  const label=m.label||'USDT';
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span> جارٍ التحقق من البلوكتشين...';
   try{
     const r=await fetch('https://apilist.tronscanapi.com/api/transaction-info?hash='+encodeURIComponent(txid));
@@ -347,10 +395,10 @@ document.getElementById('verifyBtn').addEventListener('click',async()=>{
     if(!d||!d.hash){throw new Error('لم يتم العثور على العملية. تأكد من رقم TXID.');}
     if(d.contractRet&&d.contractRet!=='SUCCESS'){throw new Error('العملية غير ناجحة على الشبكة.');}
     const transfers=d.trc20TransferInfo||[];
-    const match=transfers.find(t=>(t.to_address===USDT_ADDR)&&((t.contract_address||'')===USDT_CONTRACT));
-    if(!match){throw new Error('لم يُعثر على تحويل USDT إلى محفظتنا في هذه العملية.');}
+    const match=transfers.find(t=>(t.to_address===m.address)&&(!m.contract||(t.contract_address||'')===m.contract));
+    if(!match){throw new Error('لم يُعثر على تحويل '+label+' إلى محفظتنا في هذه العملية.');}
     const paid=parseFloat(match.amount_str||match.amount||'0')/Math.pow(10,parseInt(match.decimals||6));
-    if(paid+0.01 < AMOUNT){throw new Error('المبلغ المُحوَّل ('+paid.toFixed(2)+' USDT) أقل من المطلوب ('+AMOUNT+' USDT).');}
+    if(paid+0.01 < AMOUNT){throw new Error('المبلغ المُحوَّل ('+paid.toFixed(2)+' '+label+') أقل من المطلوب ('+AMOUNT+' '+label+').');}
     // امنع إعادة استخدام نفس رقم العملية لطلب آخر
     try{
       const {data:used}=await sb.from('processed_payments').select('tx_hash').eq('tx_hash',txid).maybeSingle();
@@ -358,14 +406,14 @@ document.getElementById('verifyBtn').addEventListener('click',async()=>{
       await sb.from('processed_payments').insert({tx_hash:txid,amount:paid,booking_id:booking?booking.id:null,matched:!!booking});
     }catch(e){ if(/مُستخدَم/.test(e.message||''))throw e; /* إن لم يوجد الجدول بعد، تابع */ }
     // نجح التحقق
-    res.className='result info';res.innerHTML='<span class="spinner" style="border-top-color:var(--gold)"></span> تم التحقق من الدفع ('+paid.toFixed(2)+' USDT). جارٍ تثبيت موعدك...';
-    await finalizePaid('USDT (TRC20)',txid);
-    showSuccess('تم تأكيد الدفع ✓','تم التحقق من تحويلك تلقائياً عبر شبكة Tron وتثبيت موعدك. ستصلك رسالة تأكيد نهائية على بريدك.');
+    res.className='result info';res.innerHTML='<span class="spinner" style="border-top-color:var(--gold)"></span> تم التحقق من الدفع ('+paid.toFixed(2)+' '+label+'). جارٍ تثبيت موعدك...';
+    await finalizePaid(label+(m.network?' ('+m.network+')':''),txid);
+    showSuccess('تم تأكيد الدفع ✓','تم التحقق من تحويلك تلقائياً وتثبيت موعدك. ستصلك رسالة تأكيد نهائية على بريدك.');
   }catch(e){
     res.className='result err';res.textContent='⚠ '+(e.message||'تعذّر التحقق. حاول مجدداً أو تواصل مع الدعم.');
     btn.disabled=false;btn.innerHTML='تحقّق تلقائي من الدفع';
   }
-});
+}
 
 // ── محادثة الدعم المباشر (Supabase Realtime) ──
 const chatBox=document.getElementById('chatBox');
@@ -400,7 +448,7 @@ document.getElementById('chatSend').addEventListener('click',async()=>{
   const text=inp.value.trim();
   if(!text)return;
   if(!REQ_CODE||REQ_CODE==='HN-REQUEST-----'){
-    const r=document.getElementById('usdtResult');r.className='result err';r.textContent='⚠ رمز الطلب غير موجود. افتح الصفحة من رابط الدفع الصحيح.';return;
+    alert('⚠ رمز الطلب غير موجود. افتح الصفحة من رابط الدفع الصحيح.');return;
   }
   inp.value='';
   const btn=document.getElementById('chatSend');btn.disabled=true;
@@ -415,27 +463,29 @@ document.getElementById('chatSend').addEventListener('click',async()=>{
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('chatSend').click();});
 loadChatHistory();initChatRealtime();
 
-// ── شام كاش: إرسال يدوي ──
-document.getElementById('shamBtn').addEventListener('click',async()=>{
-  const ref=document.getElementById('shamRef').value.trim();
-  const nm=document.getElementById('shamName').value.trim();
-  const res=document.getElementById('shamResult');res.className='result';res.style.display='none';
-  if(!ref||!nm){res.className='result err';res.textContent='⚠ الرجاء إدخال رقم التحويل واسم المُحوِّل.';return;}
-  const btn=document.getElementById('shamBtn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> جارٍ الإرسال...';
+// ── إرسال إثبات دفع يدوي (تحويل بنكي / شام كاش / أي طريقة يدوية) ──
+async function submitManual(m,pane,btn){
+  const ref=(pane.querySelector('[data-ref]').value||'').trim();
+  const nameEl=pane.querySelector('[data-name]');
+  const nm=nameEl?(nameEl.value||'').trim():'';
+  const res=pane.querySelector('[data-result]');res.className='result';res.style.display='none';
+  if(!ref||(nameEl&&!nm)){res.className='result err';res.textContent='⚠ الرجاء إدخال رقم التحويل'+(nameEl?' واسم المُحوِّل':'')+'.';return;}
+  const label=m.label||'تحويل يدوي';
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> جارٍ الإرسال...';
   try{
     // تسجيل قيد المراجعة (لا يقفل الموعد إلا بعد تأكيد الإدارة من اللوحة)
     if(booking)await sb.from('bookings').update({status:'pending'}).eq('id',booking.id);
-    await sendMail(ADMIN_EMAIL,'🟡 دفع شام كاش بانتظار التحقق — '+REQ_CODE,adminNotifyHTML({
-      title:'دفع شام كاش بانتظار التحقق',message:`المبلغ: ${AMOUNT}$ — رقم التحويل: ${ref} — المُحوِّل: ${nm}`,
+    await sendMail(ADMIN_EMAIL,'🟡 دفع '+label+' بانتظار التحقق — '+REQ_CODE,adminNotifyHTML({
+      title:'دفع '+label+' بانتظار التحقق',message:`المبلغ: ${AMOUNT}$ — رقم التحويل: ${ref}`+(nm?` — المُحوِّل: ${nm}`:''),
       name:booking&&booking.client_name||nm,email:booking&&booking.client_email,phone:booking&&booking.client_phone,
       type:booking&&booking.consultation_type,appt:booking&&booking.time,code:REQ_CODE
     }),booking&&booking.client_email);
-    showSuccess('تم استلام إثبات الدفع','وصلنا إثبات تحويلك عبر شام كاش وسيتم التحقق منه يدوياً وتأكيد حجزك قريباً. رمز طلبك مرجعك للمتابعة.');
+    showSuccess('تم استلام إثبات الدفع','وصلنا إثبات تحويلك عبر '+label+' وسيتم التحقق منه يدوياً وتأكيد حجزك قريباً. رمز طلبك مرجعك للمتابعة.');
   }catch(e){
     res.className='result err';res.textContent='⚠ تعذّر الإرسال. حاول مجدداً أو تواصل مع الدعم.';
     btn.disabled=false;btn.innerHTML='إرسال إثبات الدفع';
   }
-});
+}
 </script>
 </body>
 </html>

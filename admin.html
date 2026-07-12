@@ -443,6 +443,7 @@
       <div class="side-link" data-panel="articles-page"><span class="side-icon">📝</span>صفحة المقالات</div>
       <div class="side-link" data-panel="footer-page"><span class="side-icon">🦶</span>الفوتر</div>
       <div class="side-link" data-panel="about-photo"><span class="side-icon">🖼️</span>صورة هنادي</div>
+      <div class="side-link" data-panel="payments-page"><span class="side-icon">💳</span>طرق الدفع</div>
       <div class="side-link" data-panel="theme"><span class="side-icon">🎭</span>القالب والألوان</div>
       <div class="side-label">أخرى</div>
       <div class="side-link" data-panel="subscribers"><span class="side-icon">📧</span>المشتركون</div>
@@ -864,6 +865,18 @@
         </div>
       </div>
 
+      <!-- PAYMENT METHODS EDITOR -->
+      <div class="panel" id="panel-payments-page">
+        <div class="panel-title">طرق الدفع</div>
+        <div class="panel-sub">أضيفي أو عدّلي طرق الدفع التي تظهر لعملائك في صفحة الدفع — محفظة كريبتو، تحويل بنكي/يدوي، أو رابط بوابة دفع.</div>
+        <div class="section-card">
+          <div id="pm_list"></div>
+          <button type="button" class="btn btn-ghost" onclick="pmAdd()" style="width:auto;padding:11px 26px;margin-top:6px">➕ إضافة طريقة دفع</button>
+        </div>
+        <button class="btn btn-gold" onclick="savePaymentMethods()" style="width:auto;padding:13px 32px;margin-top:4px;">💾 حفظ ونشر</button>
+        <div id="pm_status" style="margin-top:10px;font-size:0.85rem;"></div>
+      </div>
+
       <!-- FOOTER EDITOR -->
       <div class="panel" id="panel-footer-page">
         <div class="panel-title">الفوتر (أسفل الموقع)</div>
@@ -982,6 +995,83 @@ function loadPanel(name){
   if(name==='articles-page')loadSimplePage('articles_page');
   if(name==='footer-page')loadFooterPage();
   if(name==='about-photo')loadAboutPhoto();
+  if(name==='payments-page')loadPaymentMethods();
+}
+// ── طرق الدفع ──
+let PM=[];
+function pmField(l,v,attrs){return `<label class="cp-lbl">${l}</label><input class="input cp-inp" ${attrs||''} value="${(v==null?'':String(v)).replace(/"/g,'&quot;')}"/>`;}
+function pmRender(){
+  const wrap=document.getElementById('pm_list');
+  if(!PM.length){wrap.innerHTML='<div style="color:var(--muted);font-size:.85rem;padding:8px 0">لا توجد طرق دفع بعد. اضغطي «إضافة طريقة دفع».</div>';return;}
+  wrap.innerHTML=PM.map((m,i)=>{
+    const t=m.type||'manual';
+    const cryptoFields=`
+      ${pmField('الشبكة (مثال: TRC20)','network' in m?m.network:'','data-pm="'+i+'" data-k="network" dir="ltr"')}
+      ${pmField('عنوان المحفظة',m.address||'','data-pm="'+i+'" data-k="address" dir="ltr"')}
+      ${pmField('عقد العملة (Contract) — للتحقق التلقائي',m.contract||'','data-pm="'+i+'" data-k="contract" dir="ltr"')}
+      <label class="cp-lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" data-pm="${i}" data-k="autoVerify" ${m.autoVerify!==false?'checked':''}/> تحقق تلقائي من الدفع عبر الشبكة</label>`;
+    const manualFields=`
+      ${pmField('بيانات الحساب (رقم/عنوان)',m.address||'','data-pm="'+i+'" data-k="address" dir="ltr"')}
+      <label class="cp-lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" data-pm="${i}" data-k="askName" ${m.askName!==false?'checked':''}/> طلب اسم المُحوِّل</label>`;
+    const gatewayFields=`
+      ${pmField('رابط بوابة الدفع (Checkout URL)',m.link||'','data-pm="'+i+'" data-k="link" dir="ltr" placeholder="https://..."')}`;
+    return `<div class="section-card" style="margin-bottom:14px;position:relative">
+      <button type="button" onclick="pmDel(${i})" style="position:absolute;top:14px;left:14px;background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:.78rem">🗑 حذف</button>
+      <label class="cp-lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" data-pm="${i}" data-k="enabled" ${m.enabled!==false?'checked':''}/> مُفعّلة (تظهر للعملاء)</label>
+      <label class="cp-lbl">النوع</label>
+      <select class="input cp-inp" data-pm="${i}" data-k="type">
+        <option value="crypto" ${t==='crypto'?'selected':''}>محفظة كريبتو (تحقق تلقائي)</option>
+        <option value="manual" ${t==='manual'?'selected':''}>تحويل يدوي / بنكي / شام كاش</option>
+        <option value="gateway" ${t==='gateway'?'selected':''}>بوابة دفع خارجية (رابط)</option>
+      </select>
+      ${pmField('الاسم المعروض (التاب)',m.label||'','data-pm="'+i+'" data-k="label"')}
+      ${pmField('الأيقونة (إيموجي)',m.icon||'','data-pm="'+i+'" data-k="icon"')}
+      ${t==='crypto'?cryptoFields:t==='gateway'?gatewayFields:manualFields}
+      <label class="cp-lbl">ملاحظة / تعليمات للعميل</label>
+      <textarea class="input cp-inp" data-pm="${i}" data-k="note" rows="2">${(m.note||'').replace(/</g,'&lt;')}</textarea>
+    </div>`;
+  }).join('');
+  // ربط التغييرات
+  wrap.querySelectorAll('[data-pm]').forEach(el=>{
+    const i=+el.dataset.pm,k=el.dataset.k;
+    const ev=el.type==='checkbox'?'change':(el.tagName==='SELECT'?'change':'input');
+    el.addEventListener(ev,()=>{
+      if(el.type==='checkbox')PM[i][k]=el.checked;
+      else PM[i][k]=el.value;
+      if(k==='type')pmRender(); // إعادة رسم الحقول حسب النوع
+    });
+  });
+}
+function pmAdd(){
+  PM.push({id:'m'+(PM.length+1)+Math.random().toString(36).slice(2,6),enabled:true,type:'manual',label:'طريقة جديدة',icon:'💳',address:'',note:'',askName:true});
+  pmRender();
+}
+function pmDel(i){PM.splice(i,1);pmRender();}
+async function loadPaymentMethods(){
+  const st=document.getElementById('pm_status');st.textContent='';
+  try{
+    const{data}=await sb.from('page_sections').select('content').eq('section_key','payment_methods').maybeSingle();
+    PM=(data&&data.content&&Array.isArray(data.content.methods))?data.content.methods:[
+      {id:'usdt',enabled:true,type:'crypto',label:'USDT',icon:'₮',network:'TRC20',address:'TJecHP1xkkXCWWrRRUZyYYkCNSS1DT4Yr9',contract:'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',note:'أرسل المبلغ عبر شبكة TRC20 فقط. أي شبكة أخرى تؤدي لفقدان المبلغ.',autoVerify:true}
+    ];
+  }catch(e){PM=[];}
+  pmRender();
+}
+async function savePaymentMethods(){
+  const st=document.getElementById('pm_status');
+  // تحقق بسيط
+  for(const m of PM){
+    if(!m.label){st.textContent='⚠ كل طريقة تحتاج اسماً معروضاً.';st.style.color='#e0ada7';return;}
+    if(!m.id)m.id='m'+Math.random().toString(36).slice(2,8);
+    if((m.type==='crypto'||m.type==='manual')&&m.enabled!==false&&!m.address){st.textContent='⚠ الطريقة «'+m.label+'» تحتاج عنوان/بيانات حساب.';st.style.color='#e0ada7';return;}
+    if(m.type==='gateway'&&m.enabled!==false&&!m.link){st.textContent='⚠ الطريقة «'+m.label+'» تحتاج رابط بوابة الدفع.';st.style.color='#e0ada7';return;}
+  }
+  st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  const{error}=await sb.from('page_sections').upsert(
+    {section_key:'payment_methods',section_name:'طرق الدفع',section_type:'page',order_index:95,visible:true,content:{methods:PM},updated_at:new Date().toISOString()},
+    {onConflict:'section_key'});
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✓ تم الحفظ والنشر على صفحة الدفع';st.style.color='#8FB996';
 }
 // ── صورة هنادي (رفع مباشر لـSupabase Storage) ──
 function apShowPreview(url){
