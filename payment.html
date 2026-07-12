@@ -488,5 +488,25 @@ async function submitManual(m,pane,btn){
   }
 }
 </script>
+
+<!-- Google Analytics (يُفعّل تلقائياً عند إدخال الرقم من لوحة التحكم) -->
+<script>
+(function(){
+  var SB='https://ozxwyyeyxmpkhsygntoy.supabase.co',KEY='sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG',t=0;
+  function init(){
+    if(!(window.supabase&&window.supabase.createClient)){if(t++<40)return setTimeout(init,300);return;}
+    var c=window.supabase.createClient(SB,KEY);
+    c.from('page_sections').select('content').eq('section_key','analytics_settings').maybeSingle().then(function(r){
+      var s=r&&r.data&&r.data.content;if(!s||!s.enabled||!s.ga_id)return;
+      var id=String(s.ga_id).trim();if(!/^G-[A-Za-z0-9]+$/.test(id))return;
+      var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(id);
+      document.head.appendChild(g);
+      window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments);};
+      gtag('js',new Date());gtag('config',id);
+    },function(){});
+  }
+  init();
+})();
+</script>
 </body>
 </html>
