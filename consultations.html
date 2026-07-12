@@ -1287,49 +1287,49 @@ async function cSendMail(to,subject,html,replyTo){
   }catch(e){console.warn('cSendMail:',e);return false;}
 }
 function _mailShell(sub,inner){
-  return `<div style="background:#0d0f0d;margin:0;padding:0;-webkit-font-smoothing:antialiased">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0d0f0d">
-    <tr><td align="center" style="padding:36px 14px">
-      <table role="presentation" cellpadding="0" cellspacing="0" dir="rtl" style="width:600px;max-width:100%;background:#171a17;border-radius:16px;overflow:hidden;font-family:Tahoma,Arial,sans-serif;box-shadow:0 12px 44px rgba(0,0,0,0.45)">
-        <tr><td style="height:4px;background:linear-gradient(90deg,#C8F57E,#9DC4A3,#6B8A71)"></td></tr>
-        <tr><td style="padding:38px 30px 18px;text-align:center">
-          <div style="font-family:Georgia,'Times New Roman',serif;font-size:27px;font-weight:700;color:#D2E6D5;letter-spacing:1px">Hanadi Insights</div>
-          <div style="font-size:12px;color:#9DC4A3;margin-top:8px">${sub}</div>
-          <div style="width:46px;height:2px;background:#6B8A71;margin:16px auto 0"></div>
+  return `<div style="background:#eef1ee;margin:0;padding:0;-webkit-font-smoothing:antialiased">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1ee">
+    <tr><td align="center" style="padding:34px 14px">
+      <table role="presentation" cellpadding="0" cellspacing="0" dir="rtl" style="width:600px;max-width:100%;background:#ffffff;border-radius:16px;overflow:hidden;font-family:Tahoma,Arial,sans-serif;box-shadow:0 10px 34px rgba(47,61,51,0.1)">
+        <tr><td style="height:5px;background:linear-gradient(90deg,#6B8A71,#9DC4A3,#C9B27B)"></td></tr>
+        <tr><td style="padding:36px 34px 6px;text-align:center">
+          <div style="font-family:Georgia,'Times New Roman',serif;font-size:25px;font-weight:700;color:#2f3d33;letter-spacing:.5px">Hanadi Insights</div>
+          <div style="font-size:12px;color:#7a8a7e;margin-top:7px;letter-spacing:.5px">${sub}</div>
+          <div style="width:44px;height:2px;background:#9DC4A3;margin:15px auto 0"></div>
         </td></tr>
-        <tr><td style="padding:8px 30px 34px">${inner}</td></tr>
-        <tr><td style="padding:22px;text-align:center;background:#101210;border-top:1px solid rgba(143,185,150,0.12)">
-          <div style="color:#D2E6D5;font-size:13px;font-weight:700">Hanadi Insights</div>
-          <div style="color:#5f6b60;font-size:11px;margin-top:5px">منصة تحليل اقتصادي وأسواق عالمية — © جميع الحقوق محفوظة</div>
+        <tr><td style="padding:12px 34px 32px">${inner}</td></tr>
+        <tr><td style="padding:22px;text-align:center;background:#f5f7f5;border-top:1px solid #e6ebe6">
+          <div style="color:#2f3d33;font-size:13px;font-weight:700">Hanadi Insights</div>
+          <div style="color:#9aa89e;font-size:11px;margin-top:5px">منصة تحليل اقتصادي وأسواق عالمية — © جميع الحقوق محفوظة</div>
         </td></tr>
       </table>
     </td></tr>
   </table></div>`;
 }
 function _detailBox(rows){
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0d0f0d;border:1px solid rgba(143,185,150,0.2);border-radius:12px;margin-top:10px">
-    <tr><td style="padding:16px 20px"><table width="100%" cellpadding="0" cellspacing="0" style="color:#CBD4CC;font-size:14px;line-height:2.2">${rows}</table></td></tr></table>`;
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f9f7;border:1px solid #e6ebe6;border-radius:12px;margin-top:12px">
+    <tr><td style="padding:16px 20px"><table width="100%" cellpadding="0" cellspacing="0" style="color:#4a5a4f;font-size:14px;line-height:2.2">${rows}</table></td></tr></table>`;
 }
-function _row(label,val,accent){return `<tr><td style="color:#8a978b;padding:3px 0">${label}</td><td style="text-align:left;color:${accent||'#F7F9F7'};font-weight:${accent?'700':'500'}">${val||'—'}</td></tr>`;}
+function _row(label,val,accent){return `<tr><td style="color:#8a978b;padding:3px 0">${label}</td><td style="text-align:left;color:${accent||'#2f3d33'};font-weight:${accent?'700':'500'}">${val||'—'}</td></tr>`;}
 function cRequestHTML(o){
   return _mailShell('استلام الطلب',
-    `<p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">مرحباً ${o.name}،</p>
-     <p style="color:#D2E6D5;font-size:15px;line-height:1.9;margin:0 0 18px">✅ استلمنا طلب استشارتك بنجاح.</p>
-     ${_detailBox(_row('📋 نوع الاستشارة',o.type)+_row('📅 الموعد المبدئي',o.when)+_row('🔖 رمز طلبك',o.code,'#9DC4A3'))}
-     <div style="background:rgba(201,178,123,0.1);border:1px solid rgba(201,178,123,0.4);border-radius:10px;padding:14px 16px;margin-top:16px;color:#e6d3a3;font-size:13.5px;line-height:1.8">
-       ⚠️ موعدك محجوز <b>مبدئياً</b> ولم يُثبَّت بعد. سيصلك رابط الدفع، وبعد إتمامه يُثبَّت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.
+    `<p style="color:#2f3d33;font-size:16px;margin:0 0 14px;font-weight:600">مرحباً ${o.name}،</p>
+     <p style="color:#4a5a4f;font-size:15px;line-height:1.95;margin:0 0 4px">تم استلام طلب استشارتك بنجاح. سنراجعه ونرسل لك تفاصيل الدفع لتثبيت موعدك.</p>
+     ${_detailBox(_row('نوع الاستشارة',o.type)+_row('الموعد المبدئي',o.when)+_row('رمز طلبك',o.code,'#6B8A71'))}
+     <div style="background:#fdf6e3;border:1px solid #ecdca6;border-radius:10px;padding:14px 18px;margin-top:16px;color:#8a6d1f;font-size:13.5px;line-height:1.85">
+       موعدك محجوز <b>مبدئياً</b> ولم يُثبَّت بعد. سيصلك رابط الدفع، وبعد إتمامه يُثبَّت موعدك تلقائياً وتصلك رسالة تأكيد نهائية.
      </div>
-     <p style="color:#7A887B;font-size:12px;margin:18px 0 0;text-align:center">📩 إن لم تجد رسائلنا في الوارد، تحقّق من مجلد الرسائل غير المرغوبة (Spam).</p>`);
+     <p style="color:#9aa89e;font-size:12px;margin:18px 0 0;text-align:center">إن لم تجد رسائلنا في الوارد، تحقّق من مجلد الرسائل غير المرغوبة (Spam).</p>`);
 }
 function cAdminHTML(o){
   return _mailShell('طلب استشارة جديد',
-    `<p style="color:#F7F9F7;font-size:16px;margin:0 0 14px">طلب استشارة جديد 📩</p>
+    `<p style="color:#2f3d33;font-size:16px;margin:0 0 14px;font-weight:600">طلب استشارة جديد</p>
      ${_detailBox(
-        _row('👤 الاسم',o.name)+_row('📧 البريد',o.email)+_row('📱 الهاتف',o.phone)+
-        _row('📋 الاستشارة',o.type)+_row('📅 الموعد',o.when)+_row('🔖 الرمز',o.code,'#9DC4A3')+
-        _row('📊 المستوى',o.exp)+_row('💹 السوق',o.market)+_row('⚠️ التحدي',o.challenge)+(o.goal?_row('🎯 الهدف',o.goal):'')
+        _row('الاسم',o.name)+_row('البريد',o.email)+_row('الهاتف',o.phone)+
+        _row('الاستشارة',o.type)+_row('الموعد',o.when)+_row('الرمز',o.code,'#6B8A71')+
+        _row('المستوى',o.exp)+_row('السوق',o.market)+_row('التحدي',o.challenge)+(o.goal?_row('الهدف',o.goal):'')
      )}
-     <p style="color:#7A887B;font-size:12px;margin:16px 0 0;text-align:center">افتحي لوحة الحجوزات لإرسال رابط الدفع.</p>`);
+     <p style="color:#9aa89e;font-size:12px;margin:16px 0 0;text-align:center">افتحي لوحة الحجوزات لإرسال رابط الدفع.</p>`);
 }
 
 // ── تحميل محتوى صفحة الاستشارات من لوحة التحكم ──
