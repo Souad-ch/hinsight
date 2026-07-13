@@ -407,16 +407,25 @@ async function verifyCrypto(m,pane,btn){
 // ── محادثة الدعم المباشر (Supabase Realtime) ──
 const chatBox=document.getElementById('chatBox');
 let _chatChannel=null;
+const _recentBot=new Set(); // لمنع تكرار رد البوت (من الرد المباشر + realtime)
 function escChat(s){return(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function makeBubble(m){
-  const isOp=m.sender==='operator';
+  const isOp=(m.sender==='operator'||m.sender==='bot');
   const d=document.createElement('div');
   d.className='chat-bubble '+(isOp?'operator':'customer');
-  const t=new Date(m.created_at).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
-  d.innerHTML=(isOp?`<span class="chat-sender">فريق الدعم</span>`:'')
+  const t=new Date(m.created_at||Date.now()).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+  const label=m.sender==='bot'?'مساعد هنادي':'فريق الدعم';
+  d.innerHTML=(isOp?`<span class="chat-sender">${label}</span>`:'')
     +escChat(m.text)
     +`<div class="chat-time">${t}</div>`;
   return d;
+}
+// عرض رد البوت فوراً من جواب الدالة (لا يعتمد على realtime)
+function renderBotReply(text){
+  if(!text)return;
+  _recentBot.add(text);setTimeout(()=>_recentBot.delete(text),8000);
+  if(chatBox.querySelector('.chat-empty'))chatBox.innerHTML='';
+  chatBox.appendChild(makeBubble({sender:'bot',text}));chatBox.scrollTop=chatBox.scrollHeight;
 }
 async function loadChatHistory(){
   if(!REQ_CODE||REQ_CODE==='HN-REQUEST-----')return;
@@ -428,6 +437,8 @@ function initChatRealtime(){
   if(!REQ_CODE||REQ_CODE==='HN-REQUEST-----')return;
   _chatChannel=sb.channel('chat:'+REQ_CODE)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'support_messages',filter:'session_code=eq.'+REQ_CODE},p=>{
+      // تفادَ تكرار رد البوت الذي عُرض مباشرةً من جواب الدالة
+      if(p.new&&(p.new.sender==='bot')&&_recentBot.has(p.new.text))return;
       if(chatBox.querySelector('.chat-empty'))chatBox.innerHTML='';
       chatBox.appendChild(makeBubble(p.new));chatBox.scrollTop=chatBox.scrollHeight;
     }).subscribe();
@@ -447,8 +458,9 @@ document.getElementById('chatSend').addEventListener('click',async()=>{
     try{
       const {data,error}=await sb.functions.invoke('support-ai',{body:{session_code:REQ_CODE,message:text}});
       if(error){botNote('تعذّر الاتصال بالمساعد الآن. اكتب «موظف» لتحويلك لمختص.');console.warn('ai invoke error:',error);}
+      else if(data&&data.reply){renderBotReply(data.reply);}       // اعرض الرد فوراً
+      else if(data&&data.handoff){/* تم التحويل لمختص — الرسالة محفوظة */}
       else if(data&&data.error){botNote('المساعد الذكي غير مُفعّل حالياً. اكتب «موظف» ليردّ عليك مختص.');console.warn('ai backend error:',data.detail||data.error);}
-      // الرد الناجح يظهر تلقائياً عبر التحديث اللحظي (realtime)
     }catch(e){botNote('تعذّر الوصول للمساعد. اكتب «موظف» لتحويلك لمختص.');console.warn('ai:',e);}
   }
   catch(e){console.warn('chat:',e);}
