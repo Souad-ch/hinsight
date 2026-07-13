@@ -171,11 +171,30 @@ function adminNotifyHTML(o){
      <p style="color:#a9b3ab;font-size:14px;line-height:1.95;margin:0">${o.message||''}</p>
      ${_mBox(_mRow('الاسم',o.name)+_mRow('البريد',o.email)+_mRow('الهاتف',o.phone)+_mRow('الاستشارة',o.type)+_mRow('الموعد',o.appt)+_mRow('الرمز',o.code,'#9FBBA4'))}`);
 }
+// رابط «أضِف للتقويم» (Google Calendar) من اسم اليوم + الوقت
+function calLink(day,time,type){
+  try{
+    const date=nextDateForDay(day); if(!date)return '';
+    const m=String(time||'').match(/(\d{1,2})[:٫:]?(\d{2})?/); if(!m)return '';
+    let h=parseInt(m[1]); const min=parseInt(m[2]||'0');
+    const pm=/م|مساء|pm/i.test(time)&&!/ص|صباح|am/i.test(time), am=/ص|صباح|am/i.test(time);
+    if(pm&&h<12)h+=12; if(am&&h===12)h=0;
+    const pad=n=>String(n).padStart(2,'0'), ymd=date.replace(/-/g,'');
+    const start=ymd+'T'+pad(h)+pad(min)+'00', end=ymd+'T'+pad((h+1)%24)+pad(min)+'00';
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+
+      encodeURIComponent('استشارة '+(type||'')+' — Hanadi Insights')+
+      '&dates='+start+'/'+end+'&ctz=Asia/Damascus&details='+
+      encodeURIComponent('موعد استشارتك مع Hanadi Insights.');
+  }catch(e){return '';}
+}
 function confirmEmailHTML(o){
+  const cal=calLink(o.day,o.time,o.type);
+  const calBtn=cal?`<div style="text-align:center;margin-top:24px"><a href="${cal}" style="display:inline-block;background:transparent;color:#cfe3d3;text-decoration:none;font-size:14px;font-weight:700;padding:12px 34px;border:1px solid #8FB996">📅 أضِف الموعد إلى تقويمك</a></div>`:'';
   return _mShell('تأكيد الحجز',
     `<p style="color:#e7e9e7;font-size:17px;margin:0 0 16px;font-weight:600">مرحباً ${o.name}،</p>
      <p style="color:#a9b3ab;font-size:15px;line-height:2;margin:0">تم تأكيد دفعتك وتثبيت موعدك نهائياً. موعدك الآن <b style="color:#9FBBA4">محجوز ومؤكَّد</b>. شكراً لثقتك، نراك في موعدك.</p>
      ${_mBox(_mRow('نوع الاستشارة',o.type)+_mRow('الموعد',(o.day||'')+' — '+(o.time||''))+_mRow('رمز طلبك',o.code,'#9FBBA4'))}
+     ${calBtn}
      <p style="color:#8a948b;font-size:12px;margin:22px 0 0">للاستفسار، ردّ على هذا الإيميل مباشرةً.</p>`);
 }
 // ── طرق الدفع الافتراضية (تُستخدم إن لم تُحفظ طرق من لوحة التحكم) ──
