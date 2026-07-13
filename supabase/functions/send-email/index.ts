@@ -2,7 +2,8 @@
 // send-email — يبعت إيميل عبر Resend من info@hanadiabdullah.com
 // يستقبل: { to, subject, html, reply_to }
 // ════════════════════════════════════════════════════════════
-const RESEND_API_KEY = "re_RcBfGv9j_7pc7ULYzDjHenBh1spuYaLWH";
+// المفتاح يُقرأ من سيكرت آمن في Supabase (Edge Functions → Secrets)، ولا يُكتب في الكود
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? Deno.env.get("RESEND_KEY") ?? "";
 const FROM = "Hanadi Insights <info@hanadiabdullah.com>";
 
 const CORS = {

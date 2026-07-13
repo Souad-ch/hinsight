@@ -2850,7 +2850,7 @@ function nlEmailHTML(sub,bodyText,btnText,btnUrl){
   +`<div style="font-size:10px;color:#e6efe4;margin-top:10px;letter-spacing:4px;text-transform:uppercase">${nlEscape(sub||'النشرة البريدية')}</div>`
   +`<div style="margin-top:13px;color:#8FB996;font-size:13px;letter-spacing:6px">◆</div></div>`
   +paras+btn
-  +`<div style="border-top:1px solid rgba(159,187,164,.28);margin-top:26px;padding-top:18px;text-align:center;color:#aab9aa;font-size:11px">© Hanadi Insights — منصة تحليل اقتصادي وأسواق عالمية</div>`
+  +`<div style="border-top:1px solid rgba(159,187,164,.28);margin-top:26px;padding-top:18px;text-align:center;color:#aab9aa;font-size:11px">© Hanadi Insights — منصة تحليل اقتصادي وأسواق عالمية<br><a href="https://hanadiabdullah.com/unsubscribe?email={{EMAIL}}" style="color:#8FB996;text-decoration:underline;font-size:11px">إلغاء الاشتراك من النشرة</a></div>`
   +`</td></tr></table></td></tr></table></td></tr></table></td></tr></table></body></html>`;
 }
 async function sendNewsletter(){
@@ -2869,7 +2869,8 @@ async function sendNewsletter(){
   for(let i=0;i<_subscribers.length;i++){
     st.textContent='⏳ جارٍ الإرسال... ('+(i+1)+'/'+_subscribers.length+')';
     try{
-      const {data,error}=await sb.functions.invoke('rapid-task',{body:{to:_subscribers[i],subject,html}});
+      const personalHtml=html.split('{{EMAIL}}').join(encodeURIComponent(_subscribers[i]));
+      const {data,error}=await sb.functions.invoke('rapid-task',{body:{to:_subscribers[i],subject,html:personalHtml}});
       if(error||(data&&data.error))fail++;else ok++;
     }catch(e){fail++;}
     await new Promise(r=>setTimeout(r,400)); // تفادي حدود المعدّل
