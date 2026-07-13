@@ -444,6 +444,7 @@
       <div class="side-link" data-panel="footer-page"><span class="side-icon">🦶</span>الفوتر</div>
       <div class="side-link" data-panel="about-photo"><span class="side-icon">🖼️</span>صورة هنادي</div>
       <div class="side-link" data-panel="testimonials-page"><span class="side-icon">⭐</span>آراء العملاء</div>
+      <div class="side-link" data-panel="availability-page"><span class="side-icon">🗓️</span>أيام وأوقات الحجز</div>
       <div class="side-link" data-panel="payments-page"><span class="side-icon">💳</span>طرق الدفع</div>
       <div class="side-link" data-panel="whatsapp-page"><span class="side-icon">💚</span>واتساب</div>
       <div class="side-link" data-panel="theme"><span class="side-icon">🎭</span>القالب والألوان</div>
@@ -943,6 +944,29 @@
         </div>
       </div>
 
+      <!-- BOOKING AVAILABILITY EDITOR -->
+      <div class="panel" id="panel-availability-page">
+        <div class="panel-title">أيام وأوقات الحجز</div>
+        <div class="panel-sub">تحكّمي بالأيام والأوقات التي تظهر للعملاء عند حجز استشارة. اتركيها فارغة لاستخدام الافتراضي.</div>
+        <div class="section-card">
+          <div class="section-card-title">🗓️ الأيام المتاحة</div>
+          <div id="av_days"></div>
+          <button type="button" class="btn btn-ghost" onclick="avAddDay()" style="width:auto;padding:10px 22px;margin-top:6px">➕ إضافة يوم</button>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">⏰ الأوقات المتاحة</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px">اكتبي الوقت مع «م» للمساء أو «ص» للصباح — مثال: <b>6:00 م</b></div>
+          <div id="av_slots"></div>
+          <button type="button" class="btn btn-ghost" onclick="avAddSlot()" style="width:auto;padding:10px 22px;margin-top:6px">➕ إضافة وقت</button>
+        </div>
+        <div class="section-card">
+          <label class="cp-lbl">جملة توضيحية للعميل (اختياري)</label>
+          <textarea class="input cp-inp" id="av_note" rows="2" placeholder="مثال: المواعيد المتاحة أيام السبت والثلاثاء والخميس من 6 حتى 9 مساءً."></textarea>
+        </div>
+        <button class="btn btn-gold" onclick="saveAvailability()" style="width:auto;padding:13px 32px;margin-top:4px;">💾 حفظ ونشر</button>
+        <div id="av_status" style="margin-top:10px;font-size:0.85rem;"></div>
+      </div>
+
       <!-- TESTIMONIALS EDITOR -->
       <div class="panel" id="panel-testimonials-page">
         <div class="panel-title">آراء العملاء</div>
@@ -1101,6 +1125,50 @@ function loadPanel(name){
   if(name==='analytics-page')loadAnalytics();
   if(name==='stats')loadStats();
   if(name==='testimonials-page')loadTestimonials();
+  if(name==='availability-page')loadAvailability();
+}
+// ── أيام وأوقات الحجز ──
+let AV_DAYS=[],AV_SLOTS=[];
+const AV_EN={'السبت':'Saturday','الأحد':'Sunday','الاثنين':'Monday','الإثنين':'Monday','الثلاثاء':'Tuesday','الأربعاء':'Wednesday','الخميس':'Thursday','الجمعة':'Friday'};
+function avRenderDays(){
+  const w=document.getElementById('av_days');
+  w.innerHTML=AV_DAYS.map((d,i)=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <input class="input cp-inp" style="margin:0;flex:1" data-avd="${i}" value="${(d.ar||d||'').toString().replace(/"/g,'&quot;')}" placeholder="اسم اليوم (مثال: السبت)"/>
+    <button type="button" onclick="avDelDay(${i})" style="background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:8px 12px;cursor:pointer">🗑</button>
+  </div>`).join('')||'<div style="color:var(--muted);font-size:.85rem">لا أيام (سيُستخدم الافتراضي).</div>';
+  w.querySelectorAll('[data-avd]').forEach(el=>el.addEventListener('input',()=>{AV_DAYS[+el.dataset.avd]={ar:el.value,en:AV_EN[el.value.trim()]||''};}));
+}
+function avRenderSlots(){
+  const w=document.getElementById('av_slots');
+  w.innerHTML=AV_SLOTS.map((s,i)=>`<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <input class="input cp-inp" style="margin:0;flex:1;direction:ltr" data-avs="${i}" value="${String(s||'').replace(/"/g,'&quot;')}" placeholder="6:00 م"/>
+    <button type="button" onclick="avDelSlot(${i})" style="background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:8px 12px;cursor:pointer">🗑</button>
+  </div>`).join('')||'<div style="color:var(--muted);font-size:.85rem">لا أوقات (سيُستخدم الافتراضي).</div>';
+  w.querySelectorAll('[data-avs]').forEach(el=>el.addEventListener('input',()=>{AV_SLOTS[+el.dataset.avs]=el.value;}));
+}
+function avAddDay(){AV_DAYS.push({ar:'',en:''});avRenderDays();}
+function avDelDay(i){AV_DAYS.splice(i,1);avRenderDays();}
+function avAddSlot(){AV_SLOTS.push('');avRenderSlots();}
+function avDelSlot(i){AV_SLOTS.splice(i,1);avRenderSlots();}
+async function loadAvailability(){
+  document.getElementById('av_status').textContent='';
+  let c={};
+  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','booking_availability').maybeSingle();c=(data&&data.content)||{};}catch(e){}
+  AV_DAYS=Array.isArray(c.days)?c.days.map(d=>typeof d==='string'?{ar:d,en:AV_EN[d]||''}:d):[];
+  AV_SLOTS=Array.isArray(c.slots)?c.slots.slice():[];
+  document.getElementById('av_note').value=c.note||'';
+  avRenderDays();avRenderSlots();
+}
+async function saveAvailability(){
+  const st=document.getElementById('av_status');
+  const days=AV_DAYS.filter(d=>(d.ar||'').trim()).map(d=>({ar:d.ar.trim(),en:(d.en||AV_EN[d.ar.trim()]||'')}));
+  const slots=AV_SLOTS.map(s=>String(s).trim()).filter(Boolean);
+  st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  const{error}=await sb.from('page_sections').upsert(
+    {section_key:'booking_availability',section_name:'أيام وأوقات الحجز',section_type:'page',order_index:91,visible:true,content:{days,slots,note:(document.getElementById('av_note').value||'').trim()},updated_at:new Date().toISOString()},
+    {onConflict:'section_key'});
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✓ تم الحفظ ونشر المواعيد على صفحة الحجز';st.style.color='#8FB996';
 }
 // ── آراء العملاء ──
 let TST=[];

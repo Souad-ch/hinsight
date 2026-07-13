@@ -732,7 +732,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
         <!-- STEP 3: Day & Time -->
         <div class="modal-step" data-step="3">
           <h3 class="modal-title">اختيار اليوم والوقت</h3>
-          <p class="modal-desc">المواعيد المتاحة أيام السبت والثلاثاء والخميس فقط، من الساعة ٦ حتى ٩ مساءً.</p>
+          <p class="modal-desc" id="iDtDesc">المواعيد المتاحة أيام السبت والثلاثاء والخميس فقط، من الساعة ٦ حتى ٩ مساءً.</p>
           <span class="dt-label">اليوم المتاح</span>
           <div class="day-pills" id="iDays">
             <div class="day-pill" data-day="السبت"><b>السبت</b><span>Saturday</span></div>
@@ -836,25 +836,43 @@ document.querySelectorAll('.choice').forEach(ch=>{
   });
 });
 
-// Day & time selection
-document.querySelectorAll('.day-pill').forEach(d=>{
-  d.addEventListener('click',()=>{
-    iState.day=d.dataset.day;
-    document.querySelectorAll('.day-pill').forEach(x=>x.classList.remove('selected'));
-    d.classList.add('selected');
-    iState.time='';
-    document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));
-    refreshSlotAvailability();
-  });
+// Day & time selection (تفويض الأحداث — يبقى شغّالاً بعد تحديث المواعيد من اللوحة)
+document.getElementById('iDays').addEventListener('click',e=>{
+  const d=e.target.closest('.day-pill');if(!d)return;
+  iState.day=d.dataset.day;
+  document.querySelectorAll('.day-pill').forEach(x=>x.classList.remove('selected'));
+  d.classList.add('selected');
+  iState.time='';
+  document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));
+  refreshSlotAvailability();
 });
-document.querySelectorAll('.slot').forEach(s=>{
-  s.addEventListener('click',()=>{
-    if(s.classList.contains('taken'))return;
-    iState.time=s.dataset.slot;
-    document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));
-    s.classList.add('selected');
-  });
+document.getElementById('iSlots').addEventListener('click',e=>{
+  const s=e.target.closest('.slot');if(!s||s.classList.contains('taken'))return;
+  iState.time=s.dataset.slot;
+  document.querySelectorAll('.slot').forEach(x=>x.classList.remove('selected'));
+  s.classList.add('selected');
 });
+// تحميل أيام/أوقات الحجز من لوحة التحكم (إن وُجدت)
+(async function loadAvailability(){
+  if(!sbClient)return;
+  try{
+    const {data}=await sbClient.from('page_sections').select('content').eq('section_key','booking_availability').maybeSingle();
+    const c=data&&data.content;if(!c)return;
+    if(Array.isArray(c.days)&&c.days.length){
+      document.getElementById('iDays').innerHTML=c.days.map(d=>{
+        const ar=(typeof d==='string')?d:(d.ar||'');const en=(typeof d==='object'&&d.en)?d.en:'';
+        return `<div class="day-pill" data-day="${ar.replace(/"/g,'')}"><b>${ar}</b><span>${en}</span></div>`;
+      }).join('');
+    }
+    if(Array.isArray(c.slots)&&c.slots.length){
+      document.getElementById('iSlots').innerHTML=c.slots.map(sl=>{
+        const val=String(sl).trim();const disp=val.replace(/\s*(م|ص|مساء|صباح)\s*/,'').trim();
+        return `<div class="slot" data-slot="${val.replace(/"/g,'')}"><span class="slot-time">${disp}</span><span class="slot-x">محجوز</span></div>`;
+      }).join('');
+    }
+    if(c.note){const p=document.getElementById('iDtDesc');if(p)p.textContent=c.note;}
+  }catch(e){}
+})();
 
 // يحسب تاريخ أقرب موعد قادم لليوم العربي المختار (السبت/الثلاثاء/الخميس)
 function nextDateForDay(arabicDay){
