@@ -262,6 +262,21 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 
     <!-- ── OVERVIEW ── -->
     <section class="view active" id="viewOverview">
+      <!-- إعلان/رسالة من هنادي (تُدار من اللوحة) -->
+      <div id="vipAnnounce" style="display:none;background:linear-gradient(145deg,rgba(201,178,123,.12),rgba(201,178,123,.04));border:1px solid var(--gold-border);border-radius:16px;padding:18px 22px;margin-bottom:18px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="font-size:1.2rem">📣</span>
+          <div><div style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">رسالة من هنادي</div>
+          <div id="vipAnnounceText" style="color:var(--text);font-size:.95rem;line-height:1.85"></div></div>
+        </div>
+      </div>
+
+      <!-- إجراءات سريعة -->
+      <div id="vipActions" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px">
+        <a href="/consultations" class="btn btn-gold" style="text-decoration:none;padding:12px 26px">📅 احجز جلستك القادمة</a>
+        <a id="vipWhatsapp" href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none;padding:12px 26px;border:1px solid var(--gold-border);border-radius:10px;color:var(--gold);font-weight:700">💬 تواصل عبر واتساب</a>
+      </div>
+
       <!-- Subscription Card -->
       <div class="sub-card" id="subCard">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
@@ -302,6 +317,17 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
         <div class="panel-body" id="upcomingPanel">
           <div class="loading"><div class="spinner"></div></div>
         </div>
+      </div>
+
+      <!-- موارد حصرية (تُدار من اللوحة) -->
+      <div class="panel" id="vipResourcesPanel" style="display:none">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">✦ موارد حصرية</h2>
+            <p class="panel-sub">ملفات وروابط خاصة بأعضاء VIP</p>
+          </div>
+        </div>
+        <div class="panel-body"><div id="vipResources" style="display:flex;flex-direction:column;gap:10px"></div></div>
       </div>
     </section>
 
@@ -468,6 +494,46 @@ function renderAll(){
   renderAllSessions();
   renderPresession();
   renderHistory();
+  loadVipExtras();
+}
+// ── إضافات البوابة (إعلان + موارد + واتساب) — تُدار من لوحة التحكم ──
+let _vipExtrasLoaded=false;
+async function loadVipExtras(){
+  if(_vipExtrasLoaded)return; _vipExtrasLoaded=true;
+  const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // إعلان + موارد
+  try{
+    const {data}=await sb.from('page_sections').select('content').eq('section_key','vip_portal').maybeSingle();
+    const c=(data&&data.content)||{};
+    if(c.announce&&String(c.announce).trim()){
+      document.getElementById('vipAnnounceText').innerHTML=esc(c.announce).replace(/\n/g,'<br>');
+      document.getElementById('vipAnnounce').style.display='block';
+    }
+    if(Array.isArray(c.resources)&&c.resources.length){
+      const list=c.resources.filter(r=>r&&r.title&&r.url);
+      if(list.length){
+        document.getElementById('vipResources').innerHTML=list.map(r=>{
+          const u=String(r.url).trim();const href=/^https?:|^mailto:/i.test(u)?u:('https://'+u);
+          return `<a href="${esc(href)}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;text-decoration:none;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:.2s">
+            <span style="font-size:1.1rem">${esc(r.icon||'📄')}</span>
+            <span style="flex:1"><span style="display:block;color:var(--text);font-weight:600;font-size:.92rem">${esc(r.title)}</span>${r.desc?`<span style="display:block;color:var(--text-muted);font-size:.78rem;margin-top:2px">${esc(r.desc)}</span>`:''}</span>
+            <span style="color:var(--gold);font-size:.8rem">فتح ←</span></a>`;
+        }).join('');
+        document.getElementById('vipResourcesPanel').style.display='block';
+      }
+    }
+  }catch(e){}
+  // واتساب (من إعدادات واتساب العامة)
+  try{
+    const {data:w}=await sb.from('page_sections').select('content').eq('section_key','whatsapp_settings').maybeSingle();
+    const s=w&&w.content;
+    if(s&&s.number){
+      const num=String(s.number).replace(/[^0-9]/g,'');
+      if(num){const a=document.getElementById('vipWhatsapp');
+        a.href='https://wa.me/'+num+'?text='+encodeURIComponent('مرحباً، أنا عضو VIP وأود الاستفسار.');
+        a.style.display='inline-block';}
+    }
+  }catch(e){}
 }
 
 // ── SUBSCRIPTION CARD ──
