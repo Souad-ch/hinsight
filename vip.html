@@ -329,6 +329,9 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
         </div>
         <div class="panel-body"><div id="vipResources" style="display:flex;flex-direction:column;gap:10px"></div></div>
       </div>
+
+      <!-- أقسام مخصّصة (تُدار من اللوحة) -->
+      <div id="vipCustomSecs"></div>
     </section>
 
     <!-- ── SESSIONS ── -->
@@ -521,6 +524,15 @@ async function loadVipExtras(){
         }).join('');
         document.getElementById('vipResourcesPanel').style.display='block';
       }
+    }
+    // أقسام مخصّصة
+    if(Array.isArray(c.sections)&&c.sections.length){
+      const secs=c.sections.filter(s=>s&&(s.title||s.body));
+      document.getElementById('vipCustomSecs').innerHTML=secs.map(s=>`
+        <div class="panel">
+          <div class="panel-head"><h2 class="panel-title">${esc(s.title||'')}</h2></div>
+          <div class="panel-body"><div style="color:var(--text-muted);font-size:.92rem;line-height:1.9">${esc(s.body||'').replace(/\n/g,'<br>')}</div></div>
+        </div>`).join('');
     }
   }catch(e){}
   // واتساب (من إعدادات واتساب العامة)

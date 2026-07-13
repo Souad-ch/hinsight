@@ -959,6 +959,12 @@
           <div id="vp_res"></div>
           <button type="button" class="btn btn-ghost" onclick="vpAddRes()" style="width:auto;padding:10px 22px;margin-top:6px">➕ إضافة مورد</button>
         </div>
+        <div class="section-card">
+          <div class="section-card-title">🧩 أقسام مخصّصة</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px">أضيفي أقسام كاملة (عنوان + نص) تظهر في بوابة الأعضاء — مثل: تعليمات، شروط، ملاحظات، أو أي محتوى.</div>
+          <div id="vp_secs"></div>
+          <button type="button" class="btn btn-ghost" onclick="vpAddSec()" style="width:auto;padding:10px 22px;margin-top:6px">➕ إضافة قسم</button>
+        </div>
         <button class="btn btn-gold" onclick="saveVip()" style="width:auto;padding:13px 32px;margin-top:4px;">💾 حفظ ونشر</button>
         <div id="vp_status" style="margin-top:10px;font-size:0.85rem;"></div>
       </div>
@@ -1189,20 +1195,37 @@ function vpRender(){
 }
 function vpAddRes(){VP_RES.push({title:'',url:'',desc:'',icon:'📄'});vpRender();}
 function vpDelRes(i){VP_RES.splice(i,1);vpRender();}
+// أقسام مخصّصة
+let VP_SECS=[];
+function vpSecRender(){
+  const w=document.getElementById('vp_secs');
+  w.innerHTML=VP_SECS.map((s,i)=>`<div class="section-card" style="margin-bottom:12px;position:relative">
+    <button type="button" onclick="vpDelSec(${i})" style="position:absolute;top:12px;left:12px;background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:.78rem">🗑</button>
+    <label class="cp-lbl">عنوان القسم</label>
+    <input class="input cp-inp" data-vps="${i}" data-k="title" value="${(s.title||'').replace(/"/g,'&quot;')}"/>
+    <label class="cp-lbl">المحتوى</label>
+    <textarea class="input cp-inp" data-vps="${i}" data-k="body" rows="3">${(s.body||'').replace(/</g,'&lt;')}</textarea>
+  </div>`).join('')||'<div style="color:var(--muted);font-size:.85rem">لا أقسام بعد.</div>';
+  w.querySelectorAll('[data-vps]').forEach(el=>el.addEventListener('input',()=>{VP_SECS[+el.dataset.vps][el.dataset.k]=el.value;}));
+}
+function vpAddSec(){VP_SECS.push({title:'',body:''});vpSecRender();}
+function vpDelSec(i){VP_SECS.splice(i,1);vpSecRender();}
 async function loadVip(){
   document.getElementById('vp_status').textContent='';
   let c={};
   try{const{data}=await sb.from('page_sections').select('content').eq('section_key','vip_portal').maybeSingle();c=(data&&data.content)||{};}catch(e){}
   document.getElementById('vp_announce').value=c.announce||'';
   VP_RES=Array.isArray(c.resources)?c.resources.slice():[];
-  vpRender();
+  VP_SECS=Array.isArray(c.sections)?c.sections.slice():[];
+  vpRender();vpSecRender();
 }
 async function saveVip(){
   const st=document.getElementById('vp_status');
   const resources=VP_RES.filter(r=>(r.title||'').trim()&&(r.url||'').trim());
+  const sections=VP_SECS.filter(s=>(s.title||'').trim()||(s.body||'').trim());
   st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
   const{error}=await sb.from('page_sections').upsert(
-    {section_key:'vip_portal',section_name:'بوابة VIP',section_type:'page',order_index:90,visible:true,content:{announce:(document.getElementById('vp_announce').value||'').trim(),resources},updated_at:new Date().toISOString()},
+    {section_key:'vip_portal',section_name:'بوابة VIP',section_type:'page',order_index:90,visible:true,content:{announce:(document.getElementById('vp_announce').value||'').trim(),resources,sections},updated_at:new Date().toISOString()},
     {onConflict:'section_key'});
   if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
   st.textContent='✓ تم الحفظ ونشر المحتوى على بوابة VIP';st.style.color='#8FB996';
