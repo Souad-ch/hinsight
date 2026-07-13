@@ -1294,7 +1294,7 @@ function _mailShell(sub,inner){
 function _detailBox(rows){
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;color:#c5cdc6;font-size:14px">${rows}</table>`;
 }
-function _row(label,val,accent){return `<tr><td style="color:#a9c6ae;padding:9px 0;border-bottom:1px solid rgba(159,187,164,.2);font-size:13.5px">${label}</td><td style="text-align:left;padding:9px 0;border-bottom:1px solid rgba(143,185,150,.1);color:${accent||'#e7e9e7'};font-weight:600">${val||'—'}</td></tr>`;}
+function _row(label,val,accent){return `<tr><td valign="top" style="color:#a9c6ae;padding:12px 0 12px 18px;border-bottom:1px solid rgba(159,187,164,.16);font-size:13px;white-space:nowrap">${label}</td><td valign="top" style="text-align:left;padding:12px 0;border-bottom:1px solid rgba(159,187,164,.16);font-size:14px;line-height:1.55;color:${accent||'#e7e9e7'};font-weight:600">${val||'—'}</td></tr>`;}
 function cRequestHTML(o){
   return _mailShell('MARKET ANALYSIS',
     `<p style="color:#e7e9e7;font-size:17px;margin:0 0 16px;font-weight:600">مرحباً ${o.name}،</p>
