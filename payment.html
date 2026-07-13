@@ -174,9 +174,9 @@ function adminNotifyHTML(o){
 function confirmEmailHTML(o){
   return _mShell('تأكيد الحجز',
     `<p style="color:#e7e9e7;font-size:17px;margin:0 0 16px;font-weight:600">مرحباً ${o.name}،</p>
-     <p style="color:#a9b3ab;font-size:15px;line-height:2;margin:0">تم تأكيد دفعتك وتثبيت موعدك نهائياً. موعدك الآن <b style="color:#9FBBA4">محجوز ومؤكَّد</b>. شكراً لثقتك، نراكِ في موعدك.</p>
+     <p style="color:#a9b3ab;font-size:15px;line-height:2;margin:0">تم تأكيد دفعتك وتثبيت موعدك نهائياً. موعدك الآن <b style="color:#9FBBA4">محجوز ومؤكَّد</b>. شكراً لثقتك، نراك في موعدك.</p>
      ${_mBox(_mRow('نوع الاستشارة',o.type)+_mRow('الموعد',(o.day||'')+' — '+(o.time||''))+_mRow('رمز طلبك',o.code,'#9FBBA4'))}
-     <p style="color:#8a948b;font-size:12px;margin:22px 0 0">للاستفسار، ردّي على هذا الإيميل مباشرةً.</p>`);
+     <p style="color:#8a948b;font-size:12px;margin:22px 0 0">للاستفسار، ردّ على هذا الإيميل مباشرةً.</p>`);
 }
 // ── طرق الدفع الافتراضية (تُستخدم إن لم تُحفظ طرق من لوحة التحكم) ──
 const DEFAULT_METHODS=[
