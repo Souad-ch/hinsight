@@ -1019,6 +1019,29 @@
             <li>انسخي <b>Measurement ID</b> (يبدأ بـ G-) والصقيه هنا.</li>
           </ol>
         </div>
+
+        <div class="section-card">
+          <div class="section-card-title">📊 عرض النتائج داخل اللوحة (اختياري)</div>
+          <div style="font-size:.85rem;color:var(--muted);line-height:1.9;margin-bottom:10px">
+            لتشوفي عدد الزوّار والإحصائيات <b>هنا مباشرةً</b> بدون فتح موقع Google، أنشئي تقريراً مجانياً بـ Looker Studio والصقي رابط التضمين:
+            <ol style="padding-right:20px;margin-top:8px">
+              <li>افتحي <b>lookerstudio.google.com</b> → <b>Create → Report</b>.</li>
+              <li>اختاري مصدر البيانات <b>Google Analytics</b> ثم موقعك (Property).</li>
+              <li>من <b>Share → Embed report</b> فعّلي التضمين وانسخي <b>Embed URL</b>.</li>
+              <li>الصقيه هنا واحفظي — رح يظهر التقرير أسفل هذه الصفحة.</li>
+            </ol>
+          </div>
+          <label class="cp-lbl">رابط تضمين التقرير (Looker Studio Embed URL)</label>
+          <input class="input cp-inp" id="ga_report" dir="ltr" placeholder="https://lookerstudio.google.com/embed/reporting/..."/>
+          <button class="btn btn-gold" onclick="saveAnalytics()" style="width:auto;padding:12px 28px;margin-top:8px;">💾 حفظ التقرير</button>
+        </div>
+
+        <div class="section-card" id="ga_report_wrap" style="display:none">
+          <div class="section-card-title">📈 تقريرك المباشر</div>
+          <div style="position:relative;width:100%;overflow:hidden;border-radius:10px;border:1px solid var(--ink-border)">
+            <iframe id="ga_report_frame" style="width:100%;height:640px;border:0;display:block" allowfullscreen></iframe>
+          </div>
+        </div>
       </div>
 
       <!-- FOOTER EDITOR -->
@@ -1322,24 +1345,34 @@ async function loadStats(){
     : '<div style="color:var(--muted);font-size:.85rem">لا توجد طلبات بعد.</div>';
 }
 // ── Google Analytics ──
+function gaRenderReport(url){
+  const wrap=document.getElementById('ga_report_wrap'),fr=document.getElementById('ga_report_frame');
+  if(url&&/^https:\/\/(lookerstudio|datastudio)\.google\.com\//i.test(url)){fr.src=url;wrap.style.display='block';}
+  else{wrap.style.display='none';fr.removeAttribute('src');}
+}
 async function loadAnalytics(){
   document.getElementById('ga_status').textContent='';
   let s={};
   try{const{data}=await sb.from('page_sections').select('content').eq('section_key','analytics_settings').maybeSingle();s=(data&&data.content)||{};}catch(e){}
   document.getElementById('ga_enabled').checked=!!s.enabled;
   document.getElementById('ga_id').value=s.ga_id||'';
+  document.getElementById('ga_report').value=s.report_url||'';
+  gaRenderReport(s.report_url||'');
 }
 async function saveAnalytics(){
   const st=document.getElementById('ga_status');
   const id=(document.getElementById('ga_id').value||'').trim();
+  const report_url=(document.getElementById('ga_report').value||'').trim();
   const enabled=document.getElementById('ga_enabled').checked;
   if(enabled&&!/^G-[A-Za-z0-9]+$/.test(id)){st.textContent='⚠ الرقم غير صحيح — يجب أن يبدأ بـ G- (مثال: G-ABC123XYZ).';st.style.color='#e0ada7';return;}
+  if(report_url&&!/^https:\/\/(lookerstudio|datastudio)\.google\.com\//i.test(report_url)){st.textContent='⚠ رابط التقرير يجب أن يكون Embed URL من Looker Studio.';st.style.color='#e0ada7';return;}
   st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
   const{error}=await sb.from('page_sections').upsert(
-    {section_key:'analytics_settings',section_name:'Google Analytics',section_type:'page',order_index:93,visible:true,content:{enabled,ga_id:id},updated_at:new Date().toISOString()},
+    {section_key:'analytics_settings',section_name:'Google Analytics',section_type:'page',order_index:93,visible:true,content:{enabled,ga_id:id,report_url},updated_at:new Date().toISOString()},
     {onConflict:'section_key'});
   if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
-  st.textContent=enabled?'✓ تم التفعيل — سيبدأ التتبّع خلال دقائق على الموقع':'✓ تم الحفظ (التتبّع مُعطّل حالياً)';st.style.color='#8FB996';
+  gaRenderReport(report_url);
+  st.textContent='✓ تم الحفظ'+(report_url?' وعرض التقرير أدناه':'')+(enabled?' — التتبّع مُفعّل':'');st.style.color='#8FB996';
 }
 // ── واتساب ──
 function waUpdatePreview(){
