@@ -812,9 +812,29 @@
 
       <!-- SUBSCRIBERS -->
       <div class="panel" id="panel-subscribers">
-        <div class="panel-title">المشتركون بالنشرة</div>
-        <div class="panel-sub">قائمة المشتركين في النشرة البريدية الأسبوعية</div>
+        <div class="panel-title">النشرة البريدية</div>
+        <div class="panel-sub">اكتبي رسالة وأرسليها لكل المشتركين بتصميم Hanadi Insights</div>
         <div class="section-card">
+          <div class="section-card-title">✉️ إرسال نشرة جديدة</div>
+          <label class="cp-lbl">عنوان الرسالة (Subject)</label>
+          <input class="input cp-inp" id="nl_subject" placeholder="مثال: تحليل الأسبوع — أبرز ما يحرّك الأسواق"/>
+          <label class="cp-lbl">عنوان داخلي صغير (يظهر تحت الشعار)</label>
+          <input class="input cp-inp" id="nl_sub" placeholder="نشرة الأسبوع"/>
+          <label class="cp-lbl">نص الرسالة</label>
+          <textarea class="input cp-inp" id="nl_body" rows="7" placeholder="اكتبي محتوى النشرة هنا... (كل سطر فارغ يُنشئ فقرة جديدة)"></textarea>
+          <label class="cp-lbl">زر اختياري (اتركيه فارغاً لتجاهله)</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <input class="input cp-inp" id="nl_btn_text" placeholder="نص الزر (مثال: اقرأ التحليل)" style="flex:1;min-width:160px"/>
+            <input class="input cp-inp" id="nl_btn_url" dir="ltr" placeholder="https://..." style="flex:1;min-width:160px"/>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px">
+            <button class="btn btn-gold" onclick="sendNewsletter()" style="width:auto;padding:13px 30px">📨 إرسال للكل</button>
+            <span id="nl_count" style="font-size:.82rem;color:var(--muted)"></span>
+          </div>
+          <div id="nl_status" style="margin-top:10px;font-size:.85rem;line-height:1.8"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">👥 المشتركون</div>
           <table class="data-table">
             <thead><tr><th>البريد الإلكتروني</th><th>تاريخ الاشتراك</th></tr></thead>
             <tbody id="subsBody"><tr><td colspan="2" class="empty-state">جارٍ التحميل...</td></tr></tbody>
@@ -2747,9 +2767,12 @@ document.getElementById('saveThemeBtn').addEventListener('click',async function(
 });
 
 // SUBSCRIBERS
+let _subscribers=[];
 async function loadSubscribers(){
   try{
     const {data}=await sb.from('newsletter_subscribers').select('*').order('created_at',{ascending:false});
+    _subscribers=(data||[]).map(s=>s.email).filter(Boolean);
+    const cnt=document.getElementById('nl_count');if(cnt)cnt.textContent=_subscribers.length?('سيُرسَل إلى '+_subscribers.length+' مشترك'):'لا يوجد مشتركون';
     const tbody=document.getElementById('subsBody');
     if(!data||!data.length){tbody.innerHTML='<tr><td colspan="2"><div class="empty-state"><div class="empty-icon">📧</div>لا يوجد مشتركون بعد.</div></td></tr>';return;}
     tbody.innerHTML=data.map(s=>`
@@ -2758,6 +2781,50 @@ async function loadSubscribers(){
         <td style="font-family:var(--font-mono);font-size:0.72rem;">${new Date(s.created_at).toLocaleDateString('ar-SA')}</td>
       </tr>`).join('');
   }catch(e){document.getElementById('subsBody').innerHTML='<tr><td colspan="2" class="empty-state">جدول المشتركين غير موجود بعد.</td></tr>';}
+}
+// ── إرسال النشرة البريدية (بتصميم Hanadi الأخضر المؤطّر) ──
+function nlEscape(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function nlEmailHTML(sub,bodyText,btnText,btnUrl){
+  const paras=String(bodyText||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean)
+    .map(p=>`<p style="color:#eef2ee;font-size:15px;line-height:2;margin:0 0 16px">${nlEscape(p).replace(/\n/g,'<br>')}</p>`).join('');
+  const btn=(btnText&&btnUrl)
+    ? `<div style="text-align:center;margin-top:26px"><a href="${nlEscape(btnUrl)}" style="display:inline-block;background:transparent;color:#cfe3d3;text-decoration:none;font-size:15px;font-weight:700;padding:14px 44px;border:1px solid #8FB996">${nlEscape(btnText)}</a></div>`:'';
+  return `<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta name="supported-color-schemes" content="dark"><style>:root{color-scheme:dark;supported-color-schemes:dark}body{margin:0;padding:0;background-color:#3c483e!important}</style></head>`
+  +`<body bgcolor="#3c483e" style="margin:0;padding:0;background-color:#3c483e;-webkit-font-smoothing:antialiased">`
+  +`<table role="presentation" width="100%" bgcolor="#3c483e" cellpadding="0" cellspacing="0" style="background-color:#3c483e"><tr><td align="center" style="padding:40px 16px">`
+  +`<table role="presentation" width="540" bgcolor="#3c483e" cellpadding="0" cellspacing="0" dir="rtl" style="width:540px;max-width:100%;background-color:#3c483e;font-family:Tahoma,Arial,sans-serif"><tr><td style="padding:12px">`
+  +`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #8FB996"><tr><td style="padding:2px">`
+  +`<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid rgba(159,187,164,.35)"><tr><td bgcolor="#3c483e" style="background-color:#3c483e;padding:40px 34px">`
+  +`<div style="text-align:center;padding-bottom:22px"><div style="font-family:Georgia,serif;font-size:25px;font-weight:600;color:#FFFFFF;letter-spacing:.5px">Hanadi Insights</div>`
+  +`<div style="font-size:10px;color:#e6efe4;margin-top:10px;letter-spacing:4px;text-transform:uppercase">${nlEscape(sub||'النشرة البريدية')}</div>`
+  +`<div style="margin-top:13px;color:#8FB996;font-size:13px;letter-spacing:6px">◆</div></div>`
+  +paras+btn
+  +`<div style="border-top:1px solid rgba(159,187,164,.28);margin-top:26px;padding-top:18px;text-align:center;color:#aab9aa;font-size:11px">© Hanadi Insights — منصة تحليل اقتصادي وأسواق عالمية</div>`
+  +`</td></tr></table></td></tr></table></td></tr></table></td></tr></table></body></html>`;
+}
+async function sendNewsletter(){
+  const st=document.getElementById('nl_status');
+  const subject=(document.getElementById('nl_subject').value||'').trim();
+  const sub=(document.getElementById('nl_sub').value||'').trim();
+  const body=(document.getElementById('nl_body').value||'').trim();
+  const bt=(document.getElementById('nl_btn_text').value||'').trim();
+  const bu=(document.getElementById('nl_btn_url').value||'').trim();
+  if(!subject||!body){st.style.color='#e0ada7';st.textContent='⚠ اكتبي العنوان ونص الرسالة أولاً.';return;}
+  if(!_subscribers.length){st.style.color='#e0ada7';st.textContent='⚠ لا يوجد مشتركون للإرسال إليهم.';return;}
+  if(!confirm('سيتم إرسال النشرة إلى '+_subscribers.length+' مشترك. متابعة؟'))return;
+  const html=nlEmailHTML(sub,body,bt,bu);
+  let ok=0,fail=0;
+  st.style.color='var(--muted)';
+  for(let i=0;i<_subscribers.length;i++){
+    st.textContent='⏳ جارٍ الإرسال... ('+(i+1)+'/'+_subscribers.length+')';
+    try{
+      const {data,error}=await sb.functions.invoke('rapid-task',{body:{to:_subscribers[i],subject,html}});
+      if(error||(data&&data.error))fail++;else ok++;
+    }catch(e){fail++;}
+    await new Promise(r=>setTimeout(r,400)); // تفادي حدود المعدّل
+  }
+  st.style.color=fail?'#e0c07a':'#8FB996';
+  st.innerHTML='✓ تم الإرسال إلى '+ok+' مشترك'+(fail?(' — تعذّر '+fail+' (قد يكون بسبب حد الإرسال اليومي).'):'.');
 }
 </script>
 
