@@ -1552,6 +1552,28 @@ setTimeout(fixAllah,2500);
   }catch(e){}
 })();
 
+// ── آراء العملاء (من لوحة التحكم إن وُجدت، وإلا تبقى الافتراضية) ──
+(async function loadTestimonials(){
+  if(!sbClient)return;
+  try{
+    const {data}=await sbClient.from('page_sections').select('content').eq('section_key','testimonials_list').maybeSingle();
+    const items=data&&data.content&&Array.isArray(data.content.items)?data.content.items.filter(t=>t&&(t.text||t.name)):null;
+    if(!items||!items.length)return; // أبقِ الافتراضية
+    const grid=document.querySelector('#testimonials .testi-grid');
+    if(!grid)return;
+    const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    grid.innerHTML=items.map((t,i)=>{
+      const av=(t.name||'؟').trim().charAt(0);
+      const stars='★★★★★'.slice(0,Math.max(1,Math.min(5,parseInt(t.stars)||5)));
+      return `<div class="testi-card reveal delay-${(i%3)+1}">
+        <div class="testi-stars">${stars}</div>
+        <p class="testi-text">${esc(t.text)}</p>
+        <div class="testi-person"><div class="testi-avatar en">${esc(av)}</div><div><div class="testi-name">${esc(t.name)}</div><div class="testi-role">${esc(t.role)}</div></div></div>
+      </div>`;
+    }).join('');
+  }catch(e){}
+})();
+
 // ── إرسال الإيميلات عبر Resend (موحّد من info@) ──
 async function sendMail(to,subject,html,replyTo){
   try{
