@@ -1878,11 +1878,11 @@ async function loadLiveTestimonials(){
 }
 loadLiveTestimonials();
 
-async function loadPageSections(){
-  if(!sbClient)return;
+// كاش محلي: يعرض آخر محتوى محفوظ فوراً (بدون وميض على النت البطيء)، ثم يجلب الجديد بالخلفية
+const _PS_CACHE_KEY='hn_page_sections_v1';
+function applyPageSections(data){
   try{
-    const {data,error}=await sbClient.from('page_sections').select('*').order('order_index',{ascending:true});
-    if(error||!data||!data.length)return;
+    if(!data||!data.length)return;
 
     // Build ordered list of section keys
     const ordered=data.map(s=>s.section_key);
@@ -2009,6 +2009,20 @@ async function loadPageSections(){
     });
 
   }catch(e){console.warn('page sections:',e);}
+}
+async function loadPageSections(){
+  // 1) طبّق النسخة المخزّنة فوراً (إن وُجدت) — يمنع ظهور المحتوى القديم لحظياً
+  let cached=null;
+  try{cached=JSON.parse(localStorage.getItem(_PS_CACHE_KEY)||'null');}catch(e){}
+  if(cached)applyPageSections(cached);
+  // 2) اجلب الأحدث من قاعدة البيانات وطبّقه وحدّث الكاش
+  if(!sbClient)return;
+  try{
+    const {data,error}=await sbClient.from('page_sections').select('*').order('order_index',{ascending:true});
+    if(error||!data||!data.length)return;
+    applyPageSections(data);
+    try{localStorage.setItem(_PS_CACHE_KEY,JSON.stringify(data));}catch(e){}
+  }catch(e){console.warn('page sections fetch:',e);}
 }
 
 // ── Custom Section Builder ─────────────────────
