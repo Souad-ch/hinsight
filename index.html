@@ -695,9 +695,12 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <script>
 (function(){
   const loader=document.getElementById('page-loader');
-  function hide(){loader.classList.add('hide');setTimeout(()=>{loader.style.display='none';},650);}
-  setTimeout(hide,2000);
-  window.addEventListener('load',function(){setTimeout(hide,400);});
+  let hidden=false;
+  function hide(){if(hidden)return;hidden=true;loader.classList.add('hide');setTimeout(()=>{loader.style.display='none';},650);}
+  // يُخفى اللودر فقط بعد تطبيق محتوى قاعدة البيانات (حدث hn:content-ready)
+  window.addEventListener('hn:content-ready',function(){setTimeout(hide,150);});
+  // صمّام أمان: لو تعذّر الجلب (نت مقطوع/خطأ) لا يعلق الزائر أكثر من 5 ثوانٍ
+  setTimeout(hide,5000);
 })();
 </script>
 
@@ -2010,19 +2013,22 @@ function applyPageSections(data){
 
   }catch(e){console.warn('page sections:',e);}
 }
+function _contentReady(){try{window.dispatchEvent(new Event('hn:content-ready'));}catch(e){}}
 async function loadPageSections(){
   // 1) طبّق النسخة المخزّنة فوراً (إن وُجدت) — يمنع ظهور المحتوى القديم لحظياً
   let cached=null;
   try{cached=JSON.parse(localStorage.getItem(_PS_CACHE_KEY)||'null');}catch(e){}
-  if(cached)applyPageSections(cached);
+  if(cached){applyPageSections(cached);_contentReady();} // زائر عائد: أظهر الصفحة فوراً من الكاش
   // 2) اجلب الأحدث من قاعدة البيانات وطبّقه وحدّث الكاش
-  if(!sbClient)return;
+  if(!sbClient){_contentReady();return;}
   try{
     const {data,error}=await sbClient.from('page_sections').select('*').order('order_index',{ascending:true});
-    if(error||!data||!data.length)return;
-    applyPageSections(data);
-    try{localStorage.setItem(_PS_CACHE_KEY,JSON.stringify(data));}catch(e){}
+    if(!error&&data&&data.length){
+      applyPageSections(data);
+      try{localStorage.setItem(_PS_CACHE_KEY,JSON.stringify(data));}catch(e){}
+    }
   }catch(e){console.warn('page sections fetch:',e);}
+  _contentReady(); // زائر جديد: لا تظهر الصفحة إلا بعد تطبيق المحتوى الحقيقي
 }
 
 // ── Custom Section Builder ─────────────────────
