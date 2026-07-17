@@ -109,8 +109,16 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
       <div class="amount-box">
         <div class="amount-label">المبلغ المطلوب</div>
         <div class="amount-val"><span id="amtUsd">—</span><span style="font-size:1.2rem"> $</span></div>
+        <div id="amtOld" style="display:none;font-size:.85rem;color:var(--text-muted);text-decoration:line-through;direction:ltr;margin-top:2px"></div>
         <div class="amount-code" id="reqCode">—</div>
       </div>
+
+      <!-- كوبون خصم -->
+      <div style="display:flex;gap:8px;margin-bottom:18px">
+        <input class="input" id="couponInput" placeholder="لديك كوبون خصم؟ اكتبه هنا" style="margin:0;flex:1;text-transform:uppercase"/>
+        <button class="btn btn-ghost" id="couponBtn" style="flex-shrink:0;padding:0 20px">تطبيق</button>
+      </div>
+      <div class="result" id="couponResult" style="margin:-8px 0 14px"></div>
 
       <div class="tabs" id="tabsRow">
         <!-- تُبنى تبويبات طرق الدفع ديناميكياً من لوحة التحكم -->
@@ -208,7 +216,7 @@ let METHODS=DEFAULT_METHODS.slice();
 // ── URL PARAMS ──
 const P=new URLSearchParams(location.search);
 const REQ_CODE=P.get('code')||'HN-REQUEST-----';
-const AMOUNT=parseFloat(P.get('amount')||'0')||0;
+let AMOUNT=parseFloat(P.get('amount')||'0')||0;
 let booking=null;
 
 document.getElementById('reqCode').textContent=REQ_CODE;
@@ -257,7 +265,7 @@ setInterval(pollPaymentStatus,12000);
 // ── COPY ──
 function copy(text,btn){navigator.clipboard?.writeText(text).then(()=>{const o=btn.textContent;btn.textContent='✓';setTimeout(()=>btn.textContent=o,1200);});}
 function escH(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-const amtTxt=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
+let amtTxt=AMOUNT?AMOUNT.toLocaleString('en-US'):'—';
 
 // ── بناء تبويبات وطرق الدفع ديناميكياً ──
 function renderMethods(){
@@ -346,6 +354,38 @@ function wireMethodEvents(){
   renderMethods();
 })();
 
+// ── كوبون الخصم ──
+const ORIG_AMOUNT=AMOUNT;
+let _couponApplied=null;
+document.getElementById('couponBtn').addEventListener('click',async()=>{
+  const inp=document.getElementById('couponInput');
+  const res=document.getElementById('couponResult');
+  const code=(inp.value||'').trim().toUpperCase();
+  res.className='result';res.style.display='none';
+  if(!code)return;
+  if(_couponApplied){res.className='result err';res.textContent='⚠ تم تطبيق كوبون بالفعل على هذا الطلب.';return;}
+  if(!ORIG_AMOUNT){res.className='result err';res.textContent='⚠ المبلغ غير محدد في الرابط.';return;}
+  const btn=document.getElementById('couponBtn');btn.disabled=true;btn.textContent='...';
+  try{
+    const {data}=await sb.from('page_sections').select('content').eq('section_key','coupons').maybeSingle();
+    const list=(data&&data.content&&Array.isArray(data.content.list))?data.content.list:[];
+    const c=list.find(x=>x&&x.enabled!==false&&String(x.code||'').toUpperCase()===code);
+    if(!c){res.className='result err';res.textContent='⚠ الكوبون غير صحيح أو منتهي.';return;}
+    const val=parseFloat(c.value)||0;
+    let discount=c.type==='fixed'?val:ORIG_AMOUNT*val/100;
+    discount=Math.min(discount,ORIG_AMOUNT-1); // لا يصل المبلغ للصفر
+    const newAmount=Math.round((ORIG_AMOUNT-discount)*100)/100;
+    _couponApplied=code;
+    AMOUNT=newAmount;amtTxt=AMOUNT.toLocaleString('en-US');
+    document.getElementById('amtUsd').textContent=amtTxt;
+    const old=document.getElementById('amtOld');old.textContent=ORIG_AMOUNT.toLocaleString('en-US')+' $';old.style.display='block';
+    renderMethods(); // حدّث المبالغ داخل طرق الدفع
+    inp.disabled=true;btn.style.display='none';
+    res.className='result ok';res.textContent='🎟️ تم تطبيق كوبون '+code+' — خصم '+(c.type==='fixed'?(val+' $'):(val+'%'))+'. المبلغ الجديد: '+amtTxt+' $';
+  }catch(e){res.className='result err';res.textContent='⚠ تعذّر التحقق من الكوبون. حاول مجدداً.';}
+  finally{btn.disabled=false;btn.textContent='تطبيق';}
+});
+
 // ── حساب اليوم/الوقت وتاريخ الموعد لقفله ──
 function parseSlot(b){
   const raw=(b&&b.time||'');const parts=raw.split('—').map(x=>x.trim());
@@ -377,7 +417,7 @@ async function finalizePaid(method,ref){
   }catch(e){console.warn('lock:',e);}
   // 3) إيميل للإدارة (عبر Resend)
   try{ await sendMail(ADMIN_EMAIL,'✅ تم الدفع — '+REQ_CODE,adminNotifyHTML({
-    title:'تم استلام الدفع',message:`الطريقة: ${method} — المبلغ: ${AMOUNT}$ — المرجع: ${ref}`,
+    title:'تم استلام الدفع',message:`الطريقة: ${method} — المبلغ: ${AMOUNT}$${_couponApplied?" — كوبون: "+_couponApplied:""} — المرجع: ${ref}`,
     name:booking&&booking.client_name,email:booking&&booking.client_email,phone:booking&&booking.client_phone,
     type:booking&&booking.consultation_type,appt:booking&&booking.time,code:REQ_CODE
   }),booking&&booking.client_email); }catch(e){}

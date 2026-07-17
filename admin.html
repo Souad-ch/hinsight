@@ -447,6 +447,8 @@
       <div class="side-link" data-panel="availability-page"><span class="side-icon">🗓️</span>أيام وأوقات الحجز</div>
       <div class="side-link" data-panel="vip-page"><span class="side-icon">👑</span>بوابة VIP</div>
       <div class="side-link" data-panel="payments-page"><span class="side-icon">💳</span>طرق الدفع</div>
+      <div class="side-link" data-panel="coupons-page"><span class="side-icon">🎟️</span>كوبونات الخصم</div>
+      <div class="side-link" data-panel="maintenance-page"><span class="side-icon">🚧</span>وضع الصيانة</div>
       <div class="side-link" data-panel="whatsapp-page"><span class="side-icon">💚</span>واتساب</div>
       <div class="side-link" data-panel="theme"><span class="side-icon">🎭</span>القالب والألوان</div>
       <div class="side-label">أخرى</div>
@@ -903,6 +905,31 @@
         <div id="pm_status" style="margin-top:10px;font-size:0.85rem;"></div>
       </div>
 
+      <!-- COUPONS EDITOR -->
+      <div class="panel" id="panel-coupons-page">
+        <div class="panel-title">كوبونات الخصم</div>
+        <div class="panel-sub">أنشئي أكواد خصم وأعطيها لعملائك — يكتبها العميل في صفحة الدفع فيُخصم المبلغ تلقائياً.</div>
+        <div class="section-card">
+          <div id="cpn_list"></div>
+          <button type="button" class="btn btn-ghost" onclick="cpnAdd()" style="width:auto;padding:11px 26px;margin-top:6px">➕ إضافة كوبون</button>
+        </div>
+        <button class="btn btn-gold" onclick="saveCoupons()" style="width:auto;padding:13px 32px;margin-top:4px;">💾 حفظ ونشر</button>
+        <div id="cpn_status" style="margin-top:10px;font-size:0.85rem;"></div>
+      </div>
+
+      <!-- MAINTENANCE EDITOR -->
+      <div class="panel" id="panel-maintenance-page">
+        <div class="panel-title">وضع الصيانة</div>
+        <div class="panel-sub">عند التفعيل، يرى الزوار صفحة «نعود قريباً» الأنيقة بدل الموقع. لوحات التحكم وصفحة الدفع تبقى شغّالة.</div>
+        <div class="section-card">
+          <label class="cp-lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="mt_enabled"/> تفعيل وضع الصيانة الآن</label>
+          <label class="cp-lbl">رسالة للزوار (اختياري)</label>
+          <textarea class="input cp-inp" id="mt_msg" rows="2" placeholder="نقوم بتحديثات سريعة على المنصة — نعود خلال وقت قصير 🌿"></textarea>
+          <button class="btn btn-gold" onclick="saveMaintenance()" style="width:auto;padding:13px 32px;margin-top:8px;">💾 حفظ ونشر</button>
+          <div id="mt_status" style="margin-top:10px;font-size:0.85rem;"></div>
+        </div>
+      </div>
+
       <!-- WHATSAPP EDITOR -->
       <div class="panel" id="panel-whatsapp-page">
         <div class="panel-title">واتساب</div>
@@ -1175,6 +1202,71 @@ function loadPanel(name){
   if(name==='testimonials-page')loadTestimonials();
   if(name==='availability-page')loadAvailability();
   if(name==='vip-page')loadVip();
+  if(name==='coupons-page')loadCoupons();
+  if(name==='maintenance-page')loadMaintenance();
+}
+// ── كوبونات الخصم ──
+let CPN=[];
+function cpnRender(){
+  const w=document.getElementById('cpn_list');
+  w.innerHTML=CPN.map((c,i)=>`<div class="section-card" style="margin-bottom:12px;position:relative">
+    <button type="button" onclick="cpnDel(${i})" style="position:absolute;top:12px;left:12px;background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:.78rem">🗑</button>
+    <label class="cp-lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" data-cpn="${i}" data-k="enabled" ${c.enabled!==false?'checked':''}/> مُفعّل</label>
+    <label class="cp-lbl">كود الكوبون (بالإنجليزية/أرقام)</label>
+    <input class="input cp-inp" data-cpn="${i}" data-k="code" dir="ltr" style="text-transform:uppercase" value="${(c.code||'').replace(/"/g,'&quot;')}" placeholder="WELCOME20"/>
+    <label class="cp-lbl">نوع الخصم</label>
+    <select class="input cp-inp" data-cpn="${i}" data-k="type">
+      <option value="percent" ${c.type!=='fixed'?'selected':''}>نسبة مئوية %</option>
+      <option value="fixed" ${c.type==='fixed'?'selected':''}>مبلغ ثابت $</option>
+    </select>
+    <label class="cp-lbl">قيمة الخصم</label>
+    <input class="input cp-inp" data-cpn="${i}" data-k="value" type="number" min="1" value="${parseFloat(c.value)||10}"/>
+  </div>`).join('')||'<div style="color:var(--muted);font-size:.85rem">لا كوبونات بعد. اضغطي «إضافة كوبون».</div>';
+  w.querySelectorAll('[data-cpn]').forEach(el=>{
+    const ev=el.type==='checkbox'||el.tagName==='SELECT'?'change':'input';
+    el.addEventListener(ev,()=>{CPN[+el.dataset.cpn][el.dataset.k]=el.type==='checkbox'?el.checked:el.value;});
+  });
+}
+function cpnAdd(){CPN.push({enabled:true,code:'',type:'percent',value:10});cpnRender();}
+function cpnDel(i){CPN.splice(i,1);cpnRender();}
+async function loadCoupons(){
+  document.getElementById('cpn_status').textContent='';
+  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','coupons').maybeSingle();CPN=(data&&data.content&&Array.isArray(data.content.list))?data.content.list:[];}catch(e){CPN=[];}
+  cpnRender();
+}
+async function saveCoupons(){
+  const st=document.getElementById('cpn_status');
+  const list=CPN.map(c=>({enabled:c.enabled!==false,code:String(c.code||'').trim().toUpperCase(),type:c.type==='fixed'?'fixed':'percent',value:Math.max(0,parseFloat(c.value)||0)}))
+    .filter(c=>c.code&&c.value>0);
+  for(const c of list){
+    if(c.type==='percent'&&c.value>100){st.textContent='⚠ النسبة لا يمكن أن تتجاوز 100%.';st.style.color='#e0ada7';return;}
+    if(!/^[A-Z0-9_-]+$/.test(c.code)){st.textContent='⚠ الكود «'+c.code+'» — استخدمي أحرفاً إنجليزية وأرقاماً فقط.';st.style.color='#e0ada7';return;}
+  }
+  st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  const{error}=await sb.from('page_sections').upsert(
+    {section_key:'coupons',section_name:'كوبونات الخصم',section_type:'page',order_index:89,visible:true,content:{list},updated_at:new Date().toISOString()},
+    {onConflict:'section_key'});
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✓ تم الحفظ — الكوبونات المفعّلة تعمل الآن بصفحة الدفع ('+list.filter(c=>c.enabled).length+' نشط)';st.style.color='#8FB996';
+}
+// ── وضع الصيانة ──
+async function loadMaintenance(){
+  document.getElementById('mt_status').textContent='';
+  let c={};
+  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','maintenance').maybeSingle();c=(data&&data.content)||{};}catch(e){}
+  document.getElementById('mt_enabled').checked=!!c.enabled;
+  document.getElementById('mt_msg').value=c.message||'';
+}
+async function saveMaintenance(){
+  const st=document.getElementById('mt_status');
+  const enabled=document.getElementById('mt_enabled').checked;
+  if(enabled&&!confirm('سيرى الزوار صفحة «نعود قريباً» بدل الموقع. متأكدة؟'))return;
+  st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  const{error}=await sb.from('page_sections').upsert(
+    {section_key:'maintenance',section_name:'وضع الصيانة',section_type:'page',order_index:88,visible:true,content:{enabled,message:(document.getElementById('mt_msg').value||'').trim()},updated_at:new Date().toISOString()},
+    {onConflict:'section_key'});
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent=enabled?'🚧 وضع الصيانة مُفعّل الآن — الموقع يعرض «نعود قريباً»':'✓ تم الإلغاء — الموقع يعمل طبيعياً';st.style.color=enabled?'#e0c07a':'#8FB996';
 }
 // ── بوابة VIP ──
 let VP_RES=[];
