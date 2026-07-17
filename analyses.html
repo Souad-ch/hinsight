@@ -269,6 +269,10 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <span class="art-modal-tag" id="artTag"></span>
 <h2 class="art-modal-title" id="artTitle"></h2>
 <div class="art-modal-meta"><span id="artDate"></span><span id="artReadTime"></span></div>
+<div id="artShare" style="display:none;gap:10px;margin-top:14px;flex-wrap:wrap">
+<a id="shareWa" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:.8rem;color:var(--accent-light)">💬 مشاركة واتساب</a>
+<button id="shareCopy" style="display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:.8rem;color:var(--accent-light);cursor:pointer;font-family:inherit">🔗 نسخ الرابط</button>
+</div>
 </div>
 <div class="art-modal-body" id="artBody"></div>
 </div>
@@ -376,6 +380,13 @@ function openModal(i){
   document.getElementById('artDate').textContent='📅 '+a.date;
   document.getElementById('artReadTime').textContent='⏱ '+a.readTime;
   document.getElementById('artBody').innerHTML=a.body;
+  const shareRow=document.getElementById('artShare');
+  if(a.slug){
+    const link='https://ozxwyyeyxmpkhsygntoy.supabase.co/functions/v1/share?s='+encodeURIComponent(a.slug);
+    shareRow.style.display='flex';
+    document.getElementById('shareWa').href='https://wa.me/?text='+encodeURIComponent(a.title+'\n'+link);
+    document.getElementById('shareCopy').onclick=function(){navigator.clipboard&&navigator.clipboard.writeText(link).then(()=>{this.textContent='✓ تم النسخ';setTimeout(()=>this.innerHTML='🔗 نسخ الرابط',1500);});};
+  }else{shareRow.style.display='none';}
   const m=document.getElementById('articleModal');
   m.classList.add('open');m.querySelector('.art-modal').scrollTop=0;
   document.body.style.overflow='hidden';
@@ -406,7 +417,7 @@ function mapRow(row){
   const mins=Math.max(1,Math.round(txt.length/700));
   let dateStr='';
   try{dateStr=new Date(row.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{dateStr='';}
-  return {id:row.id,tag:row.tag||'تحليل',title:row.title,excerpt:row.excerpt||'',date:dateStr,readTime:mins+' دقائق قراءة',body:row.content||''};
+  return {id:row.id,slug:row.slug||'',tag:row.tag||'تحليل',title:row.title,excerpt:row.excerpt||'',date:dateStr,readTime:mins+' دقائق قراءة',body:row.content||''};
 }
 
 // جلب المقالات المنشورة من Supabase واستبدال الاحتياطية
@@ -417,6 +428,9 @@ async function loadFromSupabase(){
     if(error){console.warn('articles supabase:',error.message);return;}
     ARTICLES=(data||[]).map(mapRow);
     renderArticles();
+    // فتح مقال مباشرةً من رابط مشاركة (?a=slug)
+    const want=new URLSearchParams(location.search).get('a');
+    if(want){const idx=currentFiltered.findIndex(x=>x.slug===want);if(idx>-1)setTimeout(()=>openModal(idx),350);}
   }catch(err){console.warn('articles load:',err);}
 }
 
