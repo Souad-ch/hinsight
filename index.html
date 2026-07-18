@@ -1164,11 +1164,18 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 </div>
 </div>
 
-<!-- صندوق إضافة رأي -->
-<div class="reveal" style="max-width:640px;margin:56px auto 0">
-  <div id="revForm" style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px 28px">
-    <h3 style="font-size:1.15rem;color:var(--text);margin-bottom:6px;text-align:center">شاركنا رأيك ✦</h3>
-    <p style="font-size:.88rem;color:var(--text-muted);text-align:center;margin-bottom:22px">رأيك يُراجَع قبل نشره. شكراً لثقتك.</p>
+<!-- زر إضافة رأي -->
+<div class="reveal" style="text-align:center;margin-top:48px">
+  <button id="revOpen" class="btn btn-outline" style="padding:13px 40px">✦ أضف رأيك</button>
+</div>
+
+</div>
+
+<!-- نافذة إضافة رأي (بوب أب) -->
+<div class="modal-overlay" id="revModal">
+  <div class="modal" style="max-width:560px;padding:36px 32px;position:relative">
+    <button onclick="document.getElementById('revModal').classList.remove('open');document.body.style.overflow='';" style="position:absolute;top:16px;left:16px;background:none;border:none;color:var(--text-muted);font-size:1.4rem;cursor:pointer;line-height:1">×</button>
+    <h3 style="font-size:1.2rem;color:var(--text);margin-bottom:20px;text-align:center">شاركنا رأيك ✦</h3>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
       <input id="revName" class="form-input" placeholder="اسمك" style="flex:1;min-width:180px"/>
       <input id="revRole" class="form-input" placeholder="صفتك (اختياري — مثل: متداول)" style="flex:1;min-width:180px"/>
@@ -1185,8 +1192,6 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
     <button id="revSubmit" class="btn btn-green" style="width:100%;justify-content:center">إرسال الرأي</button>
     <div id="revMsg" style="margin-top:12px;font-size:.88rem;text-align:center;min-height:20px"></div>
   </div>
-</div>
-
 </div>
 </section>
 
@@ -1895,6 +1900,14 @@ loadLiveTestimonials();
   const starsEl=document.getElementById('revStars');
   const btn=document.getElementById('revSubmit');
   if(!starsEl||!btn)return;
+  // فتح/إغلاق البوب أب
+  const modal=document.getElementById('revModal');
+  const openBtn=document.getElementById('revOpen');
+  if(openBtn&&modal){
+    openBtn.addEventListener('click',()=>{modal.classList.add('open');document.body.style.overflow='hidden';});
+    modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('open');document.body.style.overflow='';}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal.classList.remove('open');document.body.style.overflow='';}});
+  }
   let rating=5;
   starsEl.addEventListener('click',e=>{
     const rect=starsEl.getBoundingClientRect();
