@@ -830,15 +830,12 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <div class="brand-card reveal delay-3"><span class="brand-num en" data-edit="difference_c3_num">03</span><h3 class="brand-title" data-edit="difference_c3_title">السياسة قبل السعر</h3><p class="brand-desc" data-edit="difference_c3_desc">الحرب، الفائدة، البنوك المركزية، الصين، النفط والذهب؛ كلها تُقرأ كعوامل تحرك السيولة لا كعناوين أخبار فقط.</p></div>
 <div class="brand-card reveal delay-4"><span class="brand-num en" data-edit="difference_c4_num">04</span><h3 class="brand-title" data-edit="difference_c4_title">إدارة المخاطر أولاً</h3><p class="brand-desc" data-edit="difference_c4_desc">النجاح في السوق لا يبدأ من توقع الاتجاه، بل من حماية الحساب وضبط حجم الدخول والقرار النفسي.</p></div>
 </div>
-</div>
-</section>
 
-<!-- TRUST -->
-<section class="section" id="trust">
-<div class="container">
-<div class="section-head reveal">
+<!-- أرقام الثقة (مدمجة داخل نفس القسم) -->
+<div id="trust" style="margin-top:64px">
+<div class="section-head reveal" style="margin-bottom:32px">
 <span class="section-label en">Credibility System</span>
-<h2 class="section-title" data-edit="trust_title">لماذا يثق الناس بتحليلات هنادي؟</h2>
+<h3 class="section-title" data-edit="trust_title" style="font-size:clamp(1.5rem,2.4vw,2rem)">لماذا يثق الناس بتحليلات هنادي؟</h3>
 <div class="green-line"></div>
 <p class="section-subtitle" data-edit="trust_subtitle">لأن الصورة المهنية هنا لا تُبنى على الادعاء، بل على مسار واضح وخبرة طويلة ومنهجية متماسكة.</p>
 </div>
@@ -848,6 +845,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <div class="proof-card reveal delay-3"><span class="proof-value en" data-edit="trust_c3_value">2002</span><p class="proof-label" data-edit="trust_c3_label">أول مكتب فوركس في دمشق</p></div>
 <div class="proof-card reveal delay-4"><span class="proof-value en" data-edit="trust_c4_value">2003</span><p class="proof-label" data-edit="trust_c4_label">تدريب وتحليل منذ بدايات السوق</p></div>
 <div class="proof-card reveal"><span class="proof-value en" data-edit="trust_c5_value">5%</span><p class="proof-label" data-edit="trust_c5_label">فلسفة صارمة لإدارة المخاطر</p></div>
+</div>
 </div>
 </div>
 </section>
@@ -1654,7 +1652,7 @@ const _SEC_MAP={
   ]},
   'articles-preview':{el:'#articles-preview'},
   difference:{el:'#difference', grid:'.brand-grid'},
-  trust:{el:'#trust', grid:'.proof-grid'},
+  trust:{el:'#difference', grid:'.proof-grid'},
 };
 
 // ── REPEATABLE ITEMS (CMS) ────────────────────
