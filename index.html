@@ -777,7 +777,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 </div>
 </div>
 <div class="hero-image-wrap">
-<div class="hero-image-frame"><div class="hero-ph">◈</div></div>
+<div class="hero-image-frame"><img id="heroPhotoImg" src="images/hanadi.jpg?v=2" alt="هنادي عبدالله" loading="eager" decoding="async" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover;object-position:top center;position:absolute;inset:0;z-index:1;"/><div class="hero-ph" style="display:none">◈</div></div>
 <div class="hero-badge"><span class="badge-num en" data-edit="hero_badge_num">+25</span><span class="badge-lbl" data-edit="hero_badge_lbl">سنة خبرة</span></div>
 </div>
 </div>
@@ -1503,9 +1503,12 @@ setTimeout(fixAllah,2500);
     const {data}=await sbClient.from('page_sections').select('content').eq('section_key','about_photo').maybeSingle();
     const url=data&&data.content&&data.content.url&&String(data.content.url).trim();
     if(url&&/^https?:\/\//i.test(url)){
-      // لا نبدّل الصورة الأصلية إلا إذا نجح تحميل الرابط البديل فعلاً
+      // لا نبدّل الصورة الأصلية إلا إذا نجح تحميل الرابط البديل فعلاً — تُطبَّق على قسم «عن هنادي» والهيرو معاً
       const test=new Image();
-      test.onload=function(){const img=document.getElementById('aboutPhotoImg');if(img)img.src=url;};
+      test.onload=function(){
+        const a=document.getElementById('aboutPhotoImg');if(a)a.src=url;
+        const hero=document.getElementById('heroPhotoImg');if(hero){hero.src=url;hero.style.display='';}
+      };
       test.src=url;
     }
   }catch(e){}
@@ -2015,11 +2018,11 @@ function applyPageSections(data){
 }
 function _contentReady(){try{window.dispatchEvent(new Event('hn:content-ready'));}catch(e){}}
 async function loadPageSections(){
-  // 1) طبّق النسخة المخزّنة فوراً (إن وُجدت) — يمنع ظهور المحتوى القديم لحظياً
+  // 1) طبّق النسخة المخزّنة خلف اللودر (كبداية سريعة تمنع أي قفزة) — لكن لا نكشف الصفحة بعد
   let cached=null;
   try{cached=JSON.parse(localStorage.getItem(_PS_CACHE_KEY)||'null');}catch(e){}
-  if(cached){applyPageSections(cached);_contentReady();} // زائر عائد: أظهر الصفحة فوراً من الكاش
-  // 2) اجلب الأحدث من قاعدة البيانات وطبّقه وحدّث الكاش
+  if(cached)applyPageSections(cached);
+  // 2) لا نُظهر الصفحة إلا بعد وصول أحدث نسخة من قاعدة البيانات (لا يظهر محتوى قديم أبداً)
   if(!sbClient){_contentReady();return;}
   try{
     const {data,error}=await sbClient.from('page_sections').select('*').order('order_index',{ascending:true});
