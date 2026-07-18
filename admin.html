@@ -1022,12 +1022,15 @@
       <!-- TESTIMONIALS EDITOR -->
       <div class="panel" id="panel-testimonials-page">
         <div class="panel-title">آراء العملاء</div>
-        <div class="panel-sub">أضيفي أو عدّلي آراء العملاء التي تظهر في الصفحة الرئيسية. اتركيها فارغة لعرض الآراء الافتراضية.</div>
+        <div class="panel-sub">راجعي آراء الزوار وأنتِ من يقرر ظهورها. يمكنك أيضاً إضافة رأي يدوياً.</div>
         <div class="section-card">
-          <div id="tst_list"></div>
-          <button type="button" class="btn btn-ghost" onclick="tstAdd()" style="width:auto;padding:11px 26px;margin-top:6px">➕ إضافة رأي</button>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px">
+            <div style="flex:1;min-width:120px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:var(--gold-bright)" id="tst_pending">—</div><div style="font-size:.78rem;color:var(--muted)">بانتظار المراجعة</div></div>
+            <div style="flex:1;min-width:120px;text-align:center"><div style="font-size:1.5rem;font-weight:800;color:#8FB996" id="tst_shown">—</div><div style="font-size:.78rem;color:var(--muted)">ظاهرة على الموقع</div></div>
+          </div>
+          <button type="button" class="btn btn-ghost" onclick="tstManualAdd()" style="width:auto;padding:10px 22px;margin-top:6px">➕ إضافة رأي يدوياً</button>
         </div>
-        <button class="btn btn-gold" onclick="saveTestimonials()" style="width:auto;padding:13px 32px;margin-top:4px;">💾 حفظ ونشر</button>
+        <div id="tst_list"></div>
         <div id="tst_status" style="margin-top:10px;font-size:0.85rem;"></div>
       </div>
 
@@ -1365,42 +1368,67 @@ async function saveAvailability(){
   if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
   st.textContent='✓ تم الحفظ ونشر المواعيد على صفحة الحجز';st.style.color='#8FB996';
 }
-// ── آراء العملاء ──
+// ── آراء العملاء (جدول testimonials مع موافقة) ──
 let TST=[];
 function tstRender(){
   const w=document.getElementById('tst_list');
-  if(!TST.length){w.innerHTML='<div style="color:var(--muted);font-size:.85rem;padding:8px 0">لا توجد آراء مضافة (ستظهر الافتراضية على الموقع). اضغطي «إضافة رأي».</div>';return;}
-  w.innerHTML=TST.map((t,i)=>`<div class="section-card" style="margin-bottom:14px;position:relative">
-    <button type="button" onclick="tstDel(${i})" style="position:absolute;top:14px;left:14px;background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:.78rem">🗑 حذف</button>
-    <label class="cp-lbl">الاسم</label>
-    <input class="input cp-inp" data-tst="${i}" data-k="name" value="${(t.name||'').replace(/"/g,'&quot;')}"/>
-    <label class="cp-lbl">الصفة (مثال: متداول فوركس)</label>
-    <input class="input cp-inp" data-tst="${i}" data-k="role" value="${(t.role||'').replace(/"/g,'&quot;')}"/>
-    <label class="cp-lbl">عدد النجوم (1-5)</label>
-    <input class="input cp-inp" data-tst="${i}" data-k="stars" type="number" min="1" max="5" value="${parseInt(t.stars)||5}"/>
-    <label class="cp-lbl">نص الرأي</label>
-    <textarea class="input cp-inp" data-tst="${i}" data-k="text" rows="3">${(t.text||'').replace(/</g,'&lt;')}</textarea>
-  </div>`).join('');
-  w.querySelectorAll('[data-tst]').forEach(el=>{
-    el.addEventListener('input',()=>{TST[+el.dataset.tst][el.dataset.k]=el.value;});
-  });
+  const pend=TST.filter(t=>!t.visible).length, shown=TST.filter(t=>t.visible).length;
+  document.getElementById('tst_pending').textContent=pend;
+  document.getElementById('tst_shown').textContent=shown;
+  if(!TST.length){w.innerHTML='<div class="section-card" style="color:var(--muted);font-size:.85rem">لا توجد آراء بعد. ستظهر هنا آراء الزوار فور إرسالها للمراجعة.</div>';return;}
+  w.innerHTML=TST.map(t=>{
+    const stars='★'.repeat(t.rating||5)+'☆'.repeat(5-(t.rating||5));
+    const av=t.image_url?`<img src="${t.image_url}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0"/>`:`<div style="width:44px;height:44px;border-radius:50%;background:rgba(120,144,124,.15);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0">${(t.name||'؟').charAt(0)}</div>`;
+    return `<div class="section-card" style="margin-bottom:12px;border-color:${t.visible?'rgba(136,174,148,.35)':'var(--ink-border)'}">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        ${av}
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <b style="color:var(--cream)">${(t.name||'').replace(/</g,'&lt;')}</b>
+            ${t.role?`<span style="color:var(--muted);font-size:.8rem">— ${(t.role||'').replace(/</g,'&lt;')}</span>`:''}
+            <span style="color:var(--gold-bright);font-size:.85rem;direction:ltr">${stars}</span>
+            <span style="font-size:.72rem;padding:2px 10px;border-radius:20px;${t.visible?'background:rgba(136,174,148,.15);color:#8FB996':'background:rgba(201,178,123,.15);color:var(--gold-bright)'}">${t.visible?'ظاهر':'بانتظار'}</span>
+          </div>
+          <p style="color:var(--text-dim);font-size:.88rem;line-height:1.8;margin-top:8px">${(t.text||'').replace(/</g,'&lt;')}</p>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button onclick="tstToggle('${t.id}',${t.visible?'false':'true'})" style="background:none;border:1px solid ${t.visible?'var(--ink-border)':'#8FB996'};color:${t.visible?'var(--muted)':'#8FB996'};border-radius:6px;padding:6px 16px;cursor:pointer;font-size:.8rem">${t.visible?'🚫 إخفاء':'✓ نشر'}</button>
+            <button onclick="tstDelete('${t.id}')" style="background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:6px 16px;cursor:pointer;font-size:.8rem">🗑 حذف</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
-function tstAdd(){TST.push({name:'',role:'',stars:5,text:''});tstRender();}
-function tstDel(i){TST.splice(i,1);tstRender();}
 async function loadTestimonials(){
-  document.getElementById('tst_status').textContent='';
-  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','testimonials_list').maybeSingle();TST=(data&&data.content&&Array.isArray(data.content.items))?data.content.items:[];}catch(e){TST=[];}
+  const st=document.getElementById('tst_status');st.textContent='';
+  try{
+    const{data,error}=await sb.from('testimonials').select('*').order('created_at',{ascending:false});
+    if(error)throw error;
+    TST=data||[];
+  }catch(e){TST=[];st.textContent='⚠ جدول testimonials غير موجود بعد.';st.style.color='#e0ada7';}
   tstRender();
 }
-async function saveTestimonials(){
+async function tstToggle(id,vis){
+  const{error}=await sb.from('testimonials').update({visible:vis==='true'||vis===true}).eq('id',id);
   const st=document.getElementById('tst_status');
-  const items=TST.filter(t=>t&&(t.text||'').trim());
-  st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
-  const{error}=await sb.from('page_sections').upsert(
-    {section_key:'testimonials_list',section_name:'آراء العملاء',section_type:'page',order_index:92,visible:true,content:{items},updated_at:new Date().toISOString()},
-    {onConflict:'section_key'});
   if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
-  st.textContent=items.length?('✓ تم الحفظ ونشر '+items.length+' رأي'):'✓ تم الحفظ (ستظهر الآراء الافتراضية)';st.style.color='#8FB996';
+  st.textContent='✓ تم التحديث';st.style.color='#8FB996';loadTestimonials();
+}
+async function tstDelete(id){
+  if(!confirm('حذف هذا الرأي نهائياً؟'))return;
+  const{error}=await sb.from('testimonials').delete().eq('id',id);
+  const st=document.getElementById('tst_status');
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✓ تم الحذف';st.style.color='#8FB996';loadTestimonials();
+}
+async function tstManualAdd(){
+  const name=prompt('اسم العميل:');if(!name)return;
+  const text=prompt('نص الرأي:');if(!text)return;
+  const role=prompt('الصفة (اختياري):')||null;
+  const st=document.getElementById('tst_status');
+  const{error}=await sb.from('testimonials').insert({name:name.trim(),text:text.trim(),role,rating:5,visible:true});
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✓ أُضيف الرأي ونُشر';st.style.color='#8FB996';loadTestimonials();
 }
 // ── لوحة الإحصائيات ──
 function priceOf(type){
