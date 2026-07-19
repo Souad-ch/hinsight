@@ -1241,9 +1241,23 @@ function libRender(){
 }
 function libAdd(){LIB.push({index:String(LIB.length+1).padStart(2,'0'),title:'',desc:'',url:''});libRender();}
 function libDel(i){LIB.splice(i,1);libRender();}
+const LIB_DEFAULTS=[
+  {index:'01',title:'ما هو التداول؟',desc:'فهم التداول كقرار واحتمال ومخاطر، لا كضغط زر.',url:''},
+  {index:'02',title:'إدارة رأس المال',desc:'كيف يحمي المتداول حسابه قبل أن يبحث عن الربح.',url:''},
+  {index:'03',title:'الذهب',desc:'قراءة الذهب كمرآة للثقة والتضخم والخوف العالمي.',url:''},
+  {index:'04',title:'البنوك المركزية',desc:'الفائدة، التضخم، الدولار، وكيف تتحرك توقعات السوق.',url:''},
+  {index:'05',title:'الصين والسيولة',desc:'لماذا مراقبة الصين تساعد على فهم الطلب والمخاطر والسلع.',url:''},
+  {index:'06',title:'سيكولوجية التداول',desc:'الخوف، الطمع، الاندفاع، الانتقام، وفخ إثبات الذات أمام السوق.',url:''},
+  {index:'07',title:'الأخبار الاقتصادية',desc:'كيف تُقرأ البيانات الاقتصادية قبل أن تتحول إلى حركة سعرية.',url:''},
+  {index:'08',title:'الجيوسياسة والأسواق',desc:'الحروب والعقوبات والطاقة ومسارات المال الذكي.',url:''},
+  {index:'09',title:'المتداول المحترف',desc:'كيف يفكر المتداول الذي يراقب الاحتمالات لا الضجيج.',url:''}
+];
 async function loadLibrary(){
   document.getElementById('lib_status').textContent='';
-  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','library').maybeSingle();LIB=(data&&data.content&&Array.isArray(data.content._items))?data.content._items.slice():[];}catch(e){LIB=[];}
+  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','library').maybeSingle();
+    const saved=(data&&data.content&&Array.isArray(data.content._items))?data.content._items:null;
+    LIB=(saved&&saved.length)?saved.slice():LIB_DEFAULTS.map(x=>({...x}));
+  }catch(e){LIB=LIB_DEFAULTS.map(x=>({...x}));}
   libRender();
 }
 async function saveLibrary(){
