@@ -434,6 +434,7 @@
       <div class="side-link" data-panel="articles"><span class="side-icon">📊</span>إدارة التحليلات</div>
       <div class="side-link" data-panel="new-blog"><span class="side-icon">✏️</span>مقال جديد</div>
       <div class="side-link" data-panel="blog"><span class="side-icon">📰</span>إدارة المقالات</div>
+      <div class="side-link" data-panel="library-page"><span class="side-icon">📚</span>إدارة المكتبة</div>
       <div class="side-label">الحجوزات</div>
       <div class="side-link" onclick="window.location.href='/bookings'"><span class="side-icon">📅</span>الحجوزات</div>
       <div class="side-label">الموقع</div>
@@ -905,6 +906,18 @@
         <div id="pm_status" style="margin-top:10px;font-size:0.85rem;"></div>
       </div>
 
+      <!-- LIBRARY EDITOR -->
+      <div class="panel" id="panel-library-page">
+        <div class="panel-title">إدارة المكتبة المعرفية</div>
+        <div class="panel-sub">أضيفي أو احذفي عناصر المكتبة التي تظهر في قسم «المكتبة المعرفية» بالصفحة الرئيسية.</div>
+        <div class="section-card">
+          <div id="lib_list"></div>
+          <button type="button" class="btn btn-ghost" onclick="libAdd()" style="width:auto;padding:11px 26px;margin-top:6px">➕ إضافة عنصر</button>
+        </div>
+        <button class="btn btn-gold" onclick="saveLibrary()" style="width:auto;padding:13px 32px;margin-top:4px;">💾 حفظ ونشر</button>
+        <div id="lib_status" style="margin-top:10px;font-size:0.85rem;"></div>
+      </div>
+
       <!-- COUPONS EDITOR -->
       <div class="panel" id="panel-coupons-page">
         <div class="panel-title">كوبونات الخصم</div>
@@ -1206,7 +1219,46 @@ function loadPanel(name){
   if(name==='availability-page')loadAvailability();
   if(name==='vip-page')loadVip();
   if(name==='coupons-page')loadCoupons();
+  if(name==='library-page')loadLibrary();
   if(name==='maintenance-page')loadMaintenance();
+}
+// ── المكتبة المعرفية ──
+let LIB=[];
+function libRender(){
+  const w=document.getElementById('lib_list');
+  w.innerHTML=LIB.map((it,i)=>`<div class="section-card" style="margin-bottom:12px;position:relative">
+    <button type="button" onclick="libDel(${i})" style="position:absolute;top:12px;left:12px;background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:.78rem">🗑 حذف</button>
+    <label class="cp-lbl">الرقم</label>
+    <input class="input cp-inp" data-lib="${i}" data-k="index" value="${(it.index||'').toString().replace(/"/g,'&quot;')}" placeholder="01"/>
+    <label class="cp-lbl">العنوان</label>
+    <input class="input cp-inp" data-lib="${i}" data-k="title" value="${(it.title||'').replace(/"/g,'&quot;')}"/>
+    <label class="cp-lbl">الوصف</label>
+    <textarea class="input cp-inp" data-lib="${i}" data-k="desc" rows="2">${(it.desc||'').replace(/</g,'&lt;')}</textarea>
+    <label class="cp-lbl">رابط فيديو (اختياري — يجعل العنصر قابلاً للتشغيل)</label>
+    <input class="input cp-inp" data-lib="${i}" data-k="url" dir="ltr" value="${(it.url||'').replace(/"/g,'&quot;')}" placeholder="https://youtube.com/..."/>
+  </div>`).join('')||'<div style="color:var(--muted);font-size:.85rem">لا عناصر. اضغطي «إضافة عنصر».</div>';
+  w.querySelectorAll('[data-lib]').forEach(el=>el.addEventListener('input',()=>{LIB[+el.dataset.lib][el.dataset.k]=el.value;}));
+}
+function libAdd(){LIB.push({index:String(LIB.length+1).padStart(2,'0'),title:'',desc:'',url:''});libRender();}
+function libDel(i){LIB.splice(i,1);libRender();}
+async function loadLibrary(){
+  document.getElementById('lib_status').textContent='';
+  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','library').maybeSingle();LIB=(data&&data.content&&Array.isArray(data.content._items))?data.content._items.slice():[];}catch(e){LIB=[];}
+  libRender();
+}
+async function saveLibrary(){
+  const st=document.getElementById('lib_status');
+  const _items=LIB.filter(it=>(it.title||'').trim()).map((it,i)=>({index:(it.index||String(i+1).padStart(2,'0')).trim(),title:(it.title||'').trim(),desc:(it.desc||'').trim(),url:(it.url||'').trim()}));
+  st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  // اقرأ المحتوى الحالي للحفاظ على العنوان/الوصف
+  let content={};
+  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','library').maybeSingle();content=(data&&data.content)||{};}catch(e){}
+  content._items=_items;
+  const{error}=await sb.from('page_sections').upsert(
+    {section_key:'library',section_name:'المكتبة المعرفية',section_type:'section',order_index:(content.order_index||6),visible:true,content,updated_at:new Date().toISOString()},
+    {onConflict:'section_key'});
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✓ تم الحفظ ونشر '+_items.length+' عنصر على الموقع';st.style.color='#8FB996';
 }
 // ── كوبونات الخصم ──
 let CPN=[];
