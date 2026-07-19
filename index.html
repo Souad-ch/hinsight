@@ -1887,8 +1887,12 @@ async function loadLiveTestimonials(){
     const {data,error}=await sbClient.from('testimonials').select('*').eq('visible',true).order('created_at',{ascending:false});
     if(error){console.warn('testimonials read:',error.message);return;}
     if(!data||!data.length)return;
-    const grid=document.querySelector('#testimonials .testi-grid');
+    const sec=document.getElementById('testimonials');
+    const grid=sec&&sec.querySelector('.testi-grid');
     if(!grid)return;
+    // إن كان الكاروسيل مبنيّاً مسبقاً (من الكروت الافتراضية) فكّكه لنعيد بناءه بالآراء الفعلية
+    const oldWrap=sec.querySelector('.carousel-wrap');
+    if(oldWrap){oldWrap.remove();grid.style.display='';}
     grid.innerHTML=data.map((t,i)=>{
       const initial=(t.name||'؟').trim().charAt(0);
       const stars='★'.repeat(t.rating||5)+'☆'.repeat(5-(t.rating||5));
@@ -1903,6 +1907,8 @@ async function loadLiveTestimonials(){
         <div class="testi-role">${(t.role||'').replace(/</g,'&lt;')}</div></div></div>
       </div>`;}).join('');
     grid.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+    // أعد بناء الكاروسيل حول الآراء الفعلية (إن كان أكثر من رأي)
+    if(typeof makeCarousel==='function'&&data.length>1){setTimeout(()=>makeCarousel(grid),60);}
   }catch(e){console.warn('testimonials:',e);}
 }
 loadLiveTestimonials();
