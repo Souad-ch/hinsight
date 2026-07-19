@@ -1200,6 +1200,16 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
     <div id="revMsg" style="margin-top:12px;font-size:.88rem;text-align:center;min-height:20px"></div>
   </div>
 </div>
+
+<!-- نافذة شرح المكتبة المعرفية -->
+<div class="modal-overlay" id="libModal">
+  <div class="modal" style="max-width:720px;max-height:88vh;overflow-y:auto;padding:40px 38px;text-align:right">
+    <button onclick="document.getElementById('libModal').classList.remove('open');document.body.style.overflow='';" style="position:absolute;top:16px;left:16px;background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;line-height:1;z-index:2">×</button>
+    <span class="section-label en" style="justify-content:flex-start">Knowledge Hub</span>
+    <h2 id="libModalTitle" style="font-size:clamp(1.4rem,3vw,2rem);color:var(--text);margin:12px 0 20px;line-height:1.35"></h2>
+    <div id="libModalBody" style="color:var(--text-dim);font-size:1rem;line-height:2"></div>
+  </div>
+</div>
 </section>
 
 <!-- NEWSLETTER -->
@@ -1682,7 +1692,12 @@ const ITEM_TEMPLATES={
   difference:it=>`<div class="brand-card reveal visible"><span class="brand-num en">${esc(it.num)}</span><h3 class="brand-title">${esc(it.title)}</h3><p class="brand-desc">${esc(it.desc)}</p></div>`,
   trust:it=>`<div class="proof-card reveal visible"><span class="proof-value en">${esc(it.value)}</span><p class="proof-label">${esc(it.label)}</p></div>`,
   method:it=>`<div class="method-card reveal visible"><span class="method-num en">${esc(it.num)}</span><div class="method-icon">${methodIcon(it.num)}</div><h3 class="method-name">${esc(it.name)}</h3><p class="method-desc">${esc(it.desc)}</p></div>`,
-  library:it=>{const u=(it.url||'').trim();const play=u?'<span class="hub-play">▶</span>':'';return `<div class="hub-card reveal visible${u?' hub-clickable':''}"${u?` data-video="${esc(u)}"`:''}><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}${play}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`;},
+  library:it=>{const u=(it.url||'').trim();const hasBody=!!(it.body&&String(it.body).trim());
+    if(hasBody){window.LIB_BODIES=window.LIB_BODIES||{};window.LIB_BODIES[it.index]={title:it.title,body:it.body};}
+    const play=u?'<span class="hub-play">▶</span>':(hasBody?'<span class="hub-play">↗</span>':'');
+    const clickable=(u||hasBody)?' hub-clickable':'';
+    const attr=u?` data-video="${esc(u)}"`:(hasBody?` data-libkey="${esc(it.index)}"`:'');
+    return `<div class="hub-card reveal visible${clickable}"${attr}><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}${play}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`;},
   reports:it=>`<div class="report-card reveal visible"><div class="report-icon">${esc(it.icon||'📄')}</div><h3 class="report-name">${esc(it.name)}</h3><p class="report-date en">${esc(it.date)}</p><a href="#" class="btn btn-ghost">${esc(it.btn||'تحميل التقرير')}</a></div>`,
   consultations:it=>`<div class="cons-card reveal visible${it.featured?' featured':''}"><div class="cons-icon">${esc(it.icon)}</div><h3 class="cons-name">${esc(it.name)}</h3><p class="cons-desc">${esc(it.desc)}</p><div class="cons-duration">${esc(it.duration||'')}</div><button class="btn btn-outline" style="margin-top:8px" onclick="openConsModal(this)">${esc(it.btn||'طلب استشارة')}</button></div>`,
   notes:it=>`<div class="qa-item reveal visible"><button class="qa-question" onclick="toggleQA(this)"><span class="qa-q-icon">س</span><span>${esc(it.question)}</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">${esc(it.answer)}</div></div></div>`,
@@ -1920,6 +1935,26 @@ async function loadLiveTestimonials(){
 loadLiveTestimonials();
 // إعادة المحاولة بعد استقرار الصفحة (يضمن ظهور الآراء المنشورة حتى لو تأخّر التحميل)
 window.addEventListener('hn:content-ready',()=>setTimeout(loadLiveTestimonials,300));
+
+// ── نافذة شرح المكتبة المعرفية ──
+(function(){
+  const modal=document.getElementById('libModal');
+  if(!modal)return;
+  function open(key){
+    const d=(window.LIB_BODIES||{})[key];if(!d)return;
+    document.getElementById('libModalTitle').textContent=d.title||'';
+    document.getElementById('libModalBody').innerHTML=d.body||'';
+    modal.querySelector('.modal').scrollTop=0;
+    modal.classList.add('open');document.body.style.overflow='hidden';
+  }
+  function close(){modal.classList.remove('open');document.body.style.overflow='';}
+  document.addEventListener('click',e=>{
+    const card=e.target.closest('.hub-card[data-libkey]');
+    if(card){open(card.getAttribute('data-libkey'));}
+  });
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
 
 // ── إرسال رأي من الزائر (يُراجَع قبل الظهور) ──
 (function(){
