@@ -1255,7 +1255,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 </div>
 </div>
 <div class="footer-bottom">
-<span class="footer-copy en" id="footerCopy">© 2025 Hanadi Insights</span>
+<span class="footer-copy en" id="footerCopy">© Hanadi Insights</span>
 <p class="footer-legal" id="footerLegal">المحتوى المنشور لأغراض تعليمية وتحليلية ولا يُعد توصية استثمارية مباشرة.</p>
 </div>
 </div>
@@ -1557,6 +1557,7 @@ setTimeout(fixAllah,2500);
     const c=(data&&data.content)||{};
     const set=(id,v)=>{const el=document.getElementById(id);if(el&&v)el.textContent=v;};
     set('footerDesc',c.desc);set('footerCopy',c.copy);set('footerLegal',c.legal);
+    try{fixAllah();}catch(e){} // إصلاح رسم لفظ الجلالة بعد تحميل نص الفوتر
     // اللوغو
     if(c.logo_url){
       const lg=document.getElementById('footerLogo');
