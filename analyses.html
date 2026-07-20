@@ -575,5 +575,27 @@ loadContactCta();
   init();
 })();
 </script>
+<!-- عدّاد الزيارات المدمج (ترافيك) -->
+<script>
+(function(){
+  try{
+    if(location.hostname==='localhost'||location.hostname==='127.0.0.1')return;
+    var KEY='hn_pv_'+location.pathname;
+    if(sessionStorage.getItem(KEY))return;              // زيارة واحدة لكل زائر بالجلسة
+    sessionStorage.setItem(KEY,'1');
+    fetch('https://ozxwyyeyxmpkhsygntoy.supabase.co/rest/v1/page_views',{
+      method:'POST',
+      headers:{
+        'apikey':'sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG',
+        'Authorization':'Bearer sb_publishable_cqwhgMNPTOYtyEeQ-NfLXA_1GSlFcaG',
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify({path:location.pathname})
+    }).catch(function(){});
+  }catch(e){}
+})();
+</script>
+
 </body>
 </html>
