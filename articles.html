@@ -582,6 +582,25 @@ loadContactCta();
     var KEY='hn_pv_'+location.pathname;
     if(sessionStorage.getItem(KEY))return;              // زيارة واحدة لكل زائر بالجلسة
     sessionStorage.setItem(KEY,'1');
+    var src='مباشر';
+    var r=document.referrer||'';
+    if(r){try{
+      var h=new URL(r).hostname.replace(/^www\./,'');
+      if(h.indexOf(location.hostname)>=0)src='داخلي';
+      else if(/google\./.test(h))src='جوجل';
+      else if(/instagram\./.test(h))src='انستغرام';
+      else if(/(facebook|fb\.)/.test(h))src='فيسبوك';
+      else if(/(twitter|t\.co|x\.com)/.test(h))src='تويتر / X';
+      else if(/(whatsapp|wa\.me)/.test(h))src='واتساب';
+      else if(/(youtube|youtu\.be)/.test(h))src='يوتيوب';
+      else if(/tiktok\./.test(h))src='تيك توك';
+      else if(/(t\.me|telegram)/.test(h))src='تيليغرام';
+      else if(/snapchat\./.test(h))src='سناب شات';
+      else if(/linkedin\./.test(h))src='لينكدإن';
+      else if(/bing\./.test(h))src='بينغ';
+      else src=h;
+    }catch(e){src='أخرى';}}
+    var device=/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'موبايل':'كمبيوتر';
     fetch('https://ozxwyyeyxmpkhsygntoy.supabase.co/rest/v1/page_views',{
       method:'POST',
       headers:{
@@ -590,7 +609,7 @@ loadContactCta();
         'Content-Type':'application/json',
         'Prefer':'return=minimal'
       },
-      body:JSON.stringify({path:location.pathname})
+      body:JSON.stringify({path:location.pathname,ref:src,device:device})
     }).catch(function(){});
   }catch(e){}
 })();

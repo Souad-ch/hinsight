@@ -978,6 +978,22 @@
           </div>
           <div id="st-visits-note" style="font-size:.78rem;color:var(--muted);margin-top:10px"></div>
         </div>
+        <div class="section-card">
+          <div class="section-card-title">📈 آخر ٧ أيام</div>
+          <div id="st-trend7" style="display:flex;flex-direction:column;gap:14px;margin-top:6px"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">🔗 مصدر الزوّار</div>
+          <div id="st-sources" style="display:flex;flex-direction:column;gap:14px;margin-top:6px"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">📄 أكثر الصفحات زيارة</div>
+          <div id="st-toppages" style="display:flex;flex-direction:column;gap:14px;margin-top:6px"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-title">📱 الأجهزة</div>
+          <div id="st-devices" style="display:flex;flex-direction:column;gap:14px;margin-top:6px"></div>
+        </div>
         <div class="stats-row">
           <div class="stat-box"><div class="stat-box-num" id="st-revenue">—</div><div class="stat-box-label">الإيرادات المؤكَّدة ($)</div></div>
           <div class="stat-box"><div class="stat-box-num" id="st-revenue-month">—</div><div class="stat-box-label">إيرادات هذا الشهر ($)</div></div>
@@ -1566,6 +1582,15 @@ async function loadStats(){
     : '<div style="color:var(--muted);font-size:.85rem">لا توجد طلبات بعد.</div>';
 }
 // ── ترافيك الموقع (عدّاد زيارات مدمج) ──
+const PAGE_NAMES={'/':'الرئيسية','/index.html':'الرئيسية','/articles':'المقالات','/articles.html':'المقالات','/analyses':'التحليلات','/analyses.html':'التحليلات','/consultations':'الاستشارات','/consultations.html':'الاستشارات','/vip':'بوابة VIP','/vip.html':'بوابة VIP','/payment':'صفحة الدفع','/payment.html':'صفحة الدفع'};
+function pageName(p){p=(p||'/').split('?')[0];return PAGE_NAMES[p]||p;}
+function fillBars(id,entries,extra){
+  const el=document.getElementById(id);if(!el)return;
+  const max=entries.length?Math.max(...entries.map(e=>e[1])):0;
+  el.innerHTML=entries.length
+    ? entries.map(([k,v])=>stBar(k,v,max,extra||'')).join('')
+    : '<div style="color:var(--muted);font-size:.85rem">لا توجد بيانات بعد.</div>';
+}
 async function loadTraffic(){
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=(v==null?0:v).toLocaleString('en-US');};
   const note=document.getElementById('st-visits-note');
@@ -1578,9 +1603,34 @@ async function loadTraffic(){
     if(tot.error)throw tot.error;
     set('st-visits-today',dy.count);set('st-visits-month',mo.count);set('st-visits-total',tot.count);
     if(note)note.textContent='تُحتسب زيارة واحدة لكل زائر في الجلسة. تبدأ من تاريخ تفعيل العدّاد.';
+    // ── تفاصيل: آخر 30 يوم ──
+    const since=new Date(now.getFullYear(),now.getMonth(),now.getDate()-29).toISOString();
+    const {data:rows}=await sb.from('page_views').select('path,ref,device,created_at').gte('created_at',since).limit(20000);
+    const list=rows||[];
+    // أكثر الصفحات
+    const byPage={},bySrc={},byDev={};
+    list.forEach(r=>{
+      const pn=pageName(r.path);byPage[pn]=(byPage[pn]||0)+1;
+      const s=(r.ref||'مباشر');bySrc[s]=(bySrc[s]||0)+1;
+      const d=(r.device||'غير معروف');byDev[d]=(byDev[d]||0)+1;
+    });
+    const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]);
+    fillBars('st-toppages',top(byPage).slice(0,8));
+    fillBars('st-sources', top(bySrc).slice(0,8));
+    fillBars('st-devices', top(byDev));
+    // رسم آخر 7 أيام
+    const days=[],names=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    for(let i=6;i>=0;i--){
+      const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);
+      days.push({key:d.toISOString().slice(0,10),label:(i===0?'اليوم':i===1?'أمس':names[d.getDay()]),count:0});
+    }
+    const dmap={};days.forEach(x=>dmap[x.key]=x);
+    list.forEach(r=>{const k=(r.created_at||'').slice(0,10);if(dmap[k])dmap[k].count++;});
+    fillBars('st-trend7',days.map(x=>[x.label,x.count]));
   }catch(e){
     ['st-visits-today','st-visits-month','st-visits-total'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
-    if(note)note.innerHTML='⚠ عدّاد الزيارات غير مُفعّل بعد — شغّلي ملف <b>setup_traffic.sql</b> مرة واحدة في Supabase.';
+    ['st-toppages','st-sources','st-devices','st-trend7'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<div style="color:var(--muted);font-size:.85rem">—</div>';});
+    if(note)note.innerHTML='⚠ عدّاد الزيارات غير مُفعّل بعد — شغّلي ملف <b>setup_traffic.sql</b> ثم <b>upgrade_traffic.sql</b> مرة واحدة في Supabase.';
   }
 }
 // ── Google Analytics ──
