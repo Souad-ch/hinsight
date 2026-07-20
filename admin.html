@@ -970,6 +970,22 @@
         <div class="panel-title">الإحصائيات</div>
         <div class="panel-sub">ملخّص أداء الموقع — الزيارات والحجوزات والإيرادات</div>
         <div class="section-card">
+          <div class="section-card-title">📥 تصدير إلى Excel</div>
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">علّمي الأقسام التي تريدين تصديرها، ثم اضغطي زر التصدير — يُنزَّل ملف واحد يفتح مباشرةً في Excel.</div>
+          <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;color:var(--cream);margin:0 0 12px 0"><input type="checkbox" id="exp-all-chk" onclick="toggleAllExp(this)"/> <b>تحديد الكل</b></label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-bottom:14px">
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="visits" checked/> ملخص الزيارات</label>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="daily"/> الزيارات آخر ٧ أيام</label>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="sources"/> مصادر الزوّار</label>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="pages"/> أكثر الصفحات زيارة</label>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="devices"/> الأجهزة</label>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="summary"/> ملخّص الأداء</label>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="type"/> الإيرادات حسب النوع</label>
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="status"/> حالة الطلبات</label>
+          </div>
+          <button class="btn btn-gold" style="width:auto;padding:11px 28px" onclick="exportSelected()">📥 تصدير المحدَّد</button>
+        </div>
+        <div class="section-card">
           <div class="section-card-title">👁️ زيارات الموقع (ترافيك)</div>
           <div class="stats-row">
             <div class="stat-box"><div class="stat-box-num" id="st-visits-today">—</div><div class="stat-box-label">زيارات اليوم</div></div>
@@ -1563,12 +1579,14 @@ async function loadStats(){
   });
   const total=data.length;
   const rate=total?Math.round((confirmed/total)*100):0;
+  _STAT.summary=[['الإيرادات المؤكَّدة ($)',revenue],['إيرادات هذا الشهر ($)',revMonth],['حجوزات مؤكَّدة',confirmed],['إجمالي الطلبات',total],['معدّل التأكيد',rate+'%']];
   document.getElementById('st-revenue').textContent=revenue.toLocaleString('en-US');
   document.getElementById('st-revenue-month').textContent=revMonth.toLocaleString('en-US');
   document.getElementById('st-confirmed').textContent=confirmed;
   document.getElementById('st-rate').textContent=rate+'%';
   // حسب النوع (بالإيراد)
   const typeEntries=Object.entries(byType).sort((a,b)=>b[1]-a[1]);
+  _STAT.type=typeEntries.map(([k,v])=>[k,Math.round(v)]);
   const maxT=typeEntries.length?typeEntries[0][1]:0;
   document.getElementById('st-bytype').innerHTML=typeEntries.length
     ? typeEntries.map(([k,v])=>stBar(k,v,maxT,' $')).join('')
@@ -1576,6 +1594,7 @@ async function loadStats(){
   // حسب الحالة (بالعدد)
   const stLabels={confirmed:'مؤكَّد',pending:'قيد المراجعة',cancelled:'ملغى',canceled:'ملغى'};
   const stEntries=Object.entries(byStatus).sort((a,b)=>b[1]-a[1]);
+  _STAT.status=stEntries.map(([k,v])=>[stLabels[k]||k,v]);
   const maxS=stEntries.length?Math.max(...stEntries.map(e=>e[1])):0;
   document.getElementById('st-status').innerHTML=stEntries.length
     ? stEntries.map(([k,v])=>stBar(stLabels[k]||k,v,maxS)).join('')
@@ -1591,6 +1610,36 @@ function fillBars(id,entries,extra){
     ? entries.map(([k,v])=>stBar(k,v,max,extra||'')).join('')
     : '<div style="color:var(--muted);font-size:.85rem">لا توجد بيانات بعد.</div>';
 }
+// ── تصدير Excel (CSV بترميز يدعم العربي) ──
+let _TRAF={visits:[],daily:[],pages:[],sources:[],devices:[]};
+let _STAT={type:[],status:[],summary:[]};
+function _csv(name,header,rows){
+  if(!rows||!rows.length){alert('لا توجد بيانات للتصدير بعد.');return;}
+  const bom='﻿',esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const lines=[header.map(esc).join(',')].concat(rows.map(r=>r.map(esc).join(',')));
+  const blob=new Blob([bom+lines.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.csv';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+const EXP_SETS={
+  visits :{name:'ملخص الزيارات',      hdr:['المؤشر','العدد'],   get:()=>_TRAF.visits },
+  daily  :{name:'الزيارات آخر 7 أيام', hdr:['اليوم','الزيارات'], get:()=>_TRAF.daily  },
+  sources:{name:'مصادر الزوّار',       hdr:['المصدر','الزيارات'],get:()=>_TRAF.sources},
+  pages  :{name:'أكثر الصفحات زيارة',  hdr:['الصفحة','الزيارات'],get:()=>_TRAF.pages  },
+  devices:{name:'الأجهزة',             hdr:['الجهاز','الزيارات'],get:()=>_TRAF.devices},
+  summary:{name:'ملخّص الأداء',        hdr:['المؤشر','القيمة'],  get:()=>_STAT.summary},
+  type   :{name:'الإيرادات حسب النوع', hdr:['النوع','الإيراد ($)'],get:()=>_STAT.type },
+  status :{name:'حالة الطلبات',        hdr:['الحالة','العدد'],   get:()=>_STAT.status },
+};
+function toggleAllExp(cb){document.querySelectorAll('.exp-chk').forEach(c=>c.checked=cb.checked);}
+function exportSelected(){
+  const sel=[...document.querySelectorAll('.exp-chk:checked')].map(c=>c.value);
+  if(!sel.length){alert('اختاري قسماً واحداً على الأقل للتصدير.');return;}
+  if(sel.length===1){const s=EXP_SETS[sel[0]];_csv(s.name.replace(/ /g,'_'),s.hdr,s.get()||[]);return;}
+  const rows=[];
+  sel.forEach(k=>{const s=EXP_SETS[k];rows.push(['— '+s.name+' —','']);rows.push(s.hdr);(s.get()||[]).forEach(r=>rows.push(r));rows.push(['','']);});
+  _csv('إحصائيات_محددة',['',''],rows);
+}
 async function loadTraffic(){
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=(v==null?0:v).toLocaleString('en-US');};
   const note=document.getElementById('st-visits-note');
@@ -1602,6 +1651,7 @@ async function loadTraffic(){
     const [tot,dy,mo]=await Promise.all([q(),q().gte('created_at',dayStart),q().gte('created_at',monStart)]);
     if(tot.error)throw tot.error;
     set('st-visits-today',dy.count);set('st-visits-month',mo.count);set('st-visits-total',tot.count);
+    _TRAF.visits=[['زيارات اليوم',dy.count||0],['زيارات هذا الشهر',mo.count||0],['إجمالي الزيارات',tot.count||0]];
     if(note)note.textContent='تُحتسب زيارة واحدة لكل زائر في الجلسة. تبدأ من تاريخ تفعيل العدّاد.';
     // ── تفاصيل: آخر 30 يوم ──
     const since=new Date(now.getFullYear(),now.getMonth(),now.getDate()-29).toISOString();
@@ -1618,6 +1668,7 @@ async function loadTraffic(){
     fillBars('st-toppages',top(byPage).slice(0,8));
     fillBars('st-sources', top(bySrc).slice(0,8));
     fillBars('st-devices', top(byDev));
+    _TRAF.pages=top(byPage);_TRAF.sources=top(bySrc);_TRAF.devices=top(byDev);
     // رسم آخر 7 أيام
     const days=[],names=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     for(let i=6;i>=0;i--){
@@ -1627,6 +1678,7 @@ async function loadTraffic(){
     const dmap={};days.forEach(x=>dmap[x.key]=x);
     list.forEach(r=>{const k=(r.created_at||'').slice(0,10);if(dmap[k])dmap[k].count++;});
     fillBars('st-trend7',days.map(x=>[x.label,x.count]));
+    _TRAF.daily=days.map(x=>[x.label,x.count]);
   }catch(e){
     ['st-visits-today','st-visits-month','st-visits-total'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
     ['st-toppages','st-sources','st-devices','st-trend7'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<div style="color:var(--muted);font-size:.85rem">—</div>';});
