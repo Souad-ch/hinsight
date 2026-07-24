@@ -971,7 +971,18 @@
         <div class="panel-sub">ملخّص أداء الموقع — الزيارات والحجوزات والإيرادات</div>
         <div class="section-card">
           <div class="section-card-title">📥 تصدير إلى Excel</div>
-          <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">علّمي الأقسام التي تريدين تصديرها، ثم اضغطي زر التصدير — يُنزَّل ملف واحد يفتح مباشرةً في Excel.</div>
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">اختاري الفترة، ثم علّمي الأقسام، ثم اضغطي زر التصدير — يُنزَّل ملف واحد يفتح مباشرةً في Excel. البيانات محفوظة لكل الأيام، فيمكنك تصدير أي شهر سابق أو فترة مخصّصة.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+            <button class="btn btn-ghost" style="width:auto;padding:7px 16px;font-size:.78rem;margin:0" onclick="setRange('this')">هذا الشهر</button>
+            <button class="btn btn-ghost" style="width:auto;padding:7px 16px;font-size:.78rem;margin:0" onclick="setRange('last')">الشهر الماضي</button>
+            <button class="btn btn-ghost" style="width:auto;padding:7px 16px;font-size:.78rem;margin:0" onclick="setRange('3')">آخر ٣ أشهر</button>
+            <button class="btn btn-ghost" style="width:auto;padding:7px 16px;font-size:.78rem;margin:0" onclick="setRange('12')">آخر سنة</button>
+            <button class="btn btn-ghost" style="width:auto;padding:7px 16px;font-size:.78rem;margin:0" onclick="setRange('all')">كل الفترة</button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:14px">
+            <div><label class="cp-lbl" style="display:block;margin-bottom:4px">من تاريخ</label><input type="date" id="exp-from" class="input cp-inp" dir="ltr" style="width:auto;margin:0"/></div>
+            <div><label class="cp-lbl" style="display:block;margin-bottom:4px">إلى تاريخ</label><input type="date" id="exp-to" class="input cp-inp" dir="ltr" style="width:auto;margin:0"/></div>
+          </div>
           <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.82rem;color:var(--cream);margin:0 0 12px 0"><input type="checkbox" id="exp-all-chk" onclick="toggleAllExp(this)"/> <b>تحديد الكل</b></label>
           <div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-bottom:14px">
             <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="visits" checked/> ملخص الزيارات</label>
@@ -983,7 +994,7 @@
             <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="type"/> الإيرادات حسب النوع</label>
             <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.85rem"><input type="checkbox" class="exp-chk" value="status"/> حالة الطلبات</label>
           </div>
-          <button class="btn btn-gold" style="width:auto;padding:11px 28px" onclick="exportSelected()">📥 تصدير المحدَّد</button>
+          <button class="btn btn-gold" id="exp-btn" style="width:auto;padding:11px 28px" onclick="exportSelected()">📥 تصدير المحدَّد</button>
         </div>
         <div class="section-card">
           <div class="section-card-title">👁️ زيارات الموقع (ترافيك)</div>
@@ -1560,6 +1571,7 @@ function stBar(label,value,max,extra){
 }
 async function loadStats(){
   loadTraffic();
+  const ef=document.getElementById('exp-from');if(ef&&!ef.value)setRange('this');
   let data=[];
   try{const r=await sb.from('bookings').select('consultation_type,status,created_at,pay_amount');data=r.data||[];}catch(e){}
   const now=new Date(),mStart=new Date(now.getFullYear(),now.getMonth(),1);
@@ -1621,24 +1633,61 @@ function _csv(name,header,rows){
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'.csv';
   document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
 }
-const EXP_SETS={
-  visits :{name:'ملخص الزيارات',      hdr:['المؤشر','العدد'],   get:()=>_TRAF.visits },
-  daily  :{name:'الزيارات آخر 7 أيام', hdr:['اليوم','الزيارات'], get:()=>_TRAF.daily  },
-  sources:{name:'مصادر الزوّار',       hdr:['المصدر','الزيارات'],get:()=>_TRAF.sources},
-  pages  :{name:'أكثر الصفحات زيارة',  hdr:['الصفحة','الزيارات'],get:()=>_TRAF.pages  },
-  devices:{name:'الأجهزة',             hdr:['الجهاز','الزيارات'],get:()=>_TRAF.devices},
-  summary:{name:'ملخّص الأداء',        hdr:['المؤشر','القيمة'],  get:()=>_STAT.summary},
-  type   :{name:'الإيرادات حسب النوع', hdr:['النوع','الإيراد ($)'],get:()=>_STAT.type },
-  status :{name:'حالة الطلبات',        hdr:['الحالة','العدد'],   get:()=>_STAT.status },
-};
 function toggleAllExp(cb){document.querySelectorAll('.exp-chk').forEach(c=>c.checked=cb.checked);}
-function exportSelected(){
+function _pad(n){return String(n).padStart(2,'0');}
+function _fmtDate(x){return x.getFullYear()+'-'+_pad(x.getMonth()+1)+'-'+_pad(x.getDate());}
+function setRange(kind){
+  const now=new Date();let from='',to=_fmtDate(now);
+  if(kind==='this')from=_fmtDate(new Date(now.getFullYear(),now.getMonth(),1));
+  else if(kind==='last'){from=_fmtDate(new Date(now.getFullYear(),now.getMonth()-1,1));to=_fmtDate(new Date(now.getFullYear(),now.getMonth(),0));}
+  else if(kind==='3')from=_fmtDate(new Date(now.getFullYear(),now.getMonth()-2,1));
+  else if(kind==='12')from=_fmtDate(new Date(now.getFullYear(),now.getMonth()-11,1));
+  else if(kind==='all'){from='';to='';}
+  const ef=document.getElementById('exp-from'),et=document.getElementById('exp-to');
+  if(ef)ef.value=from;if(et)et.value=to;
+}
+async function exportSelected(){
   const sel=[...document.querySelectorAll('.exp-chk:checked')].map(c=>c.value);
   if(!sel.length){alert('اختاري قسماً واحداً على الأقل للتصدير.');return;}
-  if(sel.length===1){const s=EXP_SETS[sel[0]];_csv(s.name.replace(/ /g,'_'),s.hdr,s.get()||[]);return;}
-  const rows=[];
-  sel.forEach(k=>{const s=EXP_SETS[k];rows.push(['— '+s.name+' —','']);rows.push(s.hdr);(s.get()||[]).forEach(r=>rows.push(r));rows.push(['','']);});
-  _csv('إحصائيات_محددة',['',''],rows);
+  const f=(document.getElementById('exp-from')||{}).value||'';
+  const t=(document.getElementById('exp-to')||{}).value||'';
+  const fromISO=f?new Date(f+'T00:00:00').toISOString():null;
+  const toISO  =t?new Date(t+'T23:59:59').toISOString():null;
+  const btn=document.getElementById('exp-btn');const old=btn?btn.innerHTML:'';
+  if(btn){btn.disabled=true;btn.innerHTML='⏳ جارٍ التجهيز...';}
+  try{
+    const trafNeeded=sel.some(k=>['visits','daily','sources','pages','devices'].includes(k));
+    const bookNeeded=sel.some(k=>['summary','type','status'].includes(k));
+    let pv=[],bk=[];
+    if(trafNeeded){let q=sb.from('page_views').select('path,ref,device,created_at');if(fromISO)q=q.gte('created_at',fromISO);if(toISO)q=q.lte('created_at',toISO);const r=await q.limit(100000);pv=r.data||[];}
+    if(bookNeeded){let q=sb.from('bookings').select('consultation_type,status,created_at,pay_amount');if(fromISO)q=q.gte('created_at',fromISO);if(toISO)q=q.lte('created_at',toISO);const r=await q.limit(100000);bk=r.data||[];}
+    const top=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]);
+    const byPage={},bySrc={},byDev={},byDay={};
+    pv.forEach(r=>{const pn=pageName(r.path);byPage[pn]=(byPage[pn]||0)+1;const s=r.ref||'مباشر';bySrc[s]=(bySrc[s]||0)+1;const dv=r.device||'غير معروف';byDev[dv]=(byDev[dv]||0)+1;const dk=(r.created_at||'').slice(0,10);if(dk)byDay[dk]=(byDay[dk]||0)+1;});
+    const dailyRows=Object.entries(byDay).sort((a,b)=>a[0]<b[0]?-1:1);
+    let revenue=0,confirmed=0;const byType={},byStatus={};
+    bk.forEach(b=>{const st=String(b.status||'pending').toLowerCase();byStatus[st]=(byStatus[st]||0)+1;if(isConfirmed(b.status)){confirmed++;const p=(parseFloat(String(b.pay_amount||'').replace(/[^0-9.]/g,''))||0)||priceOf(b.consultation_type);revenue+=p;const k=b.consultation_type||'غير محدد';byType[k]=(byType[k]||0)+p;}});
+    const stLabels={confirmed:'مؤكَّد',pending:'قيد المراجعة',cancelled:'ملغى',canceled:'ملغى'};
+    const rangeLabel=(f||'البداية')+' ← '+(t||'اليوم');
+    const DATA={
+      visits :{name:'ملخص الزيارات',      hdr:['المؤشر','القيمة'],   rows:[['الفترة',rangeLabel],['إجمالي الزيارات',pv.length]]},
+      daily  :{name:'الزيارات اليومية',   hdr:['اليوم','الزيارات'],  rows:dailyRows},
+      sources:{name:'مصادر الزوّار',       hdr:['المصدر','الزيارات'], rows:top(bySrc)},
+      pages  :{name:'أكثر الصفحات زيارة',  hdr:['الصفحة','الزيارات'], rows:top(byPage)},
+      devices:{name:'الأجهزة',             hdr:['الجهاز','الزيارات'], rows:top(byDev)},
+      summary:{name:'ملخّص الأداء',        hdr:['المؤشر','القيمة'],   rows:[['الفترة',rangeLabel],['الإيرادات المؤكَّدة ($)',Math.round(revenue)],['حجوزات مؤكَّدة',confirmed],['إجمالي الطلبات',bk.length]]},
+      type   :{name:'الإيرادات حسب النوع', hdr:['النوع','الإيراد ($)'],rows:top(byType).map(([k,v])=>[k,Math.round(v)])},
+      status :{name:'حالة الطلبات',        hdr:['الحالة','العدد'],    rows:top(byStatus).map(([k,v])=>[stLabels[k]||k,v])},
+    };
+    const tag=(f||'الكل')+'_الى_'+(t||'اليوم');
+    if(sel.length===1){const s=DATA[sel[0]];_csv(s.name.replace(/ /g,'_')+'_'+tag,s.hdr,s.rows);}
+    else{
+      const rows=[];
+      sel.forEach(k=>{const s=DATA[k];rows.push(['— '+s.name+' —','']);rows.push(s.hdr);s.rows.forEach(r=>rows.push(r));rows.push(['','']);});
+      _csv('إحصائيات_'+tag,['',''],rows);
+    }
+  }catch(e){alert('تعذّر التصدير: '+(e.message||e));}
+  finally{if(btn){btn.disabled=false;btn.innerHTML=old;}}
 }
 async function loadTraffic(){
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=(v==null?0:v).toLocaleString('en-US');};
