@@ -196,6 +196,8 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .trust-badge::after{content:'';position:absolute;bottom:-8px;right:0;left:0;height:1px;background:linear-gradient(270deg,var(--accent-dim),transparent);}
 .trust-badge .num{font-family:var(--font-en);font-size:1.1rem;font-weight:600;color:var(--accent-light);line-height:1;margin-bottom:5px;}
 .trust-badge .lbl{font-size:0.78rem;color:var(--text-muted);}
+.trust-badge.highlight .num{font-size:1.45rem;color:#e6c15a;}
+.trust-badge.highlight .lbl{color:var(--text-dim);}
 .hero-image-wrap{position:relative;opacity:0;animation:heroReveal 1s ease 0.5s forwards;}
 .hero-image-frame{width:100%;aspect-ratio:3/4;max-height:540px;background:linear-gradient(135deg,var(--card) 0%,var(--bg-mid) 100%);border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .hero-image-frame::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(12,11,15,0.7) 100%),linear-gradient(135deg,rgba(143,185,150,0.06) 0%,transparent 50%);}
@@ -788,11 +790,12 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <a href="#insights" class="btn btn-green" data-edit="hero_cta_primary">اقرأ آخر التحليلات</a>
 <span id="heroBookingBtn"><button class="btn btn-outline" data-edit="hero_cta_secondary" onclick="document.getElementById('consultations').scrollIntoView({behavior:'smooth'})">احجز استشارة</button></span>
 </div>
-<div class="hero-assure" data-edit="hero_assure"><span class="lock">🔒</span> استشارة خاصة وسرّية — ما تشاركه يبقى بينك وبين هنادي فقط.</div>
+<div class="hero-assure" data-edit="hero_assure"><span class="lock">🔒</span> سرّية تامة — تُدار كل استشارة بخصوصية واحترافية كاملة.</div>
 <div class="trust-badges">
 <div class="trust-badge"><span class="num en" data-edit="hero_badge1_num">منذ 1998</span><span class="lbl" data-edit="hero_badge1_lbl">خبرة عملية في الأسواق</span></div>
 <div class="trust-badge"><span class="num en" data-edit="hero_badge2_num">2002</span><span class="lbl" data-edit="hero_badge2_lbl">أول مكتب فوركس في دمشق</span></div>
 <div class="trust-badge"><span class="num en" data-edit="hero_badge3_num">منذ 2003</span><span class="lbl" data-edit="hero_badge3_lbl">تدريب وتحليل أسواق</span></div>
+<div class="trust-badge highlight"><span class="num en" data-edit="hero_badge4_num">+200,000</span><span class="lbl" data-edit="hero_badge4_lbl">متداول ومتدرّب حول العالم</span></div>
 </div>
 </div>
 <div class="hero-image-wrap">
