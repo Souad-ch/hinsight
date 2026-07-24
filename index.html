@@ -128,7 +128,8 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .section-label::before{content:'';display:block;width:24px;height:1px;background:var(--accent-light);}
 .section-title{font-size:clamp(1.8rem,3vw,2.6rem);color:var(--text);margin-bottom:16px;}
 .section-subtitle{color:var(--text-dim);font-size:1.05rem;max-width:520px;line-height:1.85;}
-.green-line{width:60px;height:2px;background:linear-gradient(270deg,var(--accent),transparent);margin-bottom:32px;animation:lineExpand 0.8s ease forwards;}
+.green-line{width:0;height:2px;background:linear-gradient(270deg,var(--accent),transparent);margin-bottom:32px;transition:width 0.75s cubic-bezier(.4,0,.2,1) 0.25s;}
+.reveal.visible .green-line,.section-head.visible .green-line{width:60px;}
 
 /* LUXURY ANIMATIONS */
 @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(40px,-30px) scale(1.08);}66%{transform:translate(-30px,20px) scale(0.94);}}
@@ -492,6 +493,16 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .js .reveal{opacity:0;transform:translateY(28px);}
 .js .reveal.visible{opacity:1;transform:translateY(0);}
 .delay-1{transition-delay:0.1s;}.delay-2{transition-delay:0.2s;}.delay-3{transition-delay:0.3s;}.delay-4{transition-delay:0.4s;}
+/* تتابع البطاقات: كروت كل شبكة تظهر واحدة ورا واحدة */
+[class$="-grid"]>.reveal:nth-child(2){transition-delay:0.08s;}
+[class$="-grid"]>.reveal:nth-child(3){transition-delay:0.16s;}
+[class$="-grid"]>.reveal:nth-child(4){transition-delay:0.24s;}
+[class$="-grid"]>.reveal:nth-child(5){transition-delay:0.32s;}
+[class$="-grid"]>.reveal:nth-child(6){transition-delay:0.40s;}
+[class$="-grid"]>.reveal:nth-child(n+7){transition-delay:0.48s;}
+/* ظهور من الجانب (يمين → مكانه) */
+.js .reveal.reveal-x{transform:translateX(38px);}
+.js .reveal.reveal-x.visible{transform:translateX(0);}
 
 /* RESPONSIVE */
 @media(max-width:1024px){
@@ -2348,12 +2359,49 @@ window.addEventListener('scroll',()=>scrollTopBtn.classList.toggle('visible',win
 scrollTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 
 // REVEAL
+const _reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// ظهور جانبي (يمين) لعناوين الأقسام بالتناوب — تنويع أنيق
+if(!_reduceMotion){
+  document.querySelectorAll('.section-head.reveal').forEach((el,i)=>{if(i%2===1)el.classList.add('reveal-x');});
+}
 const observer=new IntersectionObserver((entries)=>{
 entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
 },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
 // safety net: reveal everything after 2.5s in case the observer misfires
 setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),2500);
+
+// ── عدّ تصاعدي للأرقام عند ظهورها ──
+function animateCount(el){
+  const raw=(el.textContent||'').trim();
+  const m=raw.match(/\d[\d,]*\.?\d*/);
+  if(!m)return;
+  const numStr=m[0].replace(/,/g,'');
+  const target=parseFloat(numStr);
+  if(!isFinite(target)||target<=0)return;
+  const decimals=(numStr.split('.')[1]||'').length;
+  const prefix=raw.slice(0,m.index), suffix=raw.slice(m.index+m[0].length);
+  if(_reduceMotion)return;
+  const dur=1300, t0=performance.now();
+  el.dataset.counting='1';
+  function fmt(v){const s=decimals?v.toFixed(decimals):Math.round(v).toLocaleString('en-US');return prefix+s+suffix;}
+  function step(now){
+    const p=Math.min((now-t0)/dur,1), eased=1-Math.pow(1-p,3);
+    el.textContent=fmt(target*eased);
+    if(p<1)requestAnimationFrame(step); else {el.textContent=raw;delete el.dataset.counting;}
+  }
+  requestAnimationFrame(step);
+}
+const countObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){countObs.unobserve(e.target);animateCount(e.target);}});
+},{threshold:0.6});
+function setupCountUp(){
+  document.querySelectorAll('.hero-badge .badge-num,.trust-badge.highlight .num,.proof-value,.ss-num').forEach(el=>{
+    if(el.dataset.cuReady)return;el.dataset.cuReady='1';countObs.observe(el);
+  });
+}
+setupCountUp();
+document.addEventListener('hn:content-ready',()=>setTimeout(setupCountUp,400));
 
 // NEWSLETTER
 const nlBtn=document.getElementById('nlBtn');
