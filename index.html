@@ -425,7 +425,12 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .testi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 32px;position:relative;transition:var(--tr);display:flex;flex-direction:column;}
 .testi-card::before{content:'\201D';position:absolute;top:14px;left:24px;font-family:var(--font-en);font-size:4rem;line-height:1;color:rgba(143,185,150,0.16);}
 .testi-card:hover{border-color:rgba(143,185,150,0.4);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
-.testi-stars{color:var(--accent-light);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;}
+.testi-stars{color:var(--gold);font-size:0.95rem;letter-spacing:2px;margin-bottom:16px;}
+.social-proof{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-top:24px;}
+.social-proof .sp-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.social-proof .sp-num{font-family:var(--font-num);font-size:1.7rem;font-weight:700;color:var(--gold);line-height:1;}
+.social-proof .sp-lbl{font-size:0.8rem;color:var(--text-muted);}
+@media(max-width:480px){.social-proof{gap:26px;}.social-proof .sp-num{font-size:1.35rem;}}
 .testi-rating{display:none;align-items:center;justify-content:center;gap:14px;margin-top:20px;flex-wrap:wrap;}
 .testi-rating .rate-num{font-family:var(--font-num);font-size:2rem;font-weight:700;color:var(--accent-light);line-height:1;}
 .testi-rating .rate-stars{color:#e6c15a;font-size:1.2rem;letter-spacing:3px;}
@@ -684,7 +689,7 @@ a:hover>.hub-clickable{border-color:rgba(143,185,150,0.5);}
 .hero-text,.section-subtitle,.card-excerpt,.testi-text,.about-text,.about-quote,
 .timeline-item p,.footer-col ul a,.footer-about,.nl-text,.cons-card p,.lib-card p,
 .method-card p,.report-card p,.qa-card p,li{
-  text-shadow:0 0 16px rgba(143,185,150,0.22);
+  text-shadow:none;
 }
 .nav-links a,.section-label,.hero-label,.card-tag,.brand-num,.method-num,
 .timeline-year,.logo-sub,.read-more-btn{
@@ -789,8 +794,8 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <h1 class="hero-title"><span data-edit="hero_title_line1">هنادي تقرأ الأسواق</span><br><span data-edit="hero_title_line2">من خلف الأحداث</span></h1>
 <p class="hero-text" data-edit="hero_text">منصة تحليل اقتصادي وأسواق عالمية تُحوّل السياسة، الاقتصاد، السيولة، وسلوك المستثمرين إلى رؤية يفهمها المتداول الجاد قبل أن يتخذ قراره.</p>
 <div class="hero-buttons">
-<a href="#insights" class="btn btn-green" data-edit="hero_cta_primary">اقرأ آخر التحليلات</a>
-<span id="heroBookingBtn"><button class="btn btn-outline" data-edit="hero_cta_secondary" onclick="document.getElementById('consultations').scrollIntoView({behavior:'smooth'})">احجز استشارة</button></span>
+<span id="heroBookingBtn"><button class="btn btn-green" data-edit="hero_cta_secondary" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">احجز استشارة</button></span>
+<a href="#insights" class="btn btn-outline" data-edit="hero_cta_primary">اقرأ آخر التحليلات</a>
 </div>
 <div class="hero-assure" data-edit="hero_assure"><span class="lock">🔒</span> سرّية تامة — تُدار كل استشارة بخصوصية واحترافية كاملة.</div>
 <div class="trust-badges">
@@ -1166,7 +1171,11 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <h2 class="section-title" data-edit="title">ماذا يقول المتدربون</h2>
 <div class="green-line"></div>
 <p class="section-subtitle" data-edit="subtitle">آراء بعض من رافقوا هنادي في رحلة فهم الأسواق.</p>
-<div class="testi-rating" id="testiRating"></div>
+<div class="social-proof" id="socialProof">
+<div class="sp-item"><span class="sp-num en" data-edit="sp1_num"></span><span class="sp-lbl" data-edit="sp1_lbl">متابع على يوتيوب</span></div>
+<div class="sp-item"><span class="sp-num en" data-edit="sp2_num"></span><span class="sp-lbl" data-edit="sp2_lbl">متابع على إنستغرام</span></div>
+<div class="sp-item"><span class="sp-num en" data-edit="sp3_num"></span><span class="sp-lbl" data-edit="sp3_lbl">مشترك على تيليغرام</span></div>
+</div>
 </div>
 <div class="testi-grid">
 <div class="testi-card reveal delay-1">
@@ -1927,18 +1936,6 @@ async function loadLiveTestimonials(){
     const {data,error}=await sbClient.from('testimonials').select('*').eq('visible',true).order('created_at',{ascending:false});
     if(error){console.warn('testimonials read:',error.message);return;}
     if(!data||!data.length)return;
-    // ── ملخّص التقييم الديناميكي (نجوم + عدد الآراء) ──
-    try{
-      const rated=data.filter(t=>Number(t.rating)>0);
-      const avg=rated.length?(rated.reduce((s,t)=>s+Number(t.rating||5),0)/rated.length):5;
-      const full=Math.round(avg);
-      const rEl=document.getElementById('testiRating');
-      if(rEl){
-        rEl.innerHTML='<span class="rate-num en">'+avg.toFixed(1)+'</span>'
-          +'<span class="rate-stars">'+('★'.repeat(full)+'☆'.repeat(5-full))+'</span>';
-        rEl.style.display='flex';
-      }
-    }catch(e){}
     const sec=document.getElementById('testimonials');
     const grid=sec&&sec.querySelector('.testi-grid');
     if(!grid)return;
@@ -1964,6 +1961,18 @@ async function loadLiveTestimonials(){
   }catch(e){console.warn('testimonials:',e);}
 }
 loadLiveTestimonials();
+// إخفاء أرقام المتابعين الفارغة (لا يظهر أي رقم حتى تملئيه من اللوحة)
+function refreshSocialProof(){
+  const strip=document.getElementById('socialProof');if(!strip)return;
+  let shown=0;
+  strip.querySelectorAll('.sp-item').forEach(it=>{
+    const n=it.querySelector('.sp-num');const v=n?(n.textContent||'').trim():'';
+    if(v){it.style.display='';shown++;}else{it.style.display='none';}
+  });
+  strip.style.display=shown?'flex':'none';
+}
+refreshSocialProof();
+document.addEventListener('hn:content-ready',()=>setTimeout(refreshSocialProof,350));
 // إعادة المحاولة بعد استقرار الصفحة (يضمن ظهور الآراء المنشورة حتى لو تأخّر التحميل)
 window.addEventListener('hn:content-ready',()=>setTimeout(loadLiveTestimonials,300));
 
