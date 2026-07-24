@@ -420,6 +420,10 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .testi-card::before{content:'\201D';position:absolute;top:14px;left:24px;font-family:var(--font-en);font-size:4rem;line-height:1;color:rgba(143,185,150,0.16);}
 .testi-card:hover{border-color:rgba(143,185,150,0.4);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
 .testi-stars{color:var(--accent-light);font-size:0.9rem;letter-spacing:2px;margin-bottom:16px;}
+.testi-rating{display:none;align-items:center;justify-content:center;gap:14px;margin-top:20px;flex-wrap:wrap;}
+.testi-rating .rate-num{font-family:var(--font-num);font-size:2rem;font-weight:700;color:var(--accent-light);line-height:1;}
+.testi-rating .rate-stars{color:#e6c15a;font-size:1.2rem;letter-spacing:3px;}
+.testi-rating .rate-count{font-size:0.85rem;color:var(--text-muted);}
 .testi-text{font-size:0.95rem;color:var(--text-dim);line-height:1.95;margin-bottom:24px;flex:1;}
 .testi-person{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:20px;}
 .testi-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-dim));display:flex;align-items:center;justify-content:center;color:var(--bg);font-weight:700;font-size:1.1rem;flex-shrink:0;font-family:var(--font-en);}
@@ -1148,6 +1152,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <h2 class="section-title" data-edit="title">ماذا يقول المتدربون</h2>
 <div class="green-line"></div>
 <p class="section-subtitle" data-edit="subtitle">آراء بعض من رافقوا هنادي في رحلة فهم الأسواق.</p>
+<div class="testi-rating" id="testiRating"></div>
 </div>
 <div class="testi-grid">
 <div class="testi-card reveal delay-1">
@@ -1908,6 +1913,19 @@ async function loadLiveTestimonials(){
     const {data,error}=await sbClient.from('testimonials').select('*').eq('visible',true).order('created_at',{ascending:false});
     if(error){console.warn('testimonials read:',error.message);return;}
     if(!data||!data.length)return;
+    // ── ملخّص التقييم الديناميكي (نجوم + عدد الآراء) ──
+    try{
+      const rated=data.filter(t=>Number(t.rating)>0);
+      const avg=rated.length?(rated.reduce((s,t)=>s+Number(t.rating||5),0)/rated.length):5;
+      const full=Math.round(avg);
+      const rEl=document.getElementById('testiRating');
+      if(rEl){
+        rEl.innerHTML='<span class="rate-num en">'+avg.toFixed(1)+'</span>'
+          +'<span class="rate-stars">'+('★'.repeat(full)+'☆'.repeat(5-full))+'</span>'
+          +'<span class="rate-count">من ٥ · بناءً على '+data.length+' رأي</span>';
+        rEl.style.display='flex';
+      }
+    }catch(e){}
     const sec=document.getElementById('testimonials');
     const grid=sec&&sec.querySelector('.testi-grid');
     if(!grid)return;
