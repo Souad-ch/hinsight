@@ -191,6 +191,16 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .hero-title span{background:linear-gradient(135deg,var(--accent-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .hero-text{font-size:1.08rem;color:var(--text-dim);max-width:520px;margin-bottom:44px;line-height:1.9;opacity:0;animation:heroReveal 0.9s ease 0.6s forwards;}
 .hero-buttons{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:60px;opacity:0;animation:heroReveal 0.9s ease 0.8s forwards;}
+.social-strip-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(143,185,150,0.03);}
+.social-strip{display:flex;justify-content:center;align-items:center;gap:52px;flex-wrap:wrap;max-width:1200px;margin:0 auto;padding:22px 20px;}
+.ss-item{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none;transition:var(--tr);}
+.ss-item:hover{transform:translateY(-2px);}
+.ss-item .ss-icon{display:inline-flex;}
+.ss-item .ss-icon svg{width:28px;height:28px;stroke:var(--accent-light);fill:none;}
+.ss-text{display:flex;flex-direction:column;gap:3px;}
+.ss-item .ss-num{font-family:var(--font-num);font-size:1.4rem;font-weight:800;color:var(--gold);line-height:1;}
+.ss-item .ss-lbl{font-size:0.78rem;color:var(--text-muted);}
+@media(max-width:600px){.social-strip{gap:28px;padding:18px 14px;}.ss-item .ss-icon svg{width:23px;height:23px;}.ss-item .ss-num{font-size:1.18rem;}.ss-item{gap:9px;}}
 .hero-assure{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:0.82rem;color:var(--text-muted);opacity:0;animation:heroReveal 0.9s ease 0.9s forwards;}
 .hero-assure .lock{display:inline-flex;}
 .hero-assure .lock svg{width:15px;height:15px;stroke:var(--accent-light);}
@@ -811,6 +821,9 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 </div>
 </div>
 </section>
+
+<!-- SOCIAL PROOF STRIP (يُدار من لوحة التحكم) -->
+<section class="social-strip-wrap" id="socialStrip" style="display:none"></section>
 
 <!-- TICKER -->
 <div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
@@ -1955,6 +1968,38 @@ async function loadLiveTestimonials(){
   }catch(e){console.warn('testimonials:',e);}
 }
 loadLiveTestimonials();
+// ── شريط المتابعين (دليل اجتماعي) — يُدار من لوحة التحكم ──
+const SS_ICONS={
+  instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+  youtube:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="6" width="19" height="12" rx="3.5"/><path d="M10.5 9.5v5l4.2-2.5z" fill="currentColor" stroke="none"/></svg>',
+  telegram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M21 4L3 11l5 2 2 6 3-4 5 4z"/><path d="M8 13l9-6-6 8"/></svg>',
+  tiktok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v9.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 7c.8 1.6 2.3 2.6 4 2.7"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>',
+  twitter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>',
+  snapchat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3c2.7 0 4 2 4 4.3 0 1.3-.2 2.4.4 2.9.5.4 1.4.2 1.8.7.3.5-.4 1-1.5 1.4 0 0 .8 1.9 2.6 2.6.4.1.4.5 0 .8-.7.5-2 .4-2.4 1-.3.5 0 1.2-.6 1.4-.7.2-1.6-.6-2.9-.6s-1.6 1-3 1-2-1-3-1-2 .8-2.9.6c-.6-.2-.3-.9-.6-1.4-.4-.6-1.7-.5-2.4-1-.4-.3-.4-.7 0-.8C6.2 15.9 7 14 7 14c-1.1-.4-1.8-.9-1.5-1.4.4-.5 1.3-.3 1.8-.7.6-.5.4-1.6.4-2.9C7.7 5 9.3 3 12 3z"/></svg>',
+  facebook:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M14 8h-1.5A1.5 1.5 0 0 0 11 9.5V12H9v2.2h2V20h2.2v-5.8H15l.5-2.2h-2.3V9.8c0-.4.3-.6.6-.6H15z" fill="currentColor" stroke="none"/></svg>',
+  generic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.3 3-5.5 7-5.5s7 2.2 7 5.5"/></svg>'
+};
+async function loadSocialStrip(){
+  if(!sbClient)return;
+  const strip=document.getElementById('socialStrip');if(!strip)return;
+  try{
+    const {data}=await sbClient.from('page_sections').select('content').eq('section_key','social_proof').maybeSingle();
+    const c=data&&data.content;
+    if(!c||c.enabled===false){strip.style.display='none';return;}
+    const items=(c._items||[]).filter(it=>it&&String(it.num||'').trim());
+    if(!items.length){strip.style.display='none';return;}
+    strip.innerHTML='<div class="social-strip">'+items.map(it=>{
+      const ic=SS_ICONS[it.platform]||SS_ICONS.generic;
+      const inner='<span class="ss-icon">'+ic+'</span><span class="ss-text"><span class="ss-num en">'+esc(it.num)+'</span><span class="ss-lbl">'+esc(it.label||'')+'</span></span>';
+      const u=String(it.url||'').trim();
+      return u?('<a class="ss-item" href="'+esc(u)+'" target="_blank" rel="noopener">'+inner+'</a>'):('<div class="ss-item">'+inner+'</div>');
+    }).join('')+'</div>';
+    strip.style.display='block';
+  }catch(e){strip.style.display='none';}
+}
+loadSocialStrip();
+document.addEventListener('hn:content-ready',()=>setTimeout(loadSocialStrip,300));
 // إعادة المحاولة بعد استقرار الصفحة (يضمن ظهور الآراء المنشورة حتى لو تأخّر التحميل)
 window.addEventListener('hn:content-ready',()=>setTimeout(loadLiveTestimonials,300));
 

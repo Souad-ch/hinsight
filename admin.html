@@ -435,6 +435,7 @@
       <div class="side-link" data-panel="new-blog"><span class="side-icon">✏️</span>مقال جديد</div>
       <div class="side-link" data-panel="blog"><span class="side-icon">📰</span>إدارة المقالات</div>
       <div class="side-link" data-panel="library-page"><span class="side-icon">📚</span>إدارة المكتبة</div>
+      <div class="side-link" data-panel="social-proof"><span class="side-icon">👥</span>شريط المتابعين</div>
       <div class="side-label">الحجوزات</div>
       <div class="side-link" onclick="window.location.href='/bookings'"><span class="side-icon">📅</span>الحجوزات</div>
       <div class="side-label">الموقع</div>
@@ -918,6 +919,21 @@
         <div id="lib_status" style="margin-top:10px;font-size:0.85rem;"></div>
       </div>
 
+      <!-- SOCIAL PROOF (FOLLOWERS STRIP) -->
+      <div class="panel" id="panel-social-proof">
+        <div class="panel-title">شريط المتابعين (دليل اجتماعي)</div>
+        <div class="panel-sub">شريط يظهر تحت الواجهة مباشرةً يعرض أرقام متابعيك على المنصّات. يمكنك إظهاره/إخفاؤه وتعديل الأرقام والنصوص والروابط. أي منصّة رقمها فارغ لا تظهر.</div>
+        <div class="section-card">
+          <label class="cp-lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.9rem;color:var(--cream)"><input type="checkbox" id="soc_enabled"/> <b>إظهار الشريط على الموقع</b></label>
+        </div>
+        <div class="section-card">
+          <div id="soc_list"></div>
+          <button type="button" class="btn btn-ghost" onclick="socAdd()" style="width:auto;padding:11px 26px;margin-top:6px">➕ إضافة منصّة</button>
+        </div>
+        <button class="btn btn-gold" onclick="saveSocial()" style="width:auto;padding:13px 32px;margin-top:4px;">💾 حفظ ونشر</button>
+        <div id="soc_status" style="margin-top:10px;font-size:0.85rem;"></div>
+      </div>
+
       <!-- COUPONS EDITOR -->
       <div class="panel" id="panel-coupons-page">
         <div class="panel-title">كوبونات الخصم</div>
@@ -1281,6 +1297,7 @@ function loadPanel(name){
   if(name==='vip-page')loadVip();
   if(name==='coupons-page')loadCoupons();
   if(name==='library-page')loadLibrary();
+  if(name==='social-proof')loadSocial();
   if(name==='maintenance-page')loadMaintenance();
 }
 // ── المكتبة المعرفية ──
@@ -1304,6 +1321,46 @@ function libRender(){
 }
 function libAdd(){LIB.push({index:String(LIB.length+1).padStart(2,'0'),title:'',desc:'',url:''});libRender();}
 function libDel(i){LIB.splice(i,1);libRender();}
+// ── شريط المتابعين (دليل اجتماعي) ──
+let SOC=[];
+const SOC_PLATFORMS=[['instagram','إنستغرام'],['youtube','يوتيوب'],['telegram','تيليغرام'],['tiktok','تيك توك'],['x','X (تويتر)'],['snapchat','سناب شات'],['facebook','فيسبوك'],['generic','منصّة أخرى']];
+function socRender(){
+  const w=document.getElementById('soc_list');
+  const opts=it=>SOC_PLATFORMS.map(([v,l])=>`<option value="${v}"${it.platform===v?' selected':''}>${l}</option>`).join('');
+  w.innerHTML=SOC.map((it,i)=>`<div class="section-card" style="margin-bottom:12px;position:relative">
+    <button type="button" onclick="socDel(${i})" style="position:absolute;top:12px;left:12px;background:none;border:1px solid #e0ada7;color:#e0ada7;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:.78rem">🗑 حذف</button>
+    <label class="cp-lbl">المنصّة</label>
+    <select class="input cp-inp" data-soc="${i}" data-k="platform">${opts(it)}</select>
+    <label class="cp-lbl">الرقم (مثال: 200k+ أو 50 ألف)</label>
+    <input class="input cp-inp" data-soc="${i}" data-k="num" dir="ltr" value="${(it.num||'').toString().replace(/"/g,'&quot;')}" placeholder="200k+"/>
+    <label class="cp-lbl">النص تحت الرقم</label>
+    <input class="input cp-inp" data-soc="${i}" data-k="label" value="${(it.label||'').replace(/"/g,'&quot;')}" placeholder="متابع على إنستغرام"/>
+    <label class="cp-lbl">الرابط (اختياري — يفتح صفحتك عند الضغط)</label>
+    <input class="input cp-inp" data-soc="${i}" data-k="url" dir="ltr" value="${(it.url||'').replace(/"/g,'&quot;')}" placeholder="https://instagram.com/..."/>
+  </div>`).join('')||'<div style="color:var(--muted);font-size:.85rem">لا منصّات. اضغطي «إضافة منصّة».</div>';
+  w.querySelectorAll('[data-soc]').forEach(el=>el.addEventListener('input',()=>{SOC[+el.dataset.soc][el.dataset.k]=el.value;}));
+}
+function socAdd(){SOC.push({platform:'instagram',num:'',label:'',url:''});socRender();}
+function socDel(i){SOC.splice(i,1);socRender();}
+async function loadSocial(){
+  document.getElementById('soc_status').textContent='';
+  let c={};
+  try{const{data}=await sb.from('page_sections').select('content').eq('section_key','social_proof').maybeSingle();c=(data&&data.content)||{};}catch(e){}
+  document.getElementById('soc_enabled').checked=(c.enabled!==false);
+  SOC=Array.isArray(c._items)&&c._items.length?c._items.map(x=>({...x})):[{platform:'instagram',num:'',label:'متابع على إنستغرام',url:'https://www.instagram.com/hanadi_insights'}];
+  socRender();
+}
+async function saveSocial(){
+  const st=document.getElementById('soc_status');
+  const enabled=document.getElementById('soc_enabled').checked;
+  const _items=SOC.map(it=>({platform:it.platform||'generic',num:(it.num||'').trim(),label:(it.label||'').trim(),url:(it.url||'').trim()}));
+  st.textContent='⏳ جارٍ الحفظ...';st.style.color='var(--muted)';
+  const{error}=await sb.from('page_sections').upsert(
+    {section_key:'social_proof',section_name:'شريط المتابعين',section_type:'section',order_index:0.7,visible:true,content:{enabled,_items},updated_at:new Date().toISOString()},
+    {onConflict:'section_key'});
+  if(error){st.textContent='⚠ '+error.message;st.style.color='#e0ada7';return;}
+  st.textContent='✓ تم الحفظ والنشر'+(enabled?'':' (الشريط مخفي حالياً)');st.style.color='#8FB996';
+}
 const LIB_DEFAULTS=[
   {index:'01',title:'ما هو التداول؟',desc:'فهم التداول كقرار واحتمال ومخاطر، لا كضغط زر.',url:''},
   {index:'02',title:'إدارة رأس المال',desc:'كيف يحمي المتداول حسابه قبل أن يبحث عن الربح.',url:''},
