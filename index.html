@@ -795,7 +795,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <div class="trust-badge"><span class="num en" data-edit="hero_badge1_num">منذ 1998</span><span class="lbl" data-edit="hero_badge1_lbl">خبرة عملية في الأسواق</span></div>
 <div class="trust-badge"><span class="num en" data-edit="hero_badge2_num">2002</span><span class="lbl" data-edit="hero_badge2_lbl">أول مكتب فوركس في دمشق</span></div>
 <div class="trust-badge"><span class="num en" data-edit="hero_badge3_num">منذ 2003</span><span class="lbl" data-edit="hero_badge3_lbl">تدريب وتحليل أسواق</span></div>
-<div class="trust-badge highlight"><span class="num en" data-edit="hero_badge4_num">+200,000</span><span class="lbl" data-edit="hero_badge4_lbl">متداول ومتدرّب حول العالم</span></div>
+<div class="trust-badge highlight"><span class="num en" data-edit="hero_badge4_num">200k+</span><span class="lbl" data-edit="hero_badge4_lbl">متداول ومتدرّب حول العالم</span></div>
 </div>
 </div>
 <div class="hero-image-wrap">
@@ -1933,8 +1933,7 @@ async function loadLiveTestimonials(){
       const rEl=document.getElementById('testiRating');
       if(rEl){
         rEl.innerHTML='<span class="rate-num en">'+avg.toFixed(1)+'</span>'
-          +'<span class="rate-stars">'+('★'.repeat(full)+'☆'.repeat(5-full))+'</span>'
-          +'<span class="rate-count">من ٥ · بناءً على '+data.length+' رأي</span>';
+          +'<span class="rate-stars">'+('★'.repeat(full)+'☆'.repeat(5-full))+'</span>';
         rEl.style.display='flex';
       }
     }catch(e){}
