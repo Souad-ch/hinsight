@@ -1006,6 +1006,15 @@
           <div id="st-visits-note" style="font-size:.78rem;color:var(--muted);margin-top:10px"></div>
         </div>
         <div class="section-card">
+          <div class="section-card-title">🎯 قمع التحويل (هذا الشهر)</div>
+          <div class="stats-row">
+            <div class="stat-box"><div class="stat-box-num" id="st-conv-visits">—</div><div class="stat-box-label">زيارات</div></div>
+            <div class="stat-box"><div class="stat-box-num" id="st-conv-books">—</div><div class="stat-box-label">حجوزات</div></div>
+            <div class="stat-box"><div class="stat-box-num" id="st-conv-rate">—</div><div class="stat-box-label">معدّل التحويل</div></div>
+          </div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:10px">نسبة الزوّار الذين قدّموا طلب حجز هذا الشهر. كلما ارتفعت، كان موقعك وتسويقك أكثر إقناعاً.</div>
+        </div>
+        <div class="section-card">
           <div class="section-card-title">📈 آخر ٧ أيام</div>
           <div id="st-trend7" style="display:flex;flex-direction:column;gap:14px;margin-top:6px"></div>
         </div>
@@ -1701,6 +1710,14 @@ async function loadTraffic(){
     if(tot.error)throw tot.error;
     set('st-visits-today',dy.count);set('st-visits-month',mo.count);set('st-visits-total',tot.count);
     _TRAF.visits=[['زيارات اليوم',dy.count||0],['زيارات هذا الشهر',mo.count||0],['إجمالي الزيارات',tot.count||0]];
+    // ── قمع التحويل: حجوزات الشهر ÷ زيارات الشهر ──
+    try{
+      const bmo=await sb.from('bookings').select('*',{count:'exact',head:true}).gte('created_at',monStart);
+      const books=bmo.count||0, visits=mo.count||0;
+      const rate=visits?Math.round((books/visits)*1000)/10:0;
+      set('st-conv-visits',visits);set('st-conv-books',books);
+      const rEl=document.getElementById('st-conv-rate');if(rEl)rEl.textContent=rate+'%';
+    }catch(e){}
     if(note)note.textContent='تُحتسب زيارة واحدة لكل زائر في الجلسة. تبدأ من تاريخ تفعيل العدّاد.';
     // ── تفاصيل: آخر 30 يوم ──
     const since=new Date(now.getFullYear(),now.getMonth(),now.getDate()-29).toISOString();
