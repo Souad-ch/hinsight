@@ -754,10 +754,11 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <script>
 (function(){
   document.documentElement.classList.add('js');
-  function revealAll(){document.querySelectorAll('.reveal:not(.visible)').forEach(function(e){e.classList.add('visible');});}
-  if(document.readyState!=='loading'){setTimeout(revealAll,1000);}
-  else{document.addEventListener('DOMContentLoaded',function(){setTimeout(revealAll,1000);});}
-  window.addEventListener('load',function(){setTimeout(revealAll,200);});
+  // متصفحات قديمة بلا IntersectionObserver: أظهري كل شيء فوراً (المراقب أدناه يتكفّل بالباقي)
+  if(!('IntersectionObserver' in window)){
+    function revealAll(){document.querySelectorAll('.reveal').forEach(function(e){e.classList.add('visible');});}
+    document.addEventListener('DOMContentLoaded',revealAll);window.addEventListener('load',revealAll);
+  }
 })();
 </script>
 <div id="scrollProgress"></div>
@@ -2368,8 +2369,8 @@ const observer=new IntersectionObserver((entries)=>{
 entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
 },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
-// safety net: reveal everything after 2.5s in case the observer misfires
-setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),2500);
+// safety net: reveal anything still hidden after 8s (guard only — observer handles scroll reveals)
+setTimeout(()=>document.querySelectorAll('.reveal:not(.visible)').forEach(el=>el.classList.add('visible')),8000);
 
 // ── عدّ تصاعدي للأرقام عند ظهورها ──
 function animateCount(el){
