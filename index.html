@@ -192,7 +192,11 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .hero-text{font-size:1.08rem;color:var(--text-dim);max-width:520px;margin-bottom:44px;line-height:1.9;opacity:0;animation:heroReveal 0.9s ease 0.6s forwards;}
 .hero-buttons{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:60px;opacity:0;animation:heroReveal 0.9s ease 0.8s forwards;}
 .hero-assure{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:0.82rem;color:var(--text-muted);opacity:0;animation:heroReveal 0.9s ease 0.9s forwards;}
-.hero-assure .lock{font-size:0.9rem;filter:grayscale(0.2);}
+.hero-assure .lock{display:inline-flex;}
+.hero-assure .lock svg{width:15px;height:15px;stroke:var(--accent-light);}
+.report-icon svg{width:34px;height:34px;stroke:var(--accent-light);}
+.rev-ico{width:16px;height:16px;vertical-align:-3px;margin-left:6px;stroke:currentColor;}
+.art-date-ico{width:14px;height:14px;vertical-align:-2px;margin-left:5px;stroke:var(--accent);}
 .trust-badges{display:flex;gap:44px;flex-wrap:wrap;opacity:0;animation:heroReveal 0.9s ease 1s forwards;}
 .trust-badge{display:flex;flex-direction:column;position:relative;}
 .trust-badge::after{content:'';position:absolute;bottom:-8px;right:0;left:0;height:1px;background:linear-gradient(270deg,var(--accent-dim),transparent);}
@@ -426,11 +430,6 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .testi-card::before{content:'\201D';position:absolute;top:14px;left:24px;font-family:var(--font-en);font-size:4rem;line-height:1;color:rgba(143,185,150,0.16);}
 .testi-card:hover{border-color:rgba(143,185,150,0.4);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
 .testi-stars{color:var(--gold);font-size:0.95rem;letter-spacing:2px;margin-bottom:16px;}
-.social-proof{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-top:24px;}
-.social-proof .sp-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.social-proof .sp-num{font-family:var(--font-num);font-size:1.7rem;font-weight:700;color:var(--gold);line-height:1;}
-.social-proof .sp-lbl{font-size:0.8rem;color:var(--text-muted);}
-@media(max-width:480px){.social-proof{gap:26px;}.social-proof .sp-num{font-size:1.35rem;}}
 .testi-rating{display:none;align-items:center;justify-content:center;gap:14px;margin-top:20px;flex-wrap:wrap;}
 .testi-rating .rate-num{font-family:var(--font-num);font-size:2rem;font-weight:700;color:var(--accent-light);line-height:1;}
 .testi-rating .rate-stars{color:#e6c15a;font-size:1.2rem;letter-spacing:3px;}
@@ -797,7 +796,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <span id="heroBookingBtn"><button class="btn btn-green" data-edit="hero_cta_secondary" onclick="document.getElementById('booking').scrollIntoView({behavior:'smooth'})">احجز استشارة</button></span>
 <a href="#insights" class="btn btn-outline" data-edit="hero_cta_primary">اقرأ آخر التحليلات</a>
 </div>
-<div class="hero-assure" data-edit="hero_assure"><span class="lock">🔒</span> سرّية تامة — تُدار كل استشارة بخصوصية واحترافية كاملة.</div>
+<div class="hero-assure" data-edit="hero_assure"><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span> سرّية تامة — تُدار كل استشارة بخصوصية واحترافية كاملة.</div>
 <div class="trust-badges">
 <div class="trust-badge"><span class="num en" data-edit="hero_badge1_num">منذ 1998</span><span class="lbl" data-edit="hero_badge1_lbl">خبرة عملية في الأسواق</span></div>
 <div class="trust-badge"><span class="num en" data-edit="hero_badge2_num">2002</span><span class="lbl" data-edit="hero_badge2_lbl">أول مكتب فوركس في دمشق</span></div>
@@ -980,9 +979,9 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <div class="green-line"></div>
 <p class="section-subtitle" data-edit="reports_subtitle">تقارير دورية تصلح كأصول رقمية قابلة للتحميل وتغذية قاعدة بيانات المنصة.</p></div>
 <div class="reports-grid">
-<div class="report-card reveal delay-1"><div class="report-icon">📄</div><h3 class="report-name" data-edit="reports_c1_name">تقرير الذهب الشهري</h3><p class="report-date en" data-edit="reports_c1_date">Monthly Gold Lens</p><a href="#" class="btn btn-ghost" data-edit="reports_c1_btn">تحميل التقرير</a></div>
-<div class="report-card reveal delay-2"><div class="report-icon">📄</div><h3 class="report-name" data-edit="reports_c2_name">تقرير الاقتصاد العالمي</h3><p class="report-date en" data-edit="reports_c2_date">Global Macro Brief</p><a href="#" class="btn btn-ghost" data-edit="reports_c2_btn">تحميل التقرير</a></div>
-<div class="report-card reveal delay-3"><div class="report-icon">📄</div><h3 class="report-name" data-edit="reports_c3_name">تقرير السيولة والأسواق</h3><p class="report-date en" data-edit="reports_c3_date">Liquidity & Markets</p><a href="#" class="btn btn-ghost" data-edit="reports_c3_btn">تحميل التقرير</a></div>
+<div class="report-card reveal delay-1"><div class="report-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg></div><h3 class="report-name" data-edit="reports_c1_name">تقرير الذهب الشهري</h3><p class="report-date en" data-edit="reports_c1_date">Monthly Gold Lens</p><a href="#" class="btn btn-ghost" data-edit="reports_c1_btn">تحميل التقرير</a></div>
+<div class="report-card reveal delay-2"><div class="report-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg></div><h3 class="report-name" data-edit="reports_c2_name">تقرير الاقتصاد العالمي</h3><p class="report-date en" data-edit="reports_c2_date">Global Macro Brief</p><a href="#" class="btn btn-ghost" data-edit="reports_c2_btn">تحميل التقرير</a></div>
+<div class="report-card reveal delay-3"><div class="report-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg></div><h3 class="report-name" data-edit="reports_c3_name">تقرير السيولة والأسواق</h3><p class="report-date en" data-edit="reports_c3_date">Liquidity & Markets</p><a href="#" class="btn btn-ghost" data-edit="reports_c3_btn">تحميل التقرير</a></div>
 </div>
 </div>
 </section>
@@ -1171,11 +1170,6 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <h2 class="section-title" data-edit="title">ماذا يقول المتدربون</h2>
 <div class="green-line"></div>
 <p class="section-subtitle" data-edit="subtitle">آراء بعض من رافقوا هنادي في رحلة فهم الأسواق.</p>
-<div class="social-proof" id="socialProof">
-<div class="sp-item"><span class="sp-num en" data-edit="sp1_num"></span><span class="sp-lbl" data-edit="sp1_lbl">متابع على يوتيوب</span></div>
-<div class="sp-item"><span class="sp-num en" data-edit="sp2_num"></span><span class="sp-lbl" data-edit="sp2_lbl">متابع على إنستغرام</span></div>
-<div class="sp-item"><span class="sp-num en" data-edit="sp3_num"></span><span class="sp-lbl" data-edit="sp3_lbl">مشترك على تيليغرام</span></div>
-</div>
 </div>
 <div class="testi-grid">
 <div class="testi-card reveal delay-1">
@@ -1197,7 +1191,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 
 <!-- زر إضافة رأي -->
 <div class="reveal" style="text-align:center;margin-top:48px">
-  <button id="revOpen" class="btn btn-outline" style="padding:13px 40px">✦ أضف رأيك</button>
+  <button id="revOpen" class="btn btn-outline" style="padding:13px 40px"><svg class="rev-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> أضف رأيك</button>
 </div>
 
 </div>
@@ -1206,7 +1200,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <div class="modal-overlay" id="revModal">
   <div class="modal" style="max-width:560px;padding:36px 32px;position:relative">
     <button onclick="document.getElementById('revModal').classList.remove('open');document.body.style.overflow='';" style="position:absolute;top:16px;left:16px;background:none;border:none;color:var(--text-muted);font-size:1.4rem;cursor:pointer;line-height:1">×</button>
-    <h3 style="font-size:1.2rem;color:var(--text);margin-bottom:20px;text-align:center">شاركنا رأيك ✦</h3>
+    <h3 style="font-size:1.2rem;color:var(--text);margin-bottom:20px;text-align:center">شاركنا رأيك</h3>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
       <input id="revName" class="form-input" placeholder="اسمك" style="flex:1;min-width:180px"/>
       <input id="revRole" class="form-input" placeholder="صفتك (اختياري — مثل: متداول)" style="flex:1;min-width:180px"/>
@@ -1217,7 +1211,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
     </div>
     <textarea id="revText" class="form-input" rows="4" placeholder="اكتب رأيك هنا..." style="width:100%;resize:vertical;margin-bottom:14px"></textarea>
     <div style="margin-bottom:16px">
-      <span style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:8px">📷 صورتك (اختياري)</span>
+      <span style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:8px"><svg class="rev-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg> صورتك (اختياري)</span>
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
         <button type="button" id="revPhotoBtn" class="btn btn-outline" style="padding:9px 22px;font-size:.85rem">اختر صورة</button>
         <span id="revPhotoName" style="font-size:.8rem;color:var(--text-muted)">لم تُختَر صورة</span>
@@ -1453,7 +1447,7 @@ function openArticle(i){
 const a=ARTICLES[i];
 document.getElementById('artTag').textContent=a.tag;
 document.getElementById('artTitle').textContent=a.title;
-document.getElementById('artDate').textContent='📅 '+a.date;
+document.getElementById('artDate').innerHTML='<svg class="art-date-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg> '+String(a.date||'').replace(/</g,'&lt;');
 document.getElementById('artReadTime').textContent='⏱ '+a.readTime;
 document.getElementById('artBody').innerHTML=a.body;
 const m=document.getElementById('articleModal');
@@ -1533,7 +1527,7 @@ document.getElementById('artTitle').textContent=a.title;
 const txt=(a.content||'').replace(/<[^>]+>/g,'');
 const mins=Math.max(1,Math.round(txt.length/700));
 let d='';try{d=new Date(a.created_at).toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});}catch{}
-document.getElementById('artDate').textContent='📅 '+d;
+document.getElementById('artDate').innerHTML='<svg class="art-date-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg> '+String(d||'').replace(/</g,'&lt;');
 document.getElementById('artReadTime').textContent='⏱ '+mins+' دقائق قراءة';
 document.getElementById('artBody').innerHTML=a.content||'';
 const m=document.getElementById('articleModal');
@@ -1726,7 +1720,7 @@ const ITEM_TEMPLATES={
     const clickable=(u||hasBody)?' hub-clickable':'';
     const attr=u?` data-video="${esc(u)}"`:(hasBody?` data-libkey="${esc(it.index)}"`:'');
     return `<div class="hub-card reveal visible${clickable}"${attr}><span class="hub-index en">${esc(it.index)}</span><div><h3 class="hub-title">${esc(it.title)}${play}</h3><p class="hub-desc">${esc(it.desc)}</p></div></div>`;},
-  reports:it=>`<div class="report-card reveal visible"><div class="report-icon">${esc(it.icon||'📄')}</div><h3 class="report-name">${esc(it.name)}</h3><p class="report-date en">${esc(it.date)}</p><a href="#" class="btn btn-ghost">${esc(it.btn||'تحميل التقرير')}</a></div>`,
+  reports:it=>`<div class="report-card reveal visible"><div class="report-icon">${it.icon?esc(it.icon):'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>'}</div><h3 class="report-name">${esc(it.name)}</h3><p class="report-date en">${esc(it.date)}</p><a href="#" class="btn btn-ghost">${esc(it.btn||'تحميل التقرير')}</a></div>`,
   consultations:it=>`<div class="cons-card reveal visible${it.featured?' featured':''}"><div class="cons-icon">${esc(it.icon)}</div><h3 class="cons-name">${esc(it.name)}</h3><p class="cons-desc">${esc(it.desc)}</p><div class="cons-duration">${esc(it.duration||'')}</div><button class="btn btn-outline" style="margin-top:8px" onclick="openConsModal(this)">${esc(it.btn||'طلب استشارة')}</button></div>`,
   notes:it=>`<div class="qa-item reveal visible"><button class="qa-question" onclick="toggleQA(this)"><span class="qa-q-icon">س</span><span>${esc(it.question)}</span><span class="qa-arrow">⌄</span></button><div class="qa-answer"><div class="qa-answer-inner">${esc(it.answer)}</div></div></div>`,
   about:it=>`<div class="timeline-item"><span class="timeline-year en">${esc(it.year)}</span><p class="timeline-title">${esc(it.title)}</p></div>`,
@@ -1961,18 +1955,6 @@ async function loadLiveTestimonials(){
   }catch(e){console.warn('testimonials:',e);}
 }
 loadLiveTestimonials();
-// إخفاء أرقام المتابعين الفارغة (لا يظهر أي رقم حتى تملئيه من اللوحة)
-function refreshSocialProof(){
-  const strip=document.getElementById('socialProof');if(!strip)return;
-  let shown=0;
-  strip.querySelectorAll('.sp-item').forEach(it=>{
-    const n=it.querySelector('.sp-num');const v=n?(n.textContent||'').trim():'';
-    if(v){it.style.display='';shown++;}else{it.style.display='none';}
-  });
-  strip.style.display=shown?'flex':'none';
-}
-refreshSocialProof();
-document.addEventListener('hn:content-ready',()=>setTimeout(refreshSocialProof,350));
 // إعادة المحاولة بعد استقرار الصفحة (يضمن ظهور الآراء المنشورة حتى لو تأخّر التحميل)
 window.addEventListener('hn:content-ready',()=>setTimeout(loadLiveTestimonials,300));
 
