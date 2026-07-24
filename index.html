@@ -189,6 +189,8 @@ h1,h2,h3,h4,.section-title,.hero-title{font-family:var(--font-heading);font-weig
 .hero-title span{background:linear-gradient(135deg,var(--accent-light),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .hero-text{font-size:1.08rem;color:var(--text-dim);max-width:520px;margin-bottom:44px;line-height:1.9;opacity:0;animation:heroReveal 0.9s ease 0.6s forwards;}
 .hero-buttons{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:60px;opacity:0;animation:heroReveal 0.9s ease 0.8s forwards;}
+.hero-assure{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:0.82rem;color:var(--text-muted);opacity:0;animation:heroReveal 0.9s ease 0.9s forwards;}
+.hero-assure .lock{font-size:0.9rem;filter:grayscale(0.2);}
 .trust-badges{display:flex;gap:44px;flex-wrap:wrap;opacity:0;animation:heroReveal 0.9s ease 1s forwards;}
 .trust-badge{display:flex;flex-direction:column;position:relative;}
 .trust-badge::after{content:'';position:absolute;bottom:-8px;right:0;left:0;height:1px;background:linear-gradient(270deg,var(--accent-dim),transparent);}
@@ -780,6 +782,7 @@ h1,h2,h3,h4,p,a,li,span{overflow-wrap:anywhere;word-break:break-word}
 <a href="#insights" class="btn btn-green" data-edit="hero_cta_primary">اقرأ آخر التحليلات</a>
 <span id="heroBookingBtn"><button class="btn btn-outline" data-edit="hero_cta_secondary" onclick="document.getElementById('consultations').scrollIntoView({behavior:'smooth'})">احجز استشارة</button></span>
 </div>
+<div class="hero-assure" data-edit="hero_assure"><span class="lock">🔒</span> استشارة خاصة وسرّية — ما تشاركه يبقى بينك وبين هنادي فقط.</div>
 <div class="trust-badges">
 <div class="trust-badge"><span class="num en" data-edit="hero_badge1_num">منذ 1998</span><span class="lbl" data-edit="hero_badge1_lbl">خبرة عملية في الأسواق</span></div>
 <div class="trust-badge"><span class="num en" data-edit="hero_badge2_num">2002</span><span class="lbl" data-edit="hero_badge2_lbl">أول مكتب فوركس في دمشق</span></div>
